@@ -5,7 +5,7 @@
 
   interface Props {
     editor: Editor;
-    key: string;
+    key: string | { name: string; attributes?: {} };
     action: () => void;
     icon: string;
     tooltip: string;
@@ -18,30 +18,42 @@
   let highlighted = $state(false);
   let disabled = $state(false);
 
-  onMount(() => {
-    editor.on("transaction", () => {
-      if (key === "textStyle") {
-        highlighted = !!editor.getAttributes(key).color && editor.isActive(key);
-      } else {
-        highlighted = editor.isActive(key);
-      }
-    });
+  function setHighlighted() {
+    const name = typeof key === "string" ? key : key.name;
+    const attributes = typeof key === "string" ? undefined : key.attributes;
 
-    editor.on("update", () => {
-      disabled = !editor.isEditable;
-    });
+    if (name === "textStyle") {
+      highlighted = !!editor.getAttributes(name).color && editor.isActive(name, attributes);
+    } else {
+      highlighted = editor.isActive(name, attributes);
+    }
+  }
+
+  function setDisabled() {
+    disabled = !editor.isEditable;
+  }
+
+  onMount(() => {
+    setHighlighted();
+    setDisabled();
+
+    editor.on("transaction", setHighlighted);
+    editor.on("update", () => setDisabled);
   });
 </script>
 
 <button {disabled} class:highlighted class:dropdownOpen onclick={() => action()} title={disabled ? "" : tooltip}>
   <Icon content={icon} />
-  <div class="icon-text">{text}</div>
+  {#if text}
+    <div class="icon-text">{text}</div>
+  {/if}
 </button>
 
 <style>
   button {
     display: flex;
     align-items: center;
+
     margin: 0.2rem 0;
     border: none;
     border-radius: 0.25rem;
@@ -61,6 +73,7 @@
 
     .icon-text {
       font-size: 0.8rem;
+      margin-left: 0.25rem;
     }
   }
 

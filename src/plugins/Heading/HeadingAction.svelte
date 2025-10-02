@@ -2,7 +2,6 @@
 
 <script lang="ts">
   import DropdownButton from "../../base/DropdownButton.svelte";
-  import Icon from "../../base/Icon.svelte";
   import Paragraph from "../../../icons/paragraph.svg?raw";
   import Heading from "../../../icons/heading.svg?raw";
   import Heading1Icon from "../../../icons/heading-1.svg?raw";
@@ -12,6 +11,7 @@
   import Heading5Icon from "../../../icons/heading-5.svg?raw";
   import Heading6Icon from "../../../icons/heading-6.svg?raw";
   import type { Editor } from "@tiptap/core";
+  import SimpleButton from "../../base/SimpleButton.svelte";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -61,28 +61,20 @@
 
     dropdownOpen = false;
   }
-
-  function isActive(level: number | null) {
-    if (!editor) return false;
-    if (level === null) {
-      return editor.isActive("paragraph");
-    }
-    return editor.isActive("heading", { level });
-  }
 </script>
 
 {#if editor}
   <DropdownButton {editor} bind:dropdownOpen key="heading" icon={Heading} tooltip={translations[language]["main"]}>
     <div class="heading-dropdown">
       {#each headingLevels as item (item.label)}
-        <button
-          class={isActive(item.level) && "active"}
-          onclick={() => setHeading(item.level)}
-          aria-label={translations[language][item.label]}
-        >
-          <Icon content={item.icon} />
-          <span>{translations[language][item.label]}</span>
-        </button>
+        <SimpleButton
+          {editor}
+          text={translations[language][item.label]}
+          key={item.level === null ? "paragraph" : { name: "heading", attributes: { level: item.level } }}
+          action={() => setHeading(item.level)}
+          icon={item.icon}
+          tooltip={translations[language][item.label]}
+        ></SimpleButton>
       {/each}
     </div>
   </DropdownButton>
@@ -93,24 +85,7 @@
     display: flex;
     flex-flow: column;
     min-width: 10rem;
+    padding: 0.25rem;
     background-color: var(--tiptob-bg-button, #fff);
-  }
-
-  button {
-    display: flex;
-    align-items: center;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    gap: 0.5rem;
-    background: var(--tiptob-bg-button, #fff);
-
-    &:hover {
-      background: var(--tiptob-bg-button-hover, #f0f0f0);
-    }
-
-    &.active {
-      background-color: var(--tiptob-bg-button-highlighted, #a6ccf7);
-    }
   }
 </style>
