@@ -13,7 +13,13 @@
   import type { Editor } from "@tiptap/core";
   import SimpleButton from "../../base/SimpleButton.svelte";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  type HeadingOption = "paragraph" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
+  let {
+    editor,
+    language = "en",
+    availableOptions = ["paragraph", "h1", "h2", "h3", "h4", "h5", "h6"],
+  }: { editor: Editor; language: "de" | "en"; availableOptions: HeadingOption[] } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -40,15 +46,15 @@
     },
   };
 
-  const headingLevels = [
-    { level: null, label: "paragraph", icon: Paragraph },
-    { level: 1, label: "h1", icon: Heading1Icon },
-    { level: 2, label: "h2", icon: Heading2Icon },
-    { level: 3, label: "h3", icon: Heading3Icon },
-    { level: 4, label: "h4", icon: Heading4Icon },
-    { level: 5, label: "h5", icon: Heading5Icon },
-    { level: 6, label: "h6", icon: Heading6Icon },
-  ];
+  const headingLevels: Record<HeadingOption, { level: number | null; label: HeadingOption; icon: string }> = {
+    paragraph: { level: null, label: "paragraph", icon: Paragraph },
+    h1: { level: 1, label: "h1", icon: Heading1Icon },
+    h2: { level: 2, label: "h2", icon: Heading2Icon },
+    h3: { level: 3, label: "h3", icon: Heading3Icon },
+    h4: { level: 4, label: "h4", icon: Heading4Icon },
+    h5: { level: 5, label: "h5", icon: Heading5Icon },
+    h6: { level: 6, label: "h6", icon: Heading6Icon },
+  };
 
   function setHeading(level: number | null) {
     if (level === null) {
@@ -66,14 +72,15 @@
 {#if editor}
   <DropdownButton {editor} bind:dropdownOpen key="heading" icon={Heading} tooltip={translations[language]["main"]}>
     <div class="heading-dropdown">
-      {#each headingLevels as item (item.label)}
+      {#each availableOptions as availableOption}
         <SimpleButton
           {editor}
-          text={translations[language][item.label]}
-          key={item.level === null ? "paragraph" : { name: "heading", attributes: { level: item.level } }}
-          action={() => setHeading(item.level)}
-          icon={item.icon}
-          tooltip={translations[language][item.label]}
+          key={headingLevels[availableOption].label === "paragraph"
+            ? "paragraph"
+            : { name: "heading", attributes: { level: headingLevels[availableOption].level } }}
+          action={() => setHeading(headingLevels[availableOption].level)}
+          icon={headingLevels[availableOption].icon}
+          tooltip={translations[language][headingLevels[availableOption].label]}
         ></SimpleButton>
       {/each}
     </div>
@@ -84,7 +91,6 @@
   .heading-dropdown {
     display: flex;
     flex-flow: column;
-    min-width: 10rem;
     padding: 0.25rem;
     background-color: var(--tiptob-bg-button, #fff);
   }
