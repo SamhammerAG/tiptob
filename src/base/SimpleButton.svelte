@@ -5,7 +5,7 @@
 
   interface Props {
     editor: Editor;
-    key: string | { name: string; attributes?: {} };
+    key: string | { name: string; attributes?: {} } | { attributes: {} };
     action: () => void;
     icon: string;
     tooltip: string;
@@ -19,13 +19,12 @@
   let disabled = $state(false);
 
   function setHighlighted() {
-    const name = typeof key === "string" ? key : key.name;
-    const attributes = typeof key === "string" ? undefined : key.attributes;
-
-    if (name === "textStyle") {
-      highlighted = !!editor.getAttributes(name).color && editor.isActive(name, attributes);
-    } else {
-      highlighted = editor.isActive(name, attributes);
+    if (typeof key === "string") {
+      highlighted = key === "textStyle" ? !!editor.getAttributes(key).color && editor.isActive(key) : editor.isActive(key);
+    } else if ("name" in key) {
+      highlighted = editor.isActive(key.name, key.attributes);
+    } else if ("attributes" in key) {
+      highlighted = editor.isActive(key.attributes);
     }
   }
 

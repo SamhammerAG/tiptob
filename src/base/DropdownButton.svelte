@@ -7,7 +7,7 @@
 
   interface Props {
     editor: Editor;
-    key: string;
+    key: string | { name: string; attributes?: {} } | { attributes: {} };
     icon: string;
     children: Snippet;
     tooltip: string;
