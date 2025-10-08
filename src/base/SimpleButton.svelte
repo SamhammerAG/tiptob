@@ -5,7 +5,7 @@
 
   interface Props {
     editor: Editor;
-    key: string | { name: string; attributes?: {} } | { attributes: {} };
+    key: string | { name: string; attributes?: object } | { attributes: object };
     action: () => void;
     icon: string;
     tooltip: string;

@@ -72,7 +72,7 @@
 {#if editor}
   <DropdownButton {editor} bind:dropdownOpen key="heading" icon={Heading} tooltip={translations[language]["main"]}>
     <div class="heading-dropdown">
-      {#each availableOptions as availableOption}
+      {#each availableOptions as availableOption (availableOption)}
         <SimpleButton
           {editor}
           key={headingLevels[availableOption].label === "paragraph"
