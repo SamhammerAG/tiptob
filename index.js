@@ -1,5 +1,11 @@
 import { Editor } from "https://esm.sh/@tiptap/core@2.26.0";
-import { ImageExtension, SelectionDecoration, TableBubbleMenuExtension, ExtendedHighlight, TokenExtension } from "./src/extensions";
+import {
+  ImageExtension,
+  SelectionDecoration,
+  TableBubbleMenuExtension,
+  ExtendedHighlight,
+  TokenExtension,
+} from "./src/extensions";
 
 import Bold from "https://esm.sh/@tiptap/extension-bold@2.26.0";
 import BulletList from "https://esm.sh/@tiptap/extension-bullet-list@2.26.0";
@@ -22,13 +28,14 @@ import Text from "https://esm.sh/@tiptap/extension-text@2.26.0";
 import TextAlign from "https://esm.sh/@tiptap/extension-text-align@2.26.0";
 import TextStyle from "https://esm.sh/@tiptap/extension-text-style@2.26.0";
 import Underline from "https://esm.sh/@tiptap/extension-underline@2.26.0";
+import Heading from "https://esm.sh/@tiptap/extension-heading@2.26.0";
 
 function uploadInlineImage(file) {
   // Replace this with your actual upload logic
   return new Promise((resolve) => {
     setTimeout(() => {
       // Simulate upload and return a dummy URL
-      resolve('https://your.cdn.com/' + file.name);
+      resolve("https://your.cdn.com/" + file.name);
     }, 1000);
   });
 }
@@ -40,6 +47,7 @@ const editor = new Editor({
   extensions: [
     Paragraph,
     Text,
+    Heading,
     TextStyle.configure({ mergeNestedSpanStyles: true }),
     Color,
     Document,
@@ -92,6 +100,7 @@ document.querySelector("tiptob-undo-button").editor = editor;
 document.querySelector("tiptob-redo-button").editor = editor;
 document.querySelector("tiptob-remove-format-button").editor = editor;
 document.querySelector("tiptob-token-button").editor = editor;
+document.querySelector("tiptob-heading-button").editor = editor;
 document.querySelector("tiptob-token-button").placeHolders = [
   { translation: "token.id", expression: "{{ token.id }}" },
   { translation: "token.id", expression: "{{ token.id }}" },

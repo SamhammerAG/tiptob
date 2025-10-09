@@ -6,8 +6,8 @@
   import TextAlignCenterIcon from "../../../icons/align-center.svg?raw";
   import TextAlignJustifyIcon from "../../../icons/align-justify.svg?raw";
   import DropdownButton from "../../base/DropdownButton.svelte";
-  import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
+  import SimpleButton from "../../base/SimpleButton.svelte";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -30,86 +30,67 @@
     },
   };
 
-  let disabled = $state(false);
-  let highlighted = $state(false);
-
   const textAlignments: { name: string; icon: string; action: () => void }[] = [
     {
       name: "left",
       icon: TextAlignLeftIcon,
       action: () => {
-        //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+        //@ts-expect-error: This error is expected because the editor is initialized outside of the Web-component
         editor.chain().focus().setTextAlign("left").run();
         dropdownOpen = false;
-        disabled = false;
       },
     },
     {
       name: "center",
       icon: TextAlignCenterIcon,
       action: () => {
-        //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+        //@ts-expect-error: This error is expected because the editor is initialized outside of the Web-component
         editor.chain().focus().setTextAlign("center").run();
         dropdownOpen = false;
-        disabled = false;
       },
     },
     {
       name: "right",
       icon: TextAlignRightIcon,
       action: () => {
-        //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+        //@ts-expect-error: This error is expected because the editor is initialized outside of the Web-component
         editor.chain().focus().setTextAlign("right").run();
         dropdownOpen = false;
-        disabled = false;
       },
     },
     {
       name: "justify",
       icon: TextAlignJustifyIcon,
       action: () => {
-        //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+        //@ts-expect-error: This error is expected because the editor is initialized outside of the Web-component
         editor.chain().focus().setTextAlign("justify").run();
         dropdownOpen = false;
-        disabled = false;
       },
     },
   ];
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="text-align" icon={TextAlignLeftIcon} tooltip={translations[language]["main"]}>
-    {#each textAlignments as alignment (alignment.name)}
-      <button
-        {disabled}
-        class:highlighted
-        onclick={() => alignment.action()}
-        title={disabled ? "" : translations[language][alignment.name]}
-      >
-        <Icon content={alignment.icon} />
-      </button>
-    {/each}
+  <DropdownButton {editor} bind:dropdownOpen key="textAlign" icon={TextAlignLeftIcon} tooltip={translations[language]["main"]}>
+    <div class="text-align-dropdown">
+      {#each textAlignments as alignment (alignment.name)}
+        <SimpleButton
+          {editor}
+          key={{ attributes: { textAlign: alignment.name } }}
+          action={() => alignment.action()}
+          icon={alignment.icon}
+          tooltip={translations[language][alignment.name]}
+        ></SimpleButton>
+      {/each}
+    </div>
   </DropdownButton>
 {/if}
 
 <style>
-  button {
+  .text-align-dropdown {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--tiptob-bg-button, #ffffff);
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem 0.8rem;
-
-    &:hover {
-      background-color: var(--tiptob-bg-button-hover, #f0f0f0);
-    }
-
-    :global(svg) {
-      width: 1.125rem;
-      height: 1.125rem;
-      color: #333333;
-    }
+    flex-flow: column;
+    padding: 0.25rem;
+    background-color: var(--tiptob-bg-button, #fff);
   }
 </style>

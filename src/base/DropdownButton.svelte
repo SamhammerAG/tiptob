@@ -7,7 +7,7 @@
 
   interface Props {
     editor: Editor;
-    key: string;
+    key: string | { name: string; attributes?: object } | { attributes: object };
     icon: string;
     children: Snippet;
     tooltip: string;
@@ -20,7 +20,8 @@
   function toggleDropdown() {
     dropdownOpen = !dropdownOpen;
   }
-  //close dropdown when user clicks outside
+
+  // Close dropdown when user clicks outside
   function outsideclick() {
     dropdownOpen = false;
   }

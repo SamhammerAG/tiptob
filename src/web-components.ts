@@ -17,7 +17,8 @@ import UndoButton from "./plugins/Undo/UndoAction.svelte";
 import HyperlinkButton from "./plugins/Hyperlink/HyperlinkAction.svelte";
 import ShowHtmlButton from "./plugins/ShowSourceSwitch/ShowHtmlAction.svelte";
 import ShowSourceButton from "./plugins/ShowSourceSwitch/ShowSourceAction.svelte";
-import TokenAction from "./plugins/Token/TokenAction.svelte"
+import TokenAction from "./plugins/Token/TokenAction.svelte";
+import HeadingAction from "./plugins/Heading/HeadingAction.svelte";
 
 export {
   BoldButton,
@@ -39,5 +40,6 @@ export {
   TextAlignButton,
   ShowHtmlButton,
   ShowSourceButton,
-  TokenAction
+  TokenAction,
+  HeadingAction,
 };
