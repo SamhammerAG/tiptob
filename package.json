@@ -37,7 +37,7 @@
   "author": "Samhammer AG",
   "license": "MIT",
   "dependencies": {
-    "@tiptap/core": "^2.26.1",
+    "@tiptap/core": "^3.6.5",
     "@tiptap/extension-bubble-menu": "^2.26.1",
     "@tiptap/extension-highlight": "^2.26.1",
     "@tiptap/extension-image": "^2.26.1",
