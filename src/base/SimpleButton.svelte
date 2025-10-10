@@ -37,7 +37,7 @@
     setDisabled();
 
     editor.on("transaction", setHighlighted);
-    editor.on("update", () => setDisabled);
+    editor.on("update", setDisabled);
   });
 </script>
 
