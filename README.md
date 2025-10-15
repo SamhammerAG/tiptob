@@ -97,7 +97,6 @@ Below is a minimal example of initializing a TipTap editor. For more advanced us
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 
-
 const editor = new Editor({
   element: document.querySelector('.editor'),
   extensions: [
