@@ -45,7 +45,7 @@
         <button
           onclick={() =>
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.toggleHeaderRow()}
+            editor.commands.toggleHeaderCell()}
           class="toggle-header-button"
           title={translations[language]["toggleHeader"]}
         >
