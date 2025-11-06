@@ -10,6 +10,7 @@
   import InsertColumnRightIcon from "../../../icons/insert-column-right.svg?raw";
   import InsertRowTopIcon from "../../../icons/insert-row-top.svg?raw";
   import InsertRowBottomIcon from "../../../icons/insert-row-bottom.svg?raw";
+  import MergeCells from "../../../icons/merge-cells-horizontal.svg?raw";
   import Icon from "../../base/Icon.svelte";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
@@ -17,6 +18,7 @@
   const translations: Record<string, Record<string, string>> = {
     de: {
       toggleHeader: "Kopfzeile umschalten",
+      mergeCells: "Zellen zusammenführen",
       deleteTable: "Tabelle löschen",
       addRowBefore: "Zeile oben einfügen",
       addRowAfter: "Zeile unten einfügen",
@@ -27,6 +29,7 @@
     },
     en: {
       toggleHeader: "Toggle Header",
+      mergeCells: "Merge Cells",
       deleteTable: "Delete Table",
       addRowBefore: "Add Row Before",
       addRowAfter: "Add Row After",
@@ -58,6 +61,14 @@
           title={translations[language]["deleteTable"]}
         >
           <Icon content={DeleteTableIcon} />
+        </button>
+        <button
+          onclick={() =>
+            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+            editor.commands.mergeCells()}
+          title={translations[language]["mergeCells"]}
+        >
+          <Icon content={MergeCells} />
         </button>
       </div>
       <div class="toolbar-button-group">
