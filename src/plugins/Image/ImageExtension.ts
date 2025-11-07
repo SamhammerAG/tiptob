@@ -10,6 +10,42 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
         new Plugin({
           key: new PluginKey("imageUpload"),
           props: {
+            handleDrop: (view, event, _, moved) => {
+              const hasFiles =
+                event.dataTransfer &&
+                event.dataTransfer.files &&
+                event.dataTransfer.files.length;
+              console.log(view, event, _, moved);
+
+              if (!hasFiles || moved) {
+                return;
+              }
+
+              const images = Array.from(event.dataTransfer.files).filter(
+                (file) => {
+                  return file.type.includes("image/");
+                }
+              );
+
+              if (images.length === 0) {
+                return;
+              }
+
+              event.preventDefault();
+
+              const { schema } = view.state;
+
+              for (const image of images) {
+                imageUpload(image).then((img: string) => {
+                  const node = schema.nodes.imageUpload.create({
+                    src: img,
+                  });
+                  const transaction =
+                    view.state.tr.insert(view.state.selection.from, node);
+                  view.dispatch(transaction);
+                });
+              }
+            },
             handlePaste: (view, event) => {
               const hasFiles =
                 event.clipboardData &&
