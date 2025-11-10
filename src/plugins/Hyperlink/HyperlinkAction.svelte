@@ -63,7 +63,7 @@
   }
 
   function setFocus(element: HTMLInputElement) {
-    element.focus();
+    if (!editor.isActive("link")) element.focus();
   }
 </script>
 
