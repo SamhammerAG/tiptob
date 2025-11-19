@@ -1,0 +1,30 @@
+name: Trivy
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/trivy.yml"
+      - "package-lock.json"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Scan dependencies for vulnerabilities
+        uses: aquasecurity/trivy-action@0.30.1
+        env:
+          # From: https://github.com/orgs/community/discussions/139074#discussioncomment-10808081
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
+          TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db
+        with:
+          severity: "MEDIUM,HIGH,CRITICAL"
+          ignore-unfixed: true
+          scanners: "vuln"
+          scan-type: "fs"
+          scan-ref: "."
+          vuln-type: "library"
+          exit-code: 1
