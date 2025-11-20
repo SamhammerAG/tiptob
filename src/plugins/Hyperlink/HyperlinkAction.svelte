@@ -44,8 +44,19 @@
 
   function setLink() {
     const parsedUrl = urlInputField.includes(":") ? urlInputField : `https://${urlInputField}`;
-    //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-    editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
+
+    const { from, empty } = editor.state.selection;
+
+    if (empty) {
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(from, [{ type: "text", text: parsedUrl, marks: [{ type: "link", attrs: { href: parsedUrl } }] }])
+        .run();
+    } else {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
+    }
     dropdownOpen = false;
   }
 
