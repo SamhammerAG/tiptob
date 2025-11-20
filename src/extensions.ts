@@ -5,6 +5,7 @@ import { SelectionDecoration } from "./plugins/Selection/SelectionPlugin";
 import type { Editor } from "@tiptap/core";
 import { ExtendedHighlight } from "./plugins/FontHighlight/HighlightExtension";
 import { TokenExtension } from "./plugins/Token/TokenExtension";
+import { SignatureExtension } from "./plugins/SignaturePlaceholder/SignatureExtension";
 
 interface CustomHTMLElement extends HTMLElement {
   editor: Editor;
@@ -18,5 +19,6 @@ export {
   TableBubbleMenuExtension,
   ExtendedHighlight,
   TokenExtension,
+  SignatureExtension,
   type CustomHTMLElement
 };
