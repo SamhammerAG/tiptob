@@ -6,6 +6,8 @@
   import DeleteTableIcon from "../../../icons/delete-bin-2-line.svg?raw";
   import DeleteColumnIcon from "../../../icons/delete-column.svg?raw";
   import DeleteRowIcon from "../../../icons/delete-row.svg?raw";
+  import ToggleHeaderIcon from "../../../icons/layout-row-fill.svg?raw";
+  import SplitCells from "../../../icons/split-cells-horizontal.svg?raw";
   import InsertColumnLeftIcon from "../../../icons/insert-column-left.svg?raw";
   import InsertColumnRightIcon from "../../../icons/insert-column-right.svg?raw";
   import InsertRowTopIcon from "../../../icons/insert-row-top.svg?raw";
@@ -19,6 +21,7 @@
     de: {
       toggleHeader: "Kopfzeile umschalten",
       mergeCells: "Zellen zusammenführen",
+      splitCells: "Zellen spalten ",
       deleteTable: "Tabelle löschen",
       addRowBefore: "Zeile oben einfügen",
       addRowAfter: "Zeile unten einfügen",
@@ -30,6 +33,7 @@
     en: {
       toggleHeader: "Toggle Header",
       mergeCells: "Merge Cells",
+      splitCells: "Split Cells",
       deleteTable: "Delete Table",
       addRowBefore: "Add Row Before",
       addRowAfter: "Add Row After",
@@ -48,19 +52,21 @@
         <button
           onclick={() =>
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.toggleHeaderCell()}
-          class="toggle-header-button"
-          title={translations[language]["toggleHeader"]}
-        >
-          Toggle Header
-        </button>
-        <button
-          onclick={() =>
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.deleteTable()}
           title={translations[language]["deleteTable"]}
         >
           <Icon content={DeleteTableIcon} />
+        </button>
+      </div>
+      <div class="toolbar-button-group">
+        <button
+          onclick={() =>
+            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+            editor.commands.toggleHeaderCell()}
+          class="toggle-header-button"
+          title={translations[language]["toggleHeader"]}
+        >
+          <Icon content={ToggleHeaderIcon} />
         </button>
         <button
           onclick={() =>
@@ -69,6 +75,14 @@
           title={translations[language]["mergeCells"]}
         >
           <Icon content={MergeCells} />
+        </button>
+        <button
+          onclick={() =>
+            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+            editor.commands.splitCell()}
+          title={translations[language]["splitCells"]}
+        >
+          <Icon content={SplitCells} />
         </button>
       </div>
       <div class="toolbar-button-group">
@@ -142,7 +156,6 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding: 0.25rem 0;
 
       & .toolbar-button-group {
         display: flex;

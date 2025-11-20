@@ -54,6 +54,7 @@
     align-items: center;
 
     margin: 0.2rem 0;
+    height: 1.75rem;
     border: none;
     border-radius: 0.25rem;
     background-color: var(--tiptob-bg-button, #ffffff);

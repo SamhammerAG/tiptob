@@ -20,7 +20,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
-    "watch": "vite build --watch",
+    "watch": "vite build && tsc --emitDeclarationOnly --watch",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint src"
   },
