@@ -12,8 +12,10 @@
     en: "Bulleted List",
   };
 
-  //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-  const action = () => editor.chain().focus().toggleBulletList().run();
+  const action = () => {
+    if (editor.isActive("orderedList")) editor.commands.toggleList("orderedList", "listItem");
+    editor.commands.toggleList("bulletList", "listItem");
+  };
 </script>
 
 {#if editor}
