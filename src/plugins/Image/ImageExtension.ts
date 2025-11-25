@@ -15,7 +15,6 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                 event.dataTransfer &&
                 event.dataTransfer.files &&
                 event.dataTransfer.files.length;
-              console.log(view, event, _, moved);
 
               if (!hasFiles || moved) {
                 return;
@@ -45,6 +44,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                   view.dispatch(transaction);
                 });
               }
+              return true;
             },
             handlePaste: (view, event) => {
               const hasFiles =
@@ -53,7 +53,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                 event.clipboardData.files.length;
 
               if (!hasFiles) {
-                return;
+                return false;
               }
 
               const images = Array.from(event.clipboardData.files).filter(
@@ -63,7 +63,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
               );
 
               if (images.length === 0) {
-                return;
+                return false;
               }
 
               event.preventDefault();
@@ -80,6 +80,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                   view.dispatch(transaction);
                 });
               }
+              return true;
             },
           },
         }),

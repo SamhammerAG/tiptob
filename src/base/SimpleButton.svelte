@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
   import Icon from "./Icon.svelte";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   interface Props {
     editor: Editor;
@@ -38,6 +38,11 @@
 
     editor.on("transaction", setHighlighted);
     editor.on("update", setDisabled);
+  });
+
+  onDestroy(() => {
+    editor.off("transaction", setHighlighted);
+    editor.off("update", setDisabled);
   });
 </script>
 
