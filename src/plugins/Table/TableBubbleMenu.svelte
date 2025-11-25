@@ -69,9 +69,12 @@
           <Icon content={ToggleHeaderIcon} />
         </button>
         <button
-          onclick={() =>
+          onclick={() => {
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.mergeCells()}
+            editor.commands.mergeCells();
+            //AID-27639 wtf is that bug, but ye this fixes it.
+            editor.chain().focus();
+          }}
           title={translations[language]["mergeCells"]}
         >
           <Icon content={MergeCells} />
