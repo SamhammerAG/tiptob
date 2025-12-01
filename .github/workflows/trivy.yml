@@ -13,7 +13,7 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Scan dependencies for vulnerabilities
         uses: aquasecurity/trivy-action@0.33.1
         env:
