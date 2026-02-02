@@ -1,6 +1,6 @@
 {
   "name": "@samhammer/tiptob",
-  "version": "2.3.23",
+  "version": "2.3.24",
   "description": "TipTap ToolBox",
   "type": "module",
   "main": "./dist/web-components.js",
