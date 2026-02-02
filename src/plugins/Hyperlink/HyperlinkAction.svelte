@@ -1,4 +1,4 @@
-<svelte:options customElement="tiptob-hyperlink-button" />
+﻿<svelte:options customElement="tiptob-hyperlink-button" />
 
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
@@ -21,12 +21,14 @@
       confirm: "Bestätigen",
       open: "Öffnen",
       remove: "Link entfernen/Schließen",
+      placeholder: "Link einfügen...",
     },
     en: {
       main: "Link",
       confirm: "Confirm",
       open: "Open",
       remove: "Remove/Close",
+      placeholder: "Paste a link...",
     },
   };
 
@@ -85,7 +87,7 @@
         id="tiptob-link-input"
         bind:value={urlInputField}
         type="url"
-        placeholder="Paste a link..."
+        placeholder={translations[language]["placeholder"]}
         onkeydown={handleKeyDown}
         autocomplete="off"
         class="tiptob-link-input"
