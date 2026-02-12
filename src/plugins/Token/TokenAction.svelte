@@ -14,11 +14,13 @@
       main: "Token auswählen",
       confirm: "Token einfügen",
       close: "Abbrechen",
+      search: "Suchen...",
     },
     en: {
       main: "choose Token",
       confirm: "insert Token",
       close: "Abort",
+      search: "Search...",
     },
   };
 
@@ -31,20 +33,41 @@
   let dropdownOpen = $state(false);
   let selected = $state("Select option");
 
+  let searchTerm = $state("");
+
+  let filteredPlaceholders = $derived(placeHolders.filter((p) => p.translation.toLowerCase().includes(searchTerm.toLowerCase())));
+
   function confirmToken() {
     editor.commands.insertContent(selected);
     dropdownOpen = false;
+    searchTerm = "";
+  }
+
+  function closeDropdown() {
+    dropdownOpen = false;
+    searchTerm = "";
   }
 </script>
 
 {#if editor}
   <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={translations[language]["main"]}>
     <div class="dropdown-content">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          placeholder={translations[language]["search"]}
+          bind:value={searchTerm}
+          onclick={(e) => e.stopPropagation()}
+        />
+      </div>
+
       <div class="menu">
-        {#each placeHolders as placeholder (placeholder)}
+        {#each filteredPlaceholders as placeholder (placeholder.expression)}
           <button class="menu-item" onclick={() => (selected = placeholder.expression)}>
             {placeholder.translation}
           </button>
+        {:else}
+          <div class="menu-item" style="color: #999; cursor: default;">-</div>
         {/each}
       </div>
 
@@ -52,7 +75,7 @@
         <button type="button" class="confirm" onclick={confirmToken} title={translations[language]["confirm"]}>
           <Icon content={CheckIcon} />
         </button>
-        <button type="button" class="close" onclick={() => (dropdownOpen = false)} title={translations[language]["close"]}>
+        <button type="button" class="close" onclick={closeDropdown} title={translations[language]["close"]}>
           <Icon content={CloseIcon} />
         </button>
       </div>
@@ -68,6 +91,26 @@
     border: 1px solid #ccc;
     background: #ffffff;
     overflow: hidden;
+  }
+
+  .search-wrapper {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+  }
+
+  .search-wrapper input {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid #cecece;
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .search-wrapper input:focus {
+    border-color: #aaa;
   }
 
   .menu {
@@ -98,6 +141,7 @@
     padding: 0.25rem 0;
     border-top: 1px solid #cecece;
     position: sticky;
+    background: #fff;
 
     button {
       display: flex;
