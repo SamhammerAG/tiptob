@@ -39,6 +39,8 @@
   let filteredPlaceholders = $derived(placeHolders.filter((p) => p.translation.toLowerCase().includes(searchTerm.toLowerCase())));
 
   function confirmToken() {
+    if (selected === "Select option") return;
+
     editor.commands.insertContent(selected);
     dropdownOpen = false;
   }
@@ -48,7 +50,7 @@
   }
 
   $effect(() => {
-    if (!dropdownOpen && searchTerm !== "") {
+    if (!dropdownOpen) {
       searchTerm = "";
     }
   });
@@ -71,8 +73,6 @@
           <button class="menu-item" onclick={() => (selected = placeholder.expression)}>
             {placeholder.translation}
           </button>
-        {:else}
-          <div class="menu-item" style="color: #999; cursor: default;">-</div>
         {/each}
       </div>
 
