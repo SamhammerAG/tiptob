@@ -31,6 +31,7 @@
   }: { editor: Editor; language: "de" | "en"; placeHolders: Array<PlaceHolder> } = $props();
 
   let dropdownOpen = $state(false);
+
   let selected = $state("Select option");
 
   let searchTerm = $state("");
@@ -40,13 +41,17 @@
   function confirmToken() {
     editor.commands.insertContent(selected);
     dropdownOpen = false;
-    searchTerm = "";
   }
 
   function closeDropdown() {
     dropdownOpen = false;
-    searchTerm = "";
   }
+
+  $effect(() => {
+    if (!dropdownOpen && searchTerm !== "") {
+      searchTerm = "";
+    }
+  });
 </script>
 
 {#if editor}
@@ -62,7 +67,7 @@
       </div>
 
       <div class="menu">
-        {#each filteredPlaceholders as placeholder (placeholder.expression)}
+        {#each filteredPlaceholders as placeholder (placeholder.translation)}
           <button class="menu-item" onclick={() => (selected = placeholder.expression)}>
             {placeholder.translation}
           </button>
