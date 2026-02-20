@@ -46,40 +46,35 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
               }
               return true;
             },
+
             handlePaste: (view, event) => {
-              const hasFiles =
-                event.clipboardData &&
-                event.clipboardData.files &&
-                event.clipboardData.files.length;
+              const clipboardData = event.clipboardData;
+              if (!clipboardData) return false;
 
-              if (!hasFiles) {
-                return false;
-              }
+              const files = Array.from(clipboardData.files || []);
+              const images = files.filter(file => file.type.startsWith("image/"));
 
-              const images = Array.from(event.clipboardData.files).filter(
-                (file) => {
-                  return file.type.includes("image/");
+              if (images.length === 0) return false;
+
+              //weird check for excel because if you paste from excel it add an image of the table into the clipboard
+              if (images.length === 1) {
+                const html = clipboardData.getData("text/html");
+                if (html && /<table[\s>]/i.test(html)) {
+                  return false;
                 }
-              );
-
-              if (images.length === 0) {
-                return false;
               }
 
               event.preventDefault();
 
               const { schema } = view.state;
-
               for (const image of images) {
                 imageUpload(image).then((img: string) => {
-                  const node = schema.nodes.imageUpload.create({
-                    src: img,
-                  });
-                  const transaction =
-                    view.state.tr.insert(view.state.selection.from, node);
-                  view.dispatch(transaction);
+                  const node = schema.nodes.imageUpload.create({ src: img });
+                  const tr = view.state.tr.insert(view.state.selection.from, node);
+                  view.dispatch(tr);
                 });
               }
+
               return true;
             },
           },
