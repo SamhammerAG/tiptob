@@ -47,18 +47,35 @@
   function setLink() {
     const parsedUrl = urlInputField.includes(":") ? urlInputField : `https://${urlInputField}`;
 
-    const { from, empty } = editor.state.selection;
+    const { empty, from } = editor.state.selection;
+
+    if (editor.isActive("link")) {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
+
+      dropdownOpen = false;
+      return;
+    }
 
     if (empty) {
       editor
         .chain()
         .focus()
-        .insertContentAt(from, [{ type: "text", text: parsedUrl, marks: [{ type: "link", attrs: { href: parsedUrl } }] }])
+        //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+        .unsetLink()
+        .insertContentAt(from, [
+          {
+            type: "text",
+            text: parsedUrl,
+            marks: [{ type: "link", attrs: { href: parsedUrl } }],
+          },
+        ])
         .run();
     } else {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-      editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
+      editor.chain().focus().setLink({ href: parsedUrl }).run();
     }
+
     dropdownOpen = false;
   }
 
