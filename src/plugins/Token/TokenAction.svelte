@@ -69,7 +69,7 @@
       </div>
 
       <div class="menu">
-        {#each filteredPlaceholders as placeholder (placeholder.translation)}
+        {#each filteredPlaceholders as placeholder (`${placeholder.expression}::${placeholder.translation}`)}
           <button class="menu-item" onclick={() => (selected = placeholder.expression)}>
             {placeholder.translation}
           </button>
