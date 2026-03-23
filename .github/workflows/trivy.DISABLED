@@ -1,13 +1,13 @@
 name: Trivy
 
-on:
-  workflow_dispatch: {}
-  push:
-    branches:
-      - "**"
-    paths:
-      - ".github/workflows/trivy.yml"
-      - "package-lock.json"
+# on:
+#  workflow_dispatch: {}
+#  push:
+#    branches:
+#      - "**"
+#    paths:
+#      - ".github/workflows/trivy.yml"
+#      - "package-lock.json"
 
 jobs:
   scan:
