@@ -5,6 +5,7 @@ import {
   TableBubbleMenuExtension,
   ExtendedHighlight,
   TokenExtension,
+  FontSizeExtension,
 } from "./src/extensions";
 
 import Bold from "https://esm.sh/@tiptap/extension-bold@2.26.0";
@@ -49,6 +50,7 @@ const editor = new Editor({
     Text,
     Heading,
     TextStyle.configure({ mergeNestedSpanStyles: true }),
+    FontSizeExtension,
     Color,
     Document,
     Gapcursor,
@@ -89,6 +91,7 @@ document.querySelector("tiptob-underline-button").editor = editor;
 document.querySelector("tiptob-strike-button").editor = editor;
 document.querySelector("tiptob-font-color-button").editor = editor;
 document.querySelector("tiptob-font-highlight-button").editor = editor;
+document.querySelector("tiptob-font-size-button").editor = editor;
 document.querySelector("tiptob-text-align-button").editor = editor;
 document.querySelector("tiptob-bullet-list-button").editor = editor;
 document.querySelector("tiptob-ordered-list-button").editor = editor;

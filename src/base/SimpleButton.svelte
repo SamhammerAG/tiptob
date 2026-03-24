@@ -7,7 +7,7 @@
     editor: Editor;
     key: string | { name: string; attributes?: object } | { attributes: object };
     action: () => void;
-    icon: string;
+    icon?: string;
     tooltip: string;
     text?: string;
     dropdownOpen?: boolean;
@@ -47,7 +47,9 @@
 </script>
 
 <button {disabled} class:highlighted class:dropdownOpen onclick={() => action()} title={disabled ? "" : tooltip}>
-  <Icon content={icon} />
+  {#if icon}
+    <Icon content={icon} />
+  {/if}
   {#if text}
     <div class="icon-text">{text}</div>
   {/if}
@@ -56,6 +58,7 @@
 <style>
   button {
     display: flex;
+    gap: 0.25rem;
     align-items: center;
 
     margin: 0.2rem 0;
@@ -78,7 +81,6 @@
 
     .icon-text {
       font-size: 0.8rem;
-      margin-left: 0.25rem;
     }
   }
 
