@@ -32,7 +32,13 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="textStyle" icon={FontColorIcon} tooltip={translations[language]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{ isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").color && editorInstance.isActive("textStyle") }}
+    icon={FontColorIcon}
+    tooltip={translations[language]}
+  >
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>
         <Icon content={EraserIcon} />

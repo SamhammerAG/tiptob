@@ -39,7 +39,13 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="heading" icon={FontSizeIcon} tooltip={translations[language]["main"]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{ isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").fontSize && editorInstance.isActive("textStyle") }}
+    icon={FontSizeIcon}
+    tooltip={translations[language]["main"]}
+  >
     <div class="heading-dropdown">
       <div class="clear-action">
         <button class="clear" onclick={clearFontSize}>

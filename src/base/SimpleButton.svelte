@@ -2,10 +2,11 @@
   import type { Editor } from "@tiptap/core";
   import Icon from "./Icon.svelte";
   import { onDestroy, onMount } from "svelte";
+  import type { ButtonKey } from "./ButtonKey";
 
   interface Props {
     editor: Editor;
-    key: string | { name: string; attributes?: object } | { attributes: object };
+    key: ButtonKey;
     action: () => void;
     icon?: string;
     tooltip: string;
@@ -20,7 +21,9 @@
 
   function setHighlighted() {
     if (typeof key === "string") {
-      highlighted = key === "textStyle" ? !!editor.getAttributes(key).color && editor.isActive(key) : editor.isActive(key);
+      highlighted = editor.isActive(key);
+    } else if ("isActive" in key) {
+      highlighted = key.isActive(editor);
     } else if ("name" in key) {
       highlighted = editor.isActive(key.name, key.attributes);
     } else if ("attributes" in key) {

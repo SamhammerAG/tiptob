@@ -4,10 +4,11 @@
   import SimpleButton from "./SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
   import { fly } from "svelte/transition";
+  import type { ButtonKey } from "./ButtonKey";
 
   interface Props {
     editor: Editor;
-    key: string | { name: string; attributes?: object } | { attributes: object };
+    key: ButtonKey;
     icon: string;
     children: Snippet;
     tooltip: string;
