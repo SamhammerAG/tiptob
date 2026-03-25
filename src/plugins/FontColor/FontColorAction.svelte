@@ -10,8 +10,8 @@
   let {
     editor,
     language = "en",
-    colors = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"],
-  }: { editor: Editor; language: "de" | "en"; colors: string[] } = $props();
+    availableOptions = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"],
+  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -48,7 +48,7 @@
         <Icon content={EraserIcon} />
       </button>
 
-      {#each colors as color (colors.indexOf(color))}
+      {#each availableOptions as color (availableOptions.indexOf(color))}
         <button style="background-color: {color};" onclick={() => setColor(color)} aria-label={color}></button>
       {/each}
     </div>
