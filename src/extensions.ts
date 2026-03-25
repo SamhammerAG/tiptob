@@ -6,7 +6,7 @@ import type { Editor } from "@tiptap/core";
 import { ExtendedHighlight } from "./plugins/FontHighlight/HighlightExtension";
 import { TokenExtension } from "./plugins/Token/TokenExtension";
 import { SignatureExtension } from "./plugins/SignaturePlaceholder/SignatureExtension";
-import FontSizeExtension from "./plugins/FontSize/FontSizeExtension";
+import { FontSizeExtension } from "./plugins/FontSize/FontSizeExtension";
 
 interface CustomHTMLElement extends HTMLElement {
   editor: Editor;
@@ -22,5 +22,5 @@ export {
   TokenExtension,
   FontSizeExtension,
   SignatureExtension,
-  type CustomHTMLElement
+  type CustomHTMLElement,
 };
