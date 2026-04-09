@@ -7,7 +7,11 @@
   import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let {
+    editor,
+    language = "en",
+    availableOptions = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"],
+  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -15,8 +19,6 @@
     de: "Schriftfarbe",
     en: "Font Color",
   };
-
-  const colors: string[] = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"];
 
   function clearColor() {
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
@@ -32,13 +34,21 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="textStyle" icon={FontColorIcon} tooltip={translations[language]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{
+      isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").color && editorInstance.isActive("textStyle"),
+    }}
+    icon={FontColorIcon}
+    tooltip={translations[language]}
+  >
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>
         <Icon content={EraserIcon} />
       </button>
 
-      {#each colors as color (colors.indexOf(color))}
+      {#each availableOptions as color (availableOptions.indexOf(color))}
         <button style="background-color: {color};" onclick={() => setColor(color)} aria-label={color}></button>
       {/each}
     </div>

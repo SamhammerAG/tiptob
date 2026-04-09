@@ -1,5 +1,5 @@
 import { Editor } from "https://esm.sh/@tiptap/core@2.26.0";
-import { ImageExtension, SelectionDecoration, TableBubbleMenuExtension, ExtendedHighlight } from "https://esm.sh/@samhammer/tiptob/extensions.js";
+import { ImageExtension, SelectionDecoration, TableBubbleMenuExtension, ExtendedHighlight, FontSizeExtension } from "https://esm.sh/@samhammer/tiptob/extensions.js";
 import Bold from "https://esm.sh/@tiptap/extension-bold@2.26.0";
 import BulletList from "https://esm.sh/@tiptap/extension-bullet-list@2.26.0";
 import Color from "https://esm.sh/@tiptap/extension-color@2.26.0";
@@ -40,6 +40,7 @@ const editor = new Editor({
     Paragraph,
     Text,
     TextStyle.configure({ mergeNestedSpanStyles: true }),
+    FontSizeExtension,
     Color,
     Document,
     Gapcursor,
@@ -79,6 +80,7 @@ document.querySelector("tiptob-underline-button").editor = editor;
 document.querySelector("tiptob-strike-button").editor = editor;
 document.querySelector("tiptob-font-color-button").editor = editor;
 document.querySelector("tiptob-font-highlight-button").editor = editor;
+document.querySelector("tiptob-font-size-button").editor = editor;
 document.querySelector("tiptob-text-align-button").editor = editor;
 document.querySelector("tiptob-bullet-list-button").editor = editor;
 document.querySelector("tiptob-ordered-list-button").editor = editor;

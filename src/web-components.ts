@@ -19,6 +19,7 @@ import ShowHtmlButton from "./plugins/ShowSourceSwitch/ShowHtmlAction.svelte";
 import ShowSourceButton from "./plugins/ShowSourceSwitch/ShowSourceAction.svelte";
 import TokenAction from "./plugins/Token/TokenAction.svelte";
 import HeadingAction from "./plugins/Heading/HeadingAction.svelte";
+import FontSizeAction from "./plugins/FontSize/FontSizeAction.svelte";
 
 export {
   BoldButton,
@@ -42,4 +43,5 @@ export {
   ShowSourceButton,
   TokenAction,
   HeadingAction,
+  FontSizeAction,
 };
