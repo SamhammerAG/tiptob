@@ -14,7 +14,7 @@ export const ExtendedHighlight = Highlight.extend<HighlightOptions>({
           const bg = node.style.backgroundColor;
           if (!bg) return false;
           const normalized = bg.replace(/\s/g, "").toLowerCase();
-          if (["white", "#fff", "#ffffff", "rgb(255,255,255)"].includes(normalized)) return false;
+          if (["white", "#fff", "#ffffff", "rgb(255,255,255)", "black", "#000", "#000000", "rgb(0,0,0)"].includes(normalized)) return false;
           return { color: bg };
         },
       },
