@@ -4,6 +4,7 @@ import { getBubbleMenuExtension as TableBubbleMenuExtension } from "./plugins/Ta
 import { SelectionDecoration } from "./plugins/Selection/SelectionPlugin";
 import type { Editor } from "@tiptap/core";
 import { ExtendedHighlight } from "./plugins/FontHighlight/HighlightExtension";
+import { ExtendedColor } from "./plugins/FontColor/FontColorExtension";
 import { TokenExtension } from "./plugins/Token/TokenExtension";
 import { SignatureExtension } from "./plugins/SignaturePlaceholder/SignatureExtension";
 import { FontSizeExtension } from "./plugins/FontSize/FontSizeExtension";
@@ -19,6 +20,7 @@ export {
   SelectionDecoration,
   TableBubbleMenuExtension,
   ExtendedHighlight,
+  ExtendedColor,
   TokenExtension,
   FontSizeExtension,
   SignatureExtension,

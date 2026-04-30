@@ -21,13 +21,11 @@
   };
 
   function clearColor() {
-    //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().unsetColor().run();
     dropdownOpen = false;
   }
 
   function setColor(color: string) {
-    //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().setColor(color).run();
     dropdownOpen = false;
   }
