@@ -1,7 +1,7 @@
 import { Extension } from '@tiptap/core'
-import { Plugin, PluginKey } from 'prosemirror-state'
-import { Decoration, DecorationSet } from 'prosemirror-view'
-import { Node as ProseMirrorNode } from 'prosemirror-model'
+import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import { Node } from '@tiptap/pm/model'
 
 export const TokenExtension = Extension.create({
   name: 'tokenHighlight',
@@ -34,7 +34,7 @@ export const TokenExtension = Extension.create({
 })
 
 
-function findCurlyBraceDecorations(doc: ProseMirrorNode): Decoration[] {
+function findCurlyBraceDecorations(doc: Node): Decoration[] {
   const decorations: Decoration[] = []
   const regex = /(\{\{[^{}]*\}\}|\{%\s*[^%]*\s*%\})/g
 

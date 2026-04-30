@@ -11,8 +11,11 @@ export const ExtendedHighlight = Highlight.extend<HighlightOptions>({
         consuming: false,
         tag: "span",
         getAttrs: (node) => {
-          if (node.style.backgroundColor !== "") return { color: node.style.backgroundColor }
-          else return false;
+          const bg = node.style.backgroundColor;
+          if (!bg) return false;
+          const normalized = bg.replace(/\s/g, "").toLowerCase();
+          if (["white", "#fff", "#ffffff", "rgb(255,255,255)"].includes(normalized)) return false;
+          return { color: bg };
         },
       },
     ];
