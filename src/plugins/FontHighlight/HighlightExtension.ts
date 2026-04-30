@@ -13,8 +13,11 @@ export const ExtendedHighlight = Highlight.extend<HighlightOptions>({
         getAttrs: (node) => {
           const bg = node.style.backgroundColor;
           if (!bg) return false;
-          const normalized = bg.replace(/\s/g, "").toLowerCase();
-          if (["white", "#fff", "#ffffff", "rgb(255,255,255)", "black", "#000", "#000000", "rgb(0,0,0)"].includes(normalized)) return false;
+          const m = bg.match(/\d+/g);
+          if (m) {
+            const [r, g, b] = m.map(Number);
+            if (r + g + b < 130 || r + g + b > 720) return false;
+          }
           return { color: bg };
         },
       },
