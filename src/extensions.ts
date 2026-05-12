@@ -1,4 +1,5 @@
 import ImageExtension from "./plugins/Image/ImageExtension";
+import InternalLinkExtension from "./plugins/InternalLink/InternalLinkExtension";
 import KnowledgeExtension from "./plugins/KnowledgeMark/KnowledgeMarkExtension";
 import { getBubbleMenuExtension as TableBubbleMenuExtension } from "./plugins/Table/TableExtension";
 import { SelectionDecoration } from "./plugins/Selection/SelectionPlugin";
@@ -16,6 +17,7 @@ interface CustomHTMLElement extends HTMLElement {
 
 export {
   ImageExtension,
+  InternalLinkExtension,
   KnowledgeExtension,
   SelectionDecoration,
   TableBubbleMenuExtension,
