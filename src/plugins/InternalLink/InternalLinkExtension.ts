@@ -16,7 +16,9 @@ export interface InternalLinkAttrs {
 export default function getInternalLinkExtension(): Mark {
   return Mark.create({
     name: "internalLink",
-    inclusive: false,
+    inclusive: true,
+    keepOnSplit: false,
+    exitable: true,
 
     addAttributes() {
       return {
