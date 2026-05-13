@@ -11,6 +11,12 @@
   import Divider from "../../base/Divider.svelte";
 
   type Suggestion = { label: string; value: string };
+  type TitleRequest = { status: "idle" } | { status: "loading" } | { status: "success"; data: string } | { status: "failed" };
+  type SuggestionsRequest =
+    | { status: "idle" }
+    | { status: "loading" }
+    | { status: "success"; data: Suggestion[] }
+    | { status: "failed" };
 
   let {
     editor,
@@ -21,20 +27,18 @@
   }: {
     editor: Editor;
     language?: "de" | "en";
-    fetchSuggestions: (term: string) => Promise<Suggestion[]>;
-    fetchTitle: (id: string) => Promise<string>;
+    fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
+    fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
   } = $props();
 
   let dropdownOpen = $state(false);
   let searchTerm = $state<string | null>(null);
-  let suggestions = $state<Suggestion[]>([]);
   let highlightIdx = $state(-1);
   let selectedSuggestion = $state<Suggestion | null>(null);
   let activeId = $state<string | null>(null);
-  let activeTitle = $state<string>("");
-  let titleError = $state(false);
-  let suggestionsLoading = $state(false);
+  let titleRequest = $state<TitleRequest>({ status: "idle" });
+  let suggestionsRequest = $state<SuggestionsRequest>({ status: "idle" });
 
   const SUGGESTION_DEBOUNCE_MS = 300;
 
@@ -47,7 +51,7 @@
       remove: "Link entfernen/Schließen",
       loading: "Lädt...",
       noResults: "Keine Treffer",
-      error: "Titel konnte nicht geladen werden",
+      error: "Daten konnten nicht geladen werden",
     },
     en: {
       main: "Internal link",
@@ -57,13 +61,13 @@
       remove: "Remove/Close",
       loading: "Loading...",
       noResults: "No results",
-      error: "Could not load title",
+      error: "Could not load data",
     },
   };
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-  let titleFetchToken = 0;
-  let suggestionsFetchToken = 0;
+  let titleController: AbortController | null = null;
+  let suggestionsController: AbortController | null = null;
 
   $effect(() => {
     if (!editor) return;
@@ -74,8 +78,8 @@
     return () => {
       editor.off("transaction", onTransaction);
       clearDebounce();
-      titleFetchToken++;
-      suggestionsFetchToken++;
+      abortTitle();
+      abortSuggestions();
     };
   });
 
@@ -84,8 +88,8 @@
 
     if (!id) {
       activeId = null;
-      activeTitle = "";
-      titleError = false;
+      abortTitle();
+      titleRequest = { status: "idle" };
       dropdownOpen = false;
       resetSearch();
       return;
@@ -105,18 +109,29 @@
     return (editor.getAttributes("internalLink").internalLinkId as string | null | undefined) ?? null;
   }
 
+  function abortTitle() {
+    titleController?.abort();
+    titleController = null;
+  }
+
+  function abortSuggestions() {
+    suggestionsController?.abort();
+    suggestionsController = null;
+  }
+
   async function loadTitle(id: string) {
-    const token = ++titleFetchToken;
-    activeTitle = "";
-    titleError = false;
+    abortTitle();
+    const controller = new AbortController();
+    titleController = controller;
+    titleRequest = { status: "loading" };
 
     try {
-      const title = await fetchTitle(id);
-      if (token !== titleFetchToken) return;
-      activeTitle = title;
-    } catch {
-      if (token !== titleFetchToken) return;
-      titleError = true;
+      const title = await fetchTitle(id, controller.signal);
+      if (controller.signal.aborted) return;
+      titleRequest = { status: "success", data: title };
+    } catch (err) {
+      if (controller.signal.aborted || (err as Error)?.name === "AbortError") return;
+      titleRequest = { status: "failed" };
     }
   }
 
@@ -128,11 +143,10 @@
 
   function resetSearch(term: string | null = null) {
     clearDebounce();
-    suggestionsFetchToken++;
+    abortSuggestions();
     searchTerm = term;
     selectedSuggestion = null;
-    suggestions = [];
-    suggestionsLoading = false;
+    suggestionsRequest = { status: "idle" };
     highlightIdx = -1;
   }
 
@@ -144,31 +158,28 @@
       return;
     }
 
-    const token = suggestionsFetchToken;
-    suggestionsLoading = true;
-    debounceTimer = setTimeout(() => loadSuggestions(term, token), SUGGESTION_DEBOUNCE_MS);
+    const controller = new AbortController();
+    suggestionsController = controller;
+    suggestionsRequest = { status: "loading" };
+    debounceTimer = setTimeout(() => loadSuggestions(term, controller), SUGGESTION_DEBOUNCE_MS);
   }
 
-  async function loadSuggestions(term: string, token: number) {
+  async function loadSuggestions(term: string, controller: AbortController) {
     debounceTimer = null;
 
     try {
-      const items = await fetchSuggestions(term);
-      if (!isCurrentSearch(term, token)) return;
-      suggestions = items;
+      const items = await fetchSuggestions(term, controller.signal);
+      if (!isCurrentSearch(term, controller)) return;
+      suggestionsRequest = { status: "success", data: items };
       highlightIdx = items.length > 0 ? 0 : -1;
-    } catch {
-      if (!isCurrentSearch(term, token)) return;
-      suggestions = [];
-    } finally {
-      if (isCurrentSearch(term, token)) {
-        suggestionsLoading = false;
-      }
+    } catch (err) {
+      if (!isCurrentSearch(term, controller) || (err as Error)?.name === "AbortError") return;
+      suggestionsRequest = { status: "failed" };
     }
   }
 
-  function isCurrentSearch(term: string, token: number) {
-    return token === suggestionsFetchToken && searchTerm === term;
+  function isCurrentSearch(term: string, controller: AbortController) {
+    return controller === suggestionsController && !controller.signal.aborted && searchTerm === term;
   }
 
   function pickSuggestion(item: Suggestion) {
@@ -196,19 +207,20 @@
   }
 
   function onKeyDown(event: KeyboardEvent) {
+    const items = suggestionsRequest.status === "success" ? suggestionsRequest.data : [];
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
-        moveHighlight(1);
+        moveHighlight(1, items);
         break;
       case "ArrowUp":
         event.preventDefault();
-        moveHighlight(-1);
+        moveHighlight(-1, items);
         break;
       case "Enter":
         event.preventDefault();
-        if (highlightIdx >= 0 && suggestions[highlightIdx]) {
-          pickSuggestion(suggestions[highlightIdx]);
+        if (highlightIdx >= 0 && items[highlightIdx]) {
+          pickSuggestion(items[highlightIdx]);
         } else {
           confirm();
         }
@@ -221,24 +233,32 @@
     }
   }
 
-  function moveHighlight(step: 1 | -1) {
-    if (suggestions.length === 0) return;
-    highlightIdx = (highlightIdx + step + suggestions.length) % suggestions.length;
+  function moveHighlight(step: 1 | -1, items: Suggestion[]) {
+    if (!items.length) return;
+    highlightIdx = (highlightIdx + step + items.length) % items.length;
   }
 
   function setFocus(element: HTMLInputElement) {
     if (!editor.isActive("internalLink")) element.focus();
   }
 
-  let inputValue = $derived(
-    activeId && searchTerm === null
-      ? titleError
-        ? translations[language].error
-        : activeTitle || translations[language].loading
-      : (searchTerm ?? ""),
-  );
+  let inputValue = $derived.by(() => {
+    if (!activeId || searchTerm !== null) return searchTerm ?? "";
+    switch (titleRequest.status) {
+      case "loading":
+        return translations[language].loading;
+      case "failed":
+        return translations[language].error;
+      case "success":
+        return titleRequest.data;
+      default:
+        return "";
+    }
+  });
 
-  let titleLoading = $derived(Boolean(activeId && searchTerm === null && !activeTitle && !titleError));
+  let searchReadonly = $derived(
+    titleRequest.status === "loading" || (Boolean(activeId) && searchTerm === null && titleRequest.status === "failed"),
+  );
 </script>
 
 {#if editor}
@@ -260,7 +280,7 @@
           oninput={onInput}
           onkeydown={onKeyDown}
           autocomplete="off"
-          readonly={titleLoading}
+          readonly={searchReadonly}
           use:setFocus
         />
         <button
@@ -281,9 +301,9 @@
         </button>
       </div>
 
-      {#if suggestions.length > 0}
+      {#if suggestionsRequest.status === "success" && suggestionsRequest.data.length}
         <ul class="tiptob-internallink-suggestions" role="listbox">
-          {#each suggestions as item, idx (item.value)}
+          {#each suggestionsRequest.data as item, idx (item.value)}
             <li
               role="option"
               aria-selected={idx === highlightIdx}
@@ -297,8 +317,10 @@
             </li>
           {/each}
         </ul>
-      {:else if suggestionsLoading}
+      {:else if suggestionsRequest.status === "loading"}
         <div class="tiptob-internallink-loading" role="status">{translations[language]["loading"]}</div>
+      {:else if searchTerm?.trim() && suggestionsRequest.status === "failed"}
+        <div class="tiptob-internallink-empty">{translations[language]["error"]}</div>
       {:else if searchTerm?.trim() && !selectedSuggestion}
         <div class="tiptob-internallink-empty">{translations[language]["noResults"]}</div>
       {/if}

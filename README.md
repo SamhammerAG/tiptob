@@ -88,8 +88,8 @@ TipToB provides the following web components:
   ```
 - **InternalLinkExtension**: Add support for `<internallink internallinkid="...">` marks. The `<tiptob-internal-link-button>` component requires these callback properties:
   ```js
-  fetchSuggestions(term: string): Promise<{ label: string; value: string }[]>;
-  fetchTitle(id: string): Promise<string>;
+  fetchSuggestions(term: string, signal?: AbortSignal): Promise<{ label: string; value: string }[]>;
+  fetchTitle(id: string, signal?: AbortSignal): Promise<string>;
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
