@@ -48,7 +48,7 @@ You can now use the provided custom elements in your HTML:
 Import the extensions bundle to use with your TipTap editor instance:
 
 ```js
-import { ImageExtension, KnowledgeExtension, SelectionDecoration, TableBubbleMenuExtension } from '@samhammer/tiptob/extensions';
+import { ImageExtension, InternalLinkExtension, KnowledgeExtension, SelectionDecoration, TableBubbleMenuExtension } from '@samhammer/tiptob/extensions';
 ```
 
 ---
@@ -73,6 +73,7 @@ TipToB provides the following web components:
 | `<tiptob-undo-button>`      | `@tiptap/extensions  (UndoRedo)`               |
 | `<tiptob-remove-format-button>`||
 | `<tiptob-hyperlink-button>` | `@tiptap/extension-link  (Link)`                    |
+| `<tiptob-internal-link-button>` | `InternalLinkExtension` (from TipToB), plus `fetchSuggestions`, `fetchTitle`, and `getPreviewUrl` callback properties |
 | `<tiptob-table-button>`     | `@tiptap/extension-table  (Table, TableCell, TableHeader, TableRow)`|
 | `<tiptob-table-bubble-menu>`| `TableBubbleMenuExtension` (from TipToB), `@tiptap/extension-table (Table, TableCell, TableHeader, TableRow)`   |
 | `<tiptob-text-align-button>`| `@tiptap/extension-text-align (TextAlign)`              |
@@ -84,6 +85,12 @@ TipToB provides the following web components:
 - **ImageExtension**: Add image support to your editor. You need to bind a function that uploads the File to your choosen FileProvider, the function receives a `File` and returns a `Promise<string>`. Example:
   ```js
   uploadInlineImage(file: File): Promise<string>;
+  ```
+- **InternalLinkExtension**: Add support for `<internallink internallinkid="...">` marks. The `<tiptob-internal-link-button>` component requires these callback properties:
+  ```js
+  fetchSuggestions(term: string, signal?: AbortSignal): Promise<{ label: string; value: string }[]>;
+  fetchTitle(id: string, signal?: AbortSignal): Promise<string>;
+  getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
 
@@ -168,7 +175,7 @@ imageButton.imageUpload = uploadInlineImage;
 <tiptob-image-button></tiptob-image-button>
 ```
 
-> **Note:** For components like `<tiptob-image-button>`, you must provide an `imageUpload` function that returns a Promise resolving to the image URL.
+> **Note:** For components like `<tiptob-image-button>` and `<tiptob-internal-link-button>`, you must provide their callback properties before users interact with them.
 
 ---
 
