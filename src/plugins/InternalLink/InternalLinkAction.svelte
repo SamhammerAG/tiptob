@@ -9,6 +9,7 @@
   import Icon from "../../base/Icon.svelte";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
+  import { onDestroy, onMount } from "svelte";
 
   type Suggestion = { label: string; value: string };
   type TitleRequest = { status: "idle" } | { status: "loading" } | { status: "success"; data: string } | { status: "failed" };
@@ -47,7 +48,7 @@
       main: "Interner Link",
       placeholder: "Suchen...",
       confirm: "Bestätigen",
-      open: "Vorschau öffnen",
+      open: "Öffnen",
       remove: "Link entfernen/Schließen",
       loading: "Lädt...",
       noResults: "Keine Treffer",
@@ -57,7 +58,7 @@
       main: "Internal link",
       placeholder: "Search...",
       confirm: "Confirm",
-      open: "Open preview",
+      open: "Open",
       remove: "Remove/Close",
       loading: "Loading...",
       noResults: "No results",
@@ -69,18 +70,15 @@
   let titleController: AbortController | null = null;
   let suggestionsController: AbortController | null = null;
 
-  $effect(() => {
-    if (!editor) return;
-    const onTransaction = () => syncFromEditor();
+  onMount(() => {
+    editor.on("transaction", syncFromEditor);
+  });
 
-    editor.on("transaction", onTransaction);
-
-    return () => {
-      editor.off("transaction", onTransaction);
-      clearDebounce();
-      abortTitle();
-      abortSuggestions();
-    };
+  onDestroy(() => {
+    editor.off("transaction", syncFromEditor);
+    clearDebounce();
+    abortTitle();
+    abortSuggestions();
   });
 
   function syncFromEditor() {
