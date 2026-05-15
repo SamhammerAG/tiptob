@@ -5,6 +5,11 @@ import { ImageNodeView } from "./ImageNodeView";
 
 type Align = "left" | "center" | "right";
 
+export interface ImageExtensionOptions {
+  resize?: boolean;
+  align?: boolean;
+}
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     imageUpload: {
@@ -29,23 +34,37 @@ function parseWidth(element: HTMLElement): string | null {
   return null;
 }
 
-export default function getImageExtension(imageUpload: (file: File) => Promise<string>): Node {
+export default function getImageExtension(
+  imageUpload: (file: File) => Promise<string>,
+  options: ImageExtensionOptions = {},
+): Node {
+  const resizeEnabled = options.resize ?? false;
+  const alignEnabled = options.align ?? false;
+
   return Image.extend({
     name: "imageUpload",
 
     addAttributes() {
       return {
         ...this.parent?.(),
-        width: {
-          default: null as string | null,
-          parseHTML: () => null,
-          renderHTML: () => ({}),
-        },
-        align: {
-          default: null as Align | null,
-          parseHTML: () => null,
-          renderHTML: () => ({}),
-        },
+        ...(resizeEnabled
+          ? {
+              width: {
+                default: null as string | null,
+                parseHTML: () => null,
+                renderHTML: () => ({}),
+              },
+            }
+          : {}),
+        ...(alignEnabled
+          ? {
+              align: {
+                default: null as Align | null,
+                parseHTML: () => null,
+                renderHTML: () => ({}),
+              },
+            }
+          : {}),
       };
     },
 
@@ -57,13 +76,14 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
             if (!(node instanceof HTMLElement)) return false;
             const img = node.querySelector("img");
             if (!img) return false;
-            return {
+            const attrs: Record<string, string | null> = {
               src: img.getAttribute("src"),
               alt: img.getAttribute("alt"),
               title: img.getAttribute("title"),
-              width: parseWidth(node),
-              align: parseAlign(node),
             };
+            if (resizeEnabled) attrs.width = parseWidth(node);
+            if (alignEnabled) attrs.align = parseAlign(node);
+            return attrs;
           },
         },
         {
@@ -74,8 +94,6 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
               src: node.getAttribute("src"),
               alt: node.getAttribute("alt"),
               title: node.getAttribute("title"),
-              width: null,
-              align: null,
             };
           },
         },
@@ -87,8 +105,8 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
         src: string | null;
         alt: string | null;
         title: string | null;
-        width: string | null;
-        align: Align | null;
+        width?: string | null;
+        align?: Align | null;
       };
 
       const classes = ["image"];
@@ -109,30 +127,50 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
     addCommands() {
       return {
         ...(this.parent?.() ?? {}),
-        setImageWidth:
-          (width: string | null) =>
-          ({ commands }) =>
-            commands.updateAttributes("imageUpload", { width }),
-        setImageAlign:
-          (align: Align | null) =>
-          ({ commands }) =>
-            commands.updateAttributes("imageUpload", { align }),
-        resetImageStyling:
-          () =>
-          ({ commands }) =>
-            commands.updateAttributes("imageUpload", { width: null, align: null }),
+        ...(resizeEnabled
+          ? {
+              setImageWidth:
+                (width: string | null) =>
+                ({ commands }) =>
+                  commands.updateAttributes("imageUpload", { width }),
+            }
+          : {}),
+        ...(alignEnabled
+          ? {
+              setImageAlign:
+                (align: Align | null) =>
+                ({ commands }) =>
+                  commands.updateAttributes("imageUpload", { align }),
+            }
+          : {}),
+        ...(resizeEnabled || alignEnabled
+          ? {
+              resetImageStyling:
+                () =>
+                ({ commands }) => {
+                  const attrs: Record<string, null> = {};
+                  if (resizeEnabled) attrs.width = null;
+                  if (alignEnabled) attrs.align = null;
+                  return commands.updateAttributes("imageUpload", attrs);
+                },
+            }
+          : {}),
       };
     },
 
-    addNodeView() {
-      return ({ node, editor, getPos }) => {
-        return new ImageNodeView({
-          node,
-          editor,
-          getPos: typeof getPos === "function" ? getPos : () => undefined,
-        });
-      };
-    },
+    ...(resizeEnabled
+      ? {
+          addNodeView() {
+            return ({ node, editor, getPos }) => {
+              return new ImageNodeView({
+                node,
+                editor,
+                getPos: typeof getPos === "function" ? getPos : () => undefined,
+              });
+            };
+          },
+        }
+      : {}),
 
     addProseMirrorPlugins: () => {
       return [
@@ -141,19 +179,15 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
           props: {
             handleDrop: (view, event, _, moved) => {
               const hasFiles =
-                event.dataTransfer &&
-                event.dataTransfer.files &&
-                event.dataTransfer.files.length;
+                event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
 
               if (!hasFiles || moved) {
                 return;
               }
 
-              const images = Array.from(event.dataTransfer.files).filter(
-                (file) => {
-                  return file.type.includes("image/");
-                }
-              );
+              const images = Array.from(event.dataTransfer.files).filter((file) => {
+                return file.type.includes("image/");
+              });
 
               if (images.length === 0) {
                 return;
@@ -168,8 +202,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                   const node = schema.nodes.imageUpload.create({
                     src: img,
                   });
-                  const transaction =
-                    view.state.tr.insert(view.state.selection.from, node);
+                  const transaction = view.state.tr.insert(view.state.selection.from, node);
                   view.dispatch(transaction);
                 });
               }
@@ -181,7 +214,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
               if (!clipboardData) return false;
 
               const files = Array.from(clipboardData.files || []);
-              const images = files.filter(file => file.type.startsWith("image/"));
+              const images = files.filter((file) => file.type.startsWith("image/"));
 
               if (images.length === 0) return false;
 

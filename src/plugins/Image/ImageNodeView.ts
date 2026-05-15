@@ -169,7 +169,7 @@ export class ImageNodeView {
         document.addEventListener("touchmove", this.boundTouchMove, { passive: false });
         document.addEventListener("touchend", this.boundTouchEnd);
       },
-      { passive: false }
+      { passive: false },
     );
   }
 
@@ -231,11 +231,7 @@ export class ImageNodeView {
     const pos = this.getPos();
     if (typeof pos !== "number") return;
 
-    this.editor
-      .chain()
-      .setNodeSelection(pos)
-      .setImageWidth(finalWidth)
-      .run();
+    this.editor.chain().setNodeSelection(pos).setImageWidth(finalWidth).run();
   }
 
   update(node: ProseMirrorNode): boolean {

@@ -86,6 +86,12 @@ TipToB provides the following web components:
   ```js
   uploadInlineImage(file: File): Promise<string>;
   ```
+  Optionally takes a second argument to opt in to extra editing features. Both flags default to `false`:
+  ```js
+  ImageExtension(uploadInlineImage, { resize: true, align: true })
+  ```
+  - `resize`: enables drag-to-resize handles on selected images and registers the `setImageWidth` / `resetImageStyling` commands.
+  - `align`: enables left/center/right alignment and registers the `setImageAlign` command. The alignment buttons inside `ImageBubbleMenuExtension` only do something useful when this is `true`.
 - **InternalLinkExtension**: Add support for `<internallink internallinkid="...">` marks. The `<tiptob-internal-link-button>` component requires these callback properties:
   ```js
   fetchSuggestions(term: string, signal?: AbortSignal): Promise<{ label: string; value: string }[]>;

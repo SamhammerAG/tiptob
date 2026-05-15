@@ -74,7 +74,7 @@ const editor = new Editor({
     TableCell,
     TokenExtension,
     SelectionDecoration,
-    ImageExtension(uploadInlineImage.bind(this)),
+    ImageExtension(uploadInlineImage.bind(this), { resize: true, align: true }),
     TableBubbleMenuExtension(() => editor),
     ImageBubbleMenuExtension(() => editor),
     TextAlign.configure({
