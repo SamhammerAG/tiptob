@@ -1,6 +1,7 @@
 import { Editor } from "https://esm.sh/@tiptap/core@2.26.0";
 import {
   ImageExtension,
+  ImageBubbleMenuExtension,
   SelectionDecoration,
   TableBubbleMenuExtension,
   ExtendedHighlight,
@@ -41,6 +42,7 @@ function uploadInlineImage(file) {
   });
 }
 var tableBubbleMenu = document.querySelector("tiptob-table-bubble-menu");
+var imageBubbleMenu = document.querySelector("tiptob-image-bubble-menu");
 
 const editor = new Editor({
   element: document.querySelector(".text-area") || undefined,
@@ -72,8 +74,9 @@ const editor = new Editor({
     TableCell,
     TokenExtension,
     SelectionDecoration,
-    ImageExtension(uploadInlineImage.bind(this)),
+    ImageExtension(uploadInlineImage.bind(this), { resize: true, align: true }),
     TableBubbleMenuExtension(() => editor),
+    ImageBubbleMenuExtension(() => editor),
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
@@ -134,3 +137,4 @@ document.querySelector("tiptob-token-button").placeHolders = [
 ];
 
 tableBubbleMenu.editor = editor;
+imageBubbleMenu.editor = editor;
