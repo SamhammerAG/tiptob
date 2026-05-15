@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+import type { PopperElement } from "tippy.js";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
@@ -44,7 +45,6 @@ export class ImageNodeView {
   private boundMouseUp?: () => void;
   private boundTouchMove?: (e: TouchEvent) => void;
   private boundTouchEnd?: () => void;
-  private bubbleUpdateRaf: number | null = null;
 
   constructor({ node, editor, getPos }: NodeViewArgs) {
     this.node = node;
@@ -178,6 +178,12 @@ export class ImageNodeView {
     this.activeCorner = corner;
     this.startX = clientX;
     this.startWidth = this.dom.offsetWidth;
+
+    // Hide bubble menu while dragging
+    document
+      .querySelector("tiptob-image-bubble-menu")
+      ?.closest<PopperElement>("[data-tippy-root]")
+      ?._tippy?.hide();
   }
 
   private onResizeMove(clientX: number): void {
@@ -197,18 +203,6 @@ export class ImageNodeView {
     if (!this.dom.classList.contains("image_resized")) {
       this.dom.classList.add("image_resized");
     }
-    this.scheduleBubbleUpdate();
-  }
-
-  private scheduleBubbleUpdate(): void {
-    if (this.bubbleUpdateRaf !== null) return;
-    this.bubbleUpdateRaf = requestAnimationFrame(() => {
-      this.bubbleUpdateRaf = null;
-      const el = document.querySelector("tiptob-image-bubble-menu") as
-        | (HTMLElement & { _tippy?: { popperInstance?: { update?: () => void } } })
-        | null;
-      el?._tippy?.popperInstance?.update?.();
-    });
   }
 
   private endResize(): void {
@@ -249,7 +243,6 @@ export class ImageNodeView {
     if (this.boundMouseUp) document.removeEventListener("mouseup", this.boundMouseUp);
     if (this.boundTouchMove) document.removeEventListener("touchmove", this.boundTouchMove);
     if (this.boundTouchEnd) document.removeEventListener("touchend", this.boundTouchEnd);
-    if (this.bubbleUpdateRaf !== null) cancelAnimationFrame(this.bubbleUpdateRaf);
   }
 
   ignoreMutation(): boolean {
