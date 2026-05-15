@@ -34,7 +34,7 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
       },
     },
     shouldShow: ({ editor }) => {
-      return editor.isEditable && editor.isActive("table") && !editor.isActive("link");
+      return editor.isEditable && editor.isActive("table") && !editor.isActive("link") && !editor.isActive("imageUpload");
     },
     element: document.querySelector("tiptob-table-bubble-menu"),
   });
