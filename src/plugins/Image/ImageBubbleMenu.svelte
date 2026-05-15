@@ -7,6 +7,7 @@
   import AlignCenterIcon from "../../../icons/align-center.svg?raw";
   import AlignRightIcon from "../../../icons/align-right.svg?raw";
   import DeleteImageIcon from "../../../icons/delete-bin-2-line.svg?raw";
+  import EraserIcon from "../../../icons/eraser-line.svg?raw";
   import Icon from "../../base/Icon.svelte";
   import SimpleButton from "../../base/SimpleButton.svelte";
 
@@ -18,12 +19,14 @@
       alignCenter: "Zentriert",
       alignRight: "Rechtsbündig",
       deleteImage: "Bild löschen",
+      resetImage: "Bildformatierung zurücksetzen",
     },
     en: {
       alignLeft: "Align left",
       alignCenter: "Align center",
       alignRight: "Align right",
       deleteImage: "Delete image",
+      resetImage: "Reset image formatting",
     },
   };
 
@@ -42,6 +45,10 @@
   function deleteImage() {
     editor.chain().focus().deleteSelection().run();
   }
+
+  function resetImage() {
+    editor.chain().focus().resetImageStyling().run();
+  }
 </script>
 
 {#if editor}
@@ -50,6 +57,9 @@
       <div class="toolbar-button-group">
         <button onclick={deleteImage} title={translations[language]["deleteImage"]}>
           <Icon content={DeleteImageIcon} />
+        </button>
+        <button onclick={resetImage} title={translations[language]["resetImage"]}>
+          <Icon content={EraserIcon} />
         </button>
       </div>
       <div class="toolbar-button-group">

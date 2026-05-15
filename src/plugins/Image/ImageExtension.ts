@@ -10,6 +10,7 @@ declare module "@tiptap/core" {
     imageUpload: {
       setImageWidth: (width: string | null) => ReturnType;
       setImageAlign: (align: Align | null) => ReturnType;
+      resetImageStyling: () => ReturnType;
     };
   }
 }
@@ -116,6 +117,10 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
           (align: Align | null) =>
           ({ commands }) =>
             commands.updateAttributes("imageUpload", { align }),
+        resetImageStyling:
+          () =>
+          ({ commands }) =>
+            commands.updateAttributes("imageUpload", { width: null, align: null }),
       };
     },
 
