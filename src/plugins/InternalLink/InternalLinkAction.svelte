@@ -25,12 +25,14 @@
     fetchSuggestions,
     fetchTitle,
     getPreviewUrl,
+    translationOverrides,
   }: {
     editor: Editor;
     language?: "de" | "en";
     fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
+    translationOverrides?: { de?: Record<string, string>; en?: Record<string, string> };
   } = $props();
 
   let dropdownOpen = $state(false);
@@ -43,7 +45,7 @@
 
   const SUGGESTION_DEBOUNCE_MS = 300;
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = $derived<Record<string, Record<string, string>>>({
     de: {
       main: "Interner Link",
       placeholder: "Suchen...",
@@ -53,6 +55,7 @@
       loading: "Lädt...",
       noResults: "Keine Treffer",
       error: "Daten konnten nicht geladen werden",
+      ...(translationOverrides?.de ?? {}),
     },
     en: {
       main: "Internal link",
@@ -63,8 +66,9 @@
       loading: "Loading...",
       noResults: "No results",
       error: "Could not load data",
+      ...(translationOverrides?.en ?? {}),
     },
-  };
+  });
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let titleController: AbortController | null = null;
