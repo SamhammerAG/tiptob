@@ -310,6 +310,7 @@
               role="option"
               aria-selected={idx === highlightIdx}
               class:active={idx === highlightIdx}
+              title={item.label}
               onmousedown={(e) => {
                 e.preventDefault();
                 pickSuggestion(item);
@@ -335,7 +336,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--tiptob-bg-button, #ffffff);
-    min-width: 18rem;
+    width: 18rem;
   }
   .tiptob-internallink-row {
     display: flex;
@@ -402,6 +403,12 @@
     padding: 0.25rem 0.5rem;
     cursor: pointer;
     color: var(--tiptob-bg-icon, #333333);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
   }
   .tiptob-internallink-suggestions li:hover {
     background-color: var(--tiptob-bg-button-hover, #f0f0f0);
