@@ -54,7 +54,7 @@
       remove: "Link entfernen/Schließen",
       loading: "Lädt...",
       noResults: "Keine Treffer",
-      error: "Daten konnten nicht geladen werden",
+      error: "Fehler beim Laden",
       ...(translationOverrides?.de ?? {}),
     },
     en: {
@@ -277,6 +277,7 @@
         <input
           type="text"
           class="tiptob-internallink-input"
+          class:muted={searchReadonly}
           value={inputValue}
           placeholder={translations[language]["placeholder"]}
           oninput={onInput}
@@ -389,6 +390,9 @@
   }
   .tiptob-internallink-input::placeholder {
     color: var(--tiptob-bg-icon, #333333);
+    opacity: 0.5;
+  }
+  .tiptob-internallink-input.muted {
     opacity: 0.5;
   }
   .tiptob-internallink-suggestions {
