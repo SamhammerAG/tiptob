@@ -25,12 +25,14 @@
     fetchSuggestions,
     fetchTitle,
     getPreviewUrl,
+    translationOverrides,
   }: {
     editor: Editor;
     language?: "de" | "en";
     fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
+    translationOverrides?: { de?: Record<string, string>; en?: Record<string, string> };
   } = $props();
 
   let dropdownOpen = $state(false);
@@ -43,7 +45,7 @@
 
   const SUGGESTION_DEBOUNCE_MS = 300;
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = $derived<Record<string, Record<string, string>>>({
     de: {
       main: "Interner Link",
       placeholder: "Suchen...",
@@ -52,7 +54,8 @@
       remove: "Link entfernen/Schließen",
       loading: "Lädt...",
       noResults: "Keine Treffer",
-      error: "Daten konnten nicht geladen werden",
+      error: "Fehler beim Laden",
+      ...(translationOverrides?.de ?? {}),
     },
     en: {
       main: "Internal link",
@@ -63,8 +66,9 @@
       loading: "Loading...",
       noResults: "No results",
       error: "Could not load data",
+      ...(translationOverrides?.en ?? {}),
     },
-  };
+  });
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let titleController: AbortController | null = null;
@@ -273,6 +277,7 @@
         <input
           type="text"
           class="tiptob-internallink-input"
+          class:muted={searchReadonly}
           value={inputValue}
           placeholder={translations[language]["placeholder"]}
           oninput={onInput}
@@ -306,6 +311,7 @@
               role="option"
               aria-selected={idx === highlightIdx}
               class:active={idx === highlightIdx}
+              title={item.label}
               onmousedown={(e) => {
                 e.preventDefault();
                 pickSuggestion(item);
@@ -331,7 +337,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--tiptob-bg-button, #ffffff);
-    min-width: 18rem;
+    width: 18rem;
   }
   .tiptob-internallink-row {
     display: flex;
@@ -386,6 +392,9 @@
     color: var(--tiptob-bg-icon, #333333);
     opacity: 0.5;
   }
+  .tiptob-internallink-input.muted {
+    opacity: 0.5;
+  }
   .tiptob-internallink-suggestions {
     list-style: none;
     margin: 0;
@@ -398,6 +407,12 @@
     padding: 0.25rem 0.5rem;
     cursor: pointer;
     color: var(--tiptob-bg-icon, #333333);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
   }
   .tiptob-internallink-suggestions li:hover {
     background-color: var(--tiptob-bg-button-hover, #f0f0f0);
