@@ -16,6 +16,7 @@ export interface InternalLinkAttrs {
 export default function getInternalLinkExtension(): Mark {
   return Mark.create({
     name: "internalLink",
+    priority: 1000,
     inclusive: true,
     keepOnSplit: false,
     exitable: true,
