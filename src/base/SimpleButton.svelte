@@ -12,12 +12,14 @@
     tooltip: string;
     text?: string;
     dropdownOpen?: boolean;
+    disabled?: boolean;
   }
 
-  let { editor, key, action, icon, tooltip, text = "", dropdownOpen = $bindable(false) }: Props = $props();
+  let { editor, key, action, icon, tooltip, text = "", dropdownOpen = $bindable(false), disabled: externalDisabled = false }: Props = $props();
 
   let highlighted = $state(false);
-  let disabled = $state(false);
+  let isEditorDisabled = $state(false);
+  let disabled = $derived(isEditorDisabled || externalDisabled);
 
   function setHighlighted() {
     if (typeof key === "string") {
@@ -32,7 +34,7 @@
   }
 
   function setDisabled() {
-    disabled = !editor.isEditable;
+    isEditorDisabled = !editor.isEditable;
   }
 
   onMount(() => {
