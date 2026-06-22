@@ -33,5 +33,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={translations[language]} externalDisabled={!canUndo} />
+  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={translations[language]} disabled={!canUndo} />
 {/if}
