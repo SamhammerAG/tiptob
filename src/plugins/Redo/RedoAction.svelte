@@ -23,9 +23,9 @@
     if (!editor) return;
 
     updateCanRedo();
-    editor.on("update", updateCanRedo);
+    editor.on("transaction", updateCanRedo);
 
-    return () => editor.off("update", updateCanRedo);
+    return () => editor.off("transaction", updateCanRedo);
   });
 
   //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
