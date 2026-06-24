@@ -61,7 +61,7 @@ const editor = new Editor({
     TableHeader,
     TableCell,
     SelectionDecoration,
-    ImageExtension(uploadInlineImage.bind(this)),
+    ImageExtension(uploadInlineImage.bind(this), { resize: true, align: true }),
     TableBubbleMenuExtension(() => editor),
     TextAlign.configure({
       types: ["heading", "paragraph"],
