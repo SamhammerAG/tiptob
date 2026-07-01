@@ -101,6 +101,10 @@
   button:enabled {
     cursor: pointer;
   }
+
+  button:disabled {
+    opacity: var(--tiptob-button-disabled-opacity, 1);
+  }
   button.dropdownOpen:enabled,
   button.highlighted:enabled {
     color: var(--tiptob-bg-icon-highlighted, #2977ff);

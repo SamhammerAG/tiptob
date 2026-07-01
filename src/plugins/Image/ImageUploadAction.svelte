@@ -119,7 +119,7 @@
       background-color: var(--tiptob-bg-button-hover, #f0f0f0);
     }
     &:disabled {
-      opacity: 0.5;
+      opacity: var(--tiptob-button-disabled-opacity, 0.5);
       cursor: default;
 
       &.confirm {
