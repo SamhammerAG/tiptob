@@ -12,12 +12,23 @@
     tooltip: string;
     text?: string;
     dropdownOpen?: boolean;
+    disabled?: boolean;
   }
 
-  let { editor, key, action, icon, tooltip, text = "", dropdownOpen = $bindable(false) }: Props = $props();
+  let {
+    editor,
+    key,
+    action,
+    icon,
+    tooltip,
+    text = "",
+    dropdownOpen = $bindable(false),
+    disabled: externalDisabled = $bindable(false),
+  }: Props = $props();
 
   let highlighted = $state(false);
-  let disabled = $state(false);
+  let isEditorReadonly = $state(false);
+  let disabled = $derived(isEditorReadonly || externalDisabled);
 
   function setHighlighted() {
     if (typeof key === "string") {
@@ -31,21 +42,21 @@
     }
   }
 
-  function setDisabled() {
-    disabled = !editor.isEditable;
+  function setIsEditorReadonly() {
+    isEditorReadonly = !editor.isEditable;
   }
 
   onMount(() => {
     setHighlighted();
-    setDisabled();
+    setIsEditorReadonly();
 
     editor.on("transaction", setHighlighted);
-    editor.on("update", setDisabled);
+    editor.on("update", setIsEditorReadonly);
   });
 
   onDestroy(() => {
     editor.off("transaction", setHighlighted);
-    editor.off("update", setDisabled);
+    editor.off("update", setIsEditorReadonly);
   });
 </script>
 
@@ -89,6 +100,10 @@
 
   button:enabled {
     cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: var(--tiptob-button-disabled-opacity, 1);
   }
   button.dropdownOpen:enabled,
   button.highlighted:enabled {

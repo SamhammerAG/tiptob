@@ -195,6 +195,7 @@ TipToB components use CSS custom properties for easy theming. The following vari
   --tiptob-bg-button-hover: #e2e2e2;
   --tiptob-bg-button-highlighted: #a6ccf7;
   --tiptob-bg-icon: rgba(37, 39, 45, 0.37);
+  --tiptob-button-disabled-opacity: 0.5;
 }
 ```
 

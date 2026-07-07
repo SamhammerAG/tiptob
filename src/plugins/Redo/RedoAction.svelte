@@ -12,10 +12,26 @@
     en: "Redo",
   };
 
+  let canRedo = $state(false);
+
+  function updateCanRedo() {
+    //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+    canRedo = editor.can().redo();
+  }
+
+  $effect(() => {
+    if (!editor) return;
+
+    updateCanRedo();
+    editor.on("transaction", updateCanRedo);
+
+    return () => editor.off("transaction", updateCanRedo);
+  });
+
   //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
   const action = () => editor.chain().focus().redo().run();
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={translations[language]} />
+  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={translations[language]} disabled={!canRedo} />
 {/if}
