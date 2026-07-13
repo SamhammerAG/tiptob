@@ -56,9 +56,10 @@ export function withImageAlign(image: Node, align: boolean): Node {
       return {
         ...(this.parent?.() ?? {}),
         setImageAlign:
+          //schauen ob mit v3 besser geht
           (align: Align | null) =>
-          ({ commands }) =>
-            commands.updateAttributes("imageUpload", { align }),
+            ({ commands }) =>
+              commands.updateAttributes("imageUpload", { align }),
       };
     },
   });

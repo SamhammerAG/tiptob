@@ -1,10 +1,15 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
+import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
+
+export const imageBubbleMenuPluginKey = new PluginKey("imageBubbleMenu");
 
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
+  const element = getBubbleMenuElement("tiptob-image-bubble-menu");
+
   return BubbleMenu.extend({ name: "imageBubbleMenu" }).configure({
-    pluginKey: new PluginKey("imageBubbleMenu"),
+    pluginKey: imageBubbleMenuPluginKey,
     updateDelay: 0,
     options: {
       strategy: "fixed",
@@ -13,6 +18,7 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
         allowedPlacements: ["top", "bottom"],
       },
       shift: { crossAxis: true },
+      ...bubbleMenuAutoUpdate(getEditor, element, imageBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
       const { state, view } = getEditor();
@@ -28,6 +34,6 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
     shouldShow: ({ editor }) => {
       return editor.isEditable && editor.isActive("imageUpload");
     },
-    element: document.querySelector("tiptob-image-bubble-menu"),
+    element,
   });
 }

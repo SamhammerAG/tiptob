@@ -1,10 +1,15 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
+import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
+
+const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
+  const element = getBubbleMenuElement("tiptob-table-bubble-menu");
+
   return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
-    pluginKey: new PluginKey("tableBubbleMenu"),
+    pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
       flip: false,
@@ -12,6 +17,7 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
         allowedPlacements: ["top", "bottom"],
       },
       shift: { crossAxis: true },
+      ...bubbleMenuAutoUpdate(getEditor, element, tableBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
       const editor = getEditor();
@@ -32,7 +38,7 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
         !editor.isActive("imageUpload")
       );
     },
-    element: document.querySelector("tiptob-table-bubble-menu"),
+    element,
   });
 }
 

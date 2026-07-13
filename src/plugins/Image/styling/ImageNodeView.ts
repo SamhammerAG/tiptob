@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { type Align, alignClass } from "./ImageAlign";
+import { imageBubbleMenuPluginKey } from "../ImageBubbleMenuExtension";
 import { resizeClass } from "./ImageResize";
 
 type Corner = "tl" | "tr" | "bl" | "br";
@@ -181,7 +182,7 @@ export class ImageNodeView {
     this.startX = clientX;
     this.startWidth = this.dom.offsetWidth;
 
-    this.editor.commands.setMeta("imageBubbleMenu", "hide");
+    this.editor.view.dispatch(this.editor.state.tr.setMeta(imageBubbleMenuPluginKey, "hide"));
   }
 
   private onResizeMove(clientX: number): void {
