@@ -1,6 +1,5 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
-import type { PopperElement } from "tippy.js";
 import { type Align, alignClass } from "./ImageAlign";
 import { resizeClass } from "./ImageResize";
 
@@ -182,11 +181,7 @@ export class ImageNodeView {
     this.startX = clientX;
     this.startWidth = this.dom.offsetWidth;
 
-    // Hide bubble menu while dragging
-    document
-      .querySelector("tiptob-image-bubble-menu")
-      ?.closest<PopperElement>("[data-tippy-root]")
-      ?._tippy?.hide();
+    this.editor.commands.setMeta("imageBubbleMenu", "hide");
   }
 
   private onResizeMove(clientX: number): void {

@@ -1,4 +1,4 @@
-import Image from "@tiptap/extension-image";
+import { Image } from "@tiptap/extension-image";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node } from "@tiptap/core";
 import { withImageResize } from "./styling/ImageResize";

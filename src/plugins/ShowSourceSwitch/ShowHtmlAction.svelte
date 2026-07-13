@@ -12,7 +12,7 @@
     en: "Show HTML",
   };
 
-  const action = () => editor.commands.setContent(editor.getText());
+  const action = () => editor.commands.setContent(editor.getText(), { emitUpdate: false });
 </script>
 
 {#if editor}

@@ -12,7 +12,7 @@
     en: "Show source code",
   };
 
-  const action = () => editor.commands.setContent(`<textarea>${editor.getHTML()}</textarea>`);
+  const action = () => editor.commands.setContent(`<textarea>${editor.getHTML()}</textarea>`, { emitUpdate: false });
 </script>
 
 {#if editor}

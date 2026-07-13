@@ -6,32 +6,24 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
   return BubbleMenu.extend({ name: "imageBubbleMenu" }).configure({
     pluginKey: new PluginKey("imageBubbleMenu"),
     updateDelay: 0,
-    tippyOptions: {
-      animation: true,
-      maxWidth: "none",
-      placement: "top",
-      popperOptions: {
-        modifiers: [
-          {
-            name: "preventOverflow",
-            options: {
-              altAxis: true,
-              tether: true,
-            },
-          },
-        ],
+    options: {
+      strategy: "fixed",
+      flip: false,
+      autoPlacement: {
+        allowedPlacements: ["top", "bottom"],
       },
-      getReferenceClientRect: () => {
-        const { state, view } = getEditor();
-        const { from, to } = state.selection;
-        const imageDom = view.nodeDOM(from) as HTMLElement | null;
+      shift: { crossAxis: true },
+    },
+    getReferencedVirtualElement: () => {
+      const { state, view } = getEditor();
+      const { from, to } = state.selection;
+      const imageDom = view.nodeDOM(from) as HTMLElement | null;
 
-        if (imageDom && typeof imageDom.getBoundingClientRect === "function") {
-          return imageDom.getBoundingClientRect();
-        }
+      if (imageDom && typeof imageDom.getBoundingClientRect === "function") {
+        return imageDom;
+      }
 
-        return posToDOMRect(view, from, to);
-      },
+      return { getBoundingClientRect: () => posToDOMRect(view, from, to) };
     },
     shouldShow: ({ editor }) => {
       return editor.isEditable && editor.isActive("imageUpload");

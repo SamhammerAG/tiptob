@@ -1,26 +1,20 @@
-import { Editor } from "https://esm.sh/@tiptap/core@2.26.0";
+import { Editor } from "https://esm.sh/@tiptap/core@3.27.3";
 import { ImageExtension, SelectionDecoration, TableBubbleMenuExtension, ExtendedHighlight, FontSizeExtension } from "https://esm.sh/@samhammer/tiptob/extensions.js";
-import Bold from "https://esm.sh/@tiptap/extension-bold@2.26.0";
-import BulletList from "https://esm.sh/@tiptap/extension-bullet-list@2.26.0";
-import Color from "https://esm.sh/@tiptap/extension-color@2.26.0";
-import Document from "https://esm.sh/@tiptap/extension-document@2.26.0";
-import Gapcursor from "https://esm.sh/@tiptap/extension-gapcursor@2.26.0";
-import HardBreak from "https://esm.sh/@tiptap/extension-hard-break@2.26.0";
-import History from "https://esm.sh/@tiptap/extension-history@2.26.0";
-import Italic from "https://esm.sh/@tiptap/extension-italic@2.26.0";
-import Link from "https://esm.sh/@tiptap/extension-link@2.26.0";
-import ListItem from "https://esm.sh/@tiptap/extension-list-item@2.26.0";
-import OrderdList from "https://esm.sh/@tiptap/extension-ordered-list@2.26.0";
-import Paragraph from "https://esm.sh/@tiptap/extension-paragraph@2.26.0";
-import Strike from "https://esm.sh/@tiptap/extension-strike@2.26.0";
-import Table from "https://esm.sh/@tiptap/extension-table@2.26.0";
-import TableCell from "https://esm.sh/@tiptap/extension-table-cell@2.26.0";
-import TableHeader from "https://esm.sh/@tiptap/extension-table-header@2.26.0";
-import TableRow from "https://esm.sh/@tiptap/extension-table-row@2.26.0";
-import Text from "https://esm.sh/@tiptap/extension-text@2.26.0";
-import TextAlign from "https://esm.sh/@tiptap/extension-text-align@2.26.0";
-import TextStyle from "https://esm.sh/@tiptap/extension-text-style@2.26.0";
-import Underline from "https://esm.sh/@tiptap/extension-underline@2.26.0";
+import { Bold } from "https://esm.sh/@tiptap/extension-bold@3.27.3";
+import { BulletList, ListItem, OrderedList } from "https://esm.sh/@tiptap/extension-list@3.27.3";
+import { Color } from "https://esm.sh/@tiptap/extension-color@3.27.3";
+import { Document } from "https://esm.sh/@tiptap/extension-document@3.27.3";
+import { Gapcursor, UndoRedo } from "https://esm.sh/@tiptap/extensions@3.27.3";
+import { HardBreak } from "https://esm.sh/@tiptap/extension-hard-break@3.27.3";
+import { Italic } from "https://esm.sh/@tiptap/extension-italic@3.27.3";
+import { Link } from "https://esm.sh/@tiptap/extension-link@3.27.3";
+import { Paragraph } from "https://esm.sh/@tiptap/extension-paragraph@3.27.3";
+import { Strike } from "https://esm.sh/@tiptap/extension-strike@3.27.3";
+import { Table, TableCell, TableHeader, TableRow } from "https://esm.sh/@tiptap/extension-table@3.27.3";
+import { Text } from "https://esm.sh/@tiptap/extension-text@3.27.3";
+import { TextAlign } from "https://esm.sh/@tiptap/extension-text-align@3.27.3";
+import { TextStyle } from "https://esm.sh/@tiptap/extension-text-style@3.27.3";
+import { Underline } from "https://esm.sh/@tiptap/extension-underline@3.27.3";
 
 function uploadInlineImage(file) {
   // Replace this with your actual upload logic
@@ -39,7 +33,7 @@ const editor = new Editor({
   extensions: [
     Paragraph,
     Text,
-    TextStyle.configure({ mergeNestedSpanStyles: true }),
+    TextStyle,
     FontSizeExtension,
     Color,
     Document,
@@ -52,8 +46,8 @@ const editor = new Editor({
     ExtendedHighlight.configure({
       multicolor: true,
     }),
-    OrderdList,
-    History,
+    OrderedList,
+    UndoRedo,
     Strike,
     Underline,
     Table,

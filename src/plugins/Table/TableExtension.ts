@@ -2,39 +2,35 @@ import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
 
-
-
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
   return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
     pluginKey: new PluginKey("tableBubbleMenu"),
-    tippyOptions: {
-      animation: true,
-      maxWidth: "none",
-      placement: "bottom",
-      popperOptions: {
-        modifiers: [
-          {
-            name: 'preventOverflow',
-            options: {
-              altAxis: true,
-              tether: true,
-            }
-          }
-        ]
+    options: {
+      strategy: "fixed",
+      flip: false,
+      autoPlacement: {
+        allowedPlacements: ["top", "bottom"],
       },
-      getReferenceClientRect: () => {
-        const { state, view } = getEditor();
-        const myNodePos = new NodePos(state.selection.$anchor, getEditor());
-        const tableElement = findParentTableFromPos(myNodePos);
-        if (tableElement) {
-          return tableElement.getBoundingClientRect();
-        }
+      shift: { crossAxis: true },
+    },
+    getReferencedVirtualElement: () => {
+      const editor = getEditor();
+      const { state, view } = editor;
+      const myNodePos = new NodePos(state.selection.$anchor, editor);
+      const tableElement = findParentTableFromPos(myNodePos);
+      if (tableElement) {
+        return tableElement;
+      }
 
-        return posToDOMRect(view, 0, 0);
-      },
+      return { getBoundingClientRect: () => posToDOMRect(view, 0, 0) };
     },
     shouldShow: ({ editor }) => {
-      return editor.isEditable && editor.isActive("table") && !editor.isActive("link") && !editor.isActive("imageUpload");
+      return (
+        editor.isEditable &&
+        editor.isActive("table") &&
+        !editor.isActive("link") &&
+        !editor.isActive("imageUpload")
+      );
     },
     element: document.querySelector("tiptob-table-bubble-menu"),
   });
