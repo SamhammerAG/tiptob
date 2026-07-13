@@ -5,7 +5,7 @@ import { PluginKey } from "@tiptap/pm/state";
 
 
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
-  return BubbleMenu.configure({
+  return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
     pluginKey: new PluginKey("tableBubbleMenu"),
     tippyOptions: {
       animation: true,

@@ -1,176 +1,23 @@
 import Image from "@tiptap/extension-image";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node } from "@tiptap/core";
-import { ImageNodeView } from "./ImageNodeView";
-
-type Align = "left" | "center" | "right";
+import { withImageResize } from "./styling/ImageResize";
+import { withImageAlign } from "./styling/ImageAlign";
+import { withImageStyling } from "./styling/ImageStyling";
 
 export interface ImageExtensionOptions {
   resize?: boolean;
   align?: boolean;
 }
 
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    imageUpload: {
-      setImageWidth: (width: string | null) => ReturnType;
-      setImageAlign: (align: Align | null) => ReturnType;
-      resetImageStyling: () => ReturnType;
-    };
-  }
-}
-
-const ALIGN_CLASS_REGEX = /image-style-align-(left|center|right)/;
-
-function parseAlign(element: HTMLElement): Align | null {
-  const match = element.className.match(ALIGN_CLASS_REGEX);
-  if (match) return match[1] as Align;
-  return null;
-}
-
-function parseWidth(element: HTMLElement): string | null {
-  const width = element.style?.width;
-  if (typeof width === "string" && width.trim()) return width.trim();
-  return null;
-}
-
 export default function getImageExtension(
   imageUpload: (file: File) => Promise<string>,
   options: ImageExtensionOptions = {},
 ): Node {
-  const resizeEnabled = options.resize ?? false;
-  const alignEnabled = options.align ?? false;
+  const { resize = false, align = false } = options;
 
-  return Image.extend({
+  const image = Image.extend<ImageExtensionOptions>({
     name: "imageUpload",
-
-    addAttributes() {
-      return {
-        ...this.parent?.(),
-        ...(resizeEnabled
-          ? {
-              width: {
-                default: null as string | null,
-                parseHTML: () => null,
-                renderHTML: () => ({}),
-              },
-            }
-          : {}),
-        ...(alignEnabled
-          ? {
-              align: {
-                default: null as Align | null,
-                parseHTML: () => null,
-                renderHTML: () => ({}),
-              },
-            }
-          : {}),
-      };
-    },
-
-    parseHTML() {
-      return [
-        {
-          tag: "figure.image",
-          getAttrs: (node) => {
-            if (!(node instanceof HTMLElement)) return false;
-            const img = node.querySelector("img");
-            if (!img) return false;
-            const attrs: Record<string, string | null> = {
-              src: img.getAttribute("src"),
-              alt: img.getAttribute("alt"),
-              title: img.getAttribute("title"),
-            };
-            if (resizeEnabled) attrs.width = parseWidth(node);
-            if (alignEnabled) attrs.align = parseAlign(node);
-            return attrs;
-          },
-        },
-        {
-          tag: "img[src]",
-          getAttrs: (node) => {
-            if (!(node instanceof HTMLElement)) return false;
-            return {
-              src: node.getAttribute("src"),
-              alt: node.getAttribute("alt"),
-              title: node.getAttribute("title"),
-            };
-          },
-        },
-      ];
-    },
-
-    renderHTML({ node }) {
-      const { src, alt, title, width, align } = node.attrs as {
-        src: string | null;
-        alt: string | null;
-        title: string | null;
-        width?: string | null;
-        align?: Align | null;
-      };
-
-      const classes = ["image"];
-      if (width) classes.push("image_resized");
-      if (align) classes.push(`image-style-align-${align}`);
-
-      const figureAttrs: Record<string, string> = { class: classes.join(" ") };
-      if (width) figureAttrs.style = `width:${width};`;
-
-      const imgAttrs: Record<string, string> = {};
-      if (src) imgAttrs.src = src;
-      if (alt) imgAttrs.alt = alt;
-      if (title) imgAttrs.title = title;
-
-      return ["figure", figureAttrs, ["img", imgAttrs]];
-    },
-
-    addCommands() {
-      return {
-        ...(this.parent?.() ?? {}),
-        ...(resizeEnabled
-          ? {
-              setImageWidth:
-                (width: string | null) =>
-                ({ commands }) =>
-                  commands.updateAttributes("imageUpload", { width }),
-            }
-          : {}),
-        ...(alignEnabled
-          ? {
-              setImageAlign:
-                (align: Align | null) =>
-                ({ commands }) =>
-                  commands.updateAttributes("imageUpload", { align }),
-            }
-          : {}),
-        ...(resizeEnabled || alignEnabled
-          ? {
-              resetImageStyling:
-                () =>
-                ({ commands }) => {
-                  const attrs: Record<string, null> = {};
-                  if (resizeEnabled) attrs.width = null;
-                  if (alignEnabled) attrs.align = null;
-                  return commands.updateAttributes("imageUpload", attrs);
-                },
-            }
-          : {}),
-      };
-    },
-
-    ...(resizeEnabled
-      ? {
-          addNodeView() {
-            return ({ node, editor, getPos }) => {
-              return new ImageNodeView({
-                node,
-                editor,
-                getPos: typeof getPos === "function" ? getPos : () => undefined,
-              });
-            };
-          },
-        }
-      : {}),
 
     addProseMirrorPlugins: () => {
       return [
@@ -244,4 +91,7 @@ export default function getImageExtension(
       ];
     },
   });
+
+  const base = withImageStyling(image, resize, align);
+  return withImageAlign(withImageResize(base, resize), align);
 }

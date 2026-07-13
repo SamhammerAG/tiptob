@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
+  import type { Align } from "./styling/ImageAlign";
 
   import AlignLeftIcon from "../../../icons/align-left.svg?raw";
   import AlignCenterIcon from "../../../icons/align-center.svg?raw";
@@ -30,13 +31,15 @@
     },
   };
 
-  type Align = "left" | "center" | "right";
-
   const alignments: { name: Align; icon: string; label: string }[] = [
     { name: "left", icon: AlignLeftIcon, label: "alignLeft" },
     { name: "center", icon: AlignCenterIcon, label: "alignCenter" },
     { name: "right", icon: AlignRightIcon, label: "alignRight" },
   ];
+
+  const alignEnabled = $derived(typeof editor?.commands.setImageAlign === "function");
+  const resizeEnabled = $derived(typeof editor?.commands.setImageWidth === "function");
+  const canResetStyling = $derived(alignEnabled || resizeEnabled);
 
   function setAlign(align: Align) {
     editor.chain().focus().setImageAlign(align).run();
@@ -58,21 +61,25 @@
         <button onclick={deleteImage} title={translations[language]["deleteImage"]}>
           <Icon content={DeleteImageIcon} />
         </button>
-        <button onclick={resetImage} title={translations[language]["resetImage"]}>
-          <Icon content={EraserIcon} />
-        </button>
+        {#if canResetStyling}
+          <button onclick={resetImage} title={translations[language]["resetImage"]}>
+            <Icon content={EraserIcon} />
+          </button>
+        {/if}
       </div>
-      <div class="toolbar-button-group">
-        {#each alignments as alignment (alignment.name)}
-          <SimpleButton
-            {editor}
-            key={{ name: "imageUpload", attributes: { align: alignment.name } }}
-            action={() => setAlign(alignment.name)}
-            icon={alignment.icon}
-            tooltip={translations[language][alignment.label]}
-          />
-        {/each}
-      </div>
+      {#if alignEnabled}
+        <div class="toolbar-button-group">
+          {#each alignments as alignment (alignment.name)}
+            <SimpleButton
+              {editor}
+              key={{ name: "imageUpload", attributes: { align: alignment.name } }}
+              action={() => setAlign(alignment.name)}
+              icon={alignment.icon}
+              tooltip={translations[language][alignment.label]}
+            />
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
 {/if}

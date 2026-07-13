@@ -1,6 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import type { PopperElement } from "tippy.js";
+import { type Align, alignClass } from "./ImageAlign";
+import { resizeClass } from "./ImageResize";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
@@ -26,6 +28,7 @@ interface NodeViewArgs {
   node: ProseMirrorNode;
   editor: Editor;
   getPos: () => number | undefined;
+  resizable: boolean;
 }
 
 export class ImageNodeView {
@@ -35,6 +38,7 @@ export class ImageNodeView {
   private editor: Editor;
   private node: ProseMirrorNode;
   private getPos: () => number | undefined;
+  private resizable: boolean;
   private selected = false;
 
   private resizing = false;
@@ -46,10 +50,11 @@ export class ImageNodeView {
   private boundTouchMove?: (e: TouchEvent) => void;
   private boundTouchEnd?: () => void;
 
-  constructor({ node, editor, getPos }: NodeViewArgs) {
+  constructor({ node, editor, getPos, resizable }: NodeViewArgs) {
     this.node = node;
     this.editor = editor;
     this.getPos = getPos;
+    this.resizable = resizable;
 
     const figure = document.createElement("figure");
     figure.style.position = "relative";
@@ -72,7 +77,7 @@ export class ImageNodeView {
       alt: string | null;
       title: string | null;
       width: string | null;
-      align: "left" | "center" | "right" | null;
+      align: Align | null;
     };
 
     if (src) {
@@ -91,9 +96,7 @@ export class ImageNodeView {
       this.img.removeAttribute("title");
     }
 
-    const classes = ["image"];
-    if (width) classes.push("image_resized");
-    if (align) classes.push(`image-style-align-${align}`);
+    const classes = ["image", resizeClass(width), alignClass(align)].filter(Boolean);
     this.dom.className = classes.join(" ");
 
     this.dom.style.width = width ? width : "";
@@ -114,7 +117,7 @@ export class ImageNodeView {
     if (!this.editor.isEditable) return;
     this.selected = true;
     this.applySelectionStyle();
-    this.addHandles();
+    if (this.resizable) this.addHandles();
   }
 
   deselectNode(): void {
@@ -232,7 +235,7 @@ export class ImageNodeView {
     if (node.type !== this.node.type) return false;
     this.node = node;
     this.applyAttrs();
-    if (this.selected && this.handles.length === 0) {
+    if (this.resizable && this.selected && this.handles.length === 0) {
       this.addHandles();
     }
     return true;

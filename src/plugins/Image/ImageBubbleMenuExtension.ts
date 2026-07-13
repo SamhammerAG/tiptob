@@ -3,7 +3,7 @@ import { Editor, Extension, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
 
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
-  return BubbleMenu.configure({
+  return BubbleMenu.extend({ name: "imageBubbleMenu" }).configure({
     pluginKey: new PluginKey("imageBubbleMenu"),
     updateDelay: 0,
     tippyOptions: {
