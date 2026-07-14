@@ -1,4 +1,4 @@
-import type { Node } from "@tiptap/core";
+import { type Node, mergeAttributes } from "@tiptap/core";
 import { ImageNodeView } from "./ImageNodeView";
 
 declare module "@tiptap/core" {
@@ -13,6 +13,20 @@ export function withImageStyling(image: Node, resize: boolean, align: boolean): 
   if (!resize && !align) return image;
 
   return image.extend({
+    addAttributes() {
+      const parent: Record<string, unknown> = this.parent?.() ?? {};
+      const suppress = (key: string) => ({
+        ...(parent[key] as object),
+        renderHTML: () => ({}),
+      });
+      return {
+        ...parent,
+        src: suppress("src"),
+        alt: suppress("alt"),
+        title: suppress("title"),
+      };
+    },
+
     parseHTML() {
       return [
         {
@@ -42,7 +56,7 @@ export function withImageStyling(image: Node, resize: boolean, align: boolean): 
       ];
     },
 
-    renderHTML({ node }) {
+    renderHTML({ node, HTMLAttributes }) {
       const { src, alt, title } = node.attrs as {
         src: string | null;
         alt: string | null;
@@ -54,19 +68,23 @@ export function withImageStyling(image: Node, resize: boolean, align: boolean): 
       if (alt) imgAttrs.alt = alt;
       if (title) imgAttrs.title = title;
 
-      return ["figure", { class: "image" }, ["img", imgAttrs]];
+      return ["figure", mergeAttributes({ class: "image" }, HTMLAttributes), ["img", imgAttrs]];
     },
 
-    addNodeView() {
-      return ({ node, editor, getPos }) => {
-        return new ImageNodeView({
-          node,
-          editor,
-          getPos: typeof getPos === "function" ? getPos : () => undefined,
-          resizable: resize,
-        });
-      };
-    },
+    ...(resize
+      ? {
+          addNodeView() {
+            return ({ node, editor, getPos }) => {
+              return new ImageNodeView({
+                node,
+                editor,
+                getPos: typeof getPos === "function" ? getPos : () => undefined,
+                resizable: resize,
+              });
+            };
+          },
+        }
+      : {}),
 
     addCommands() {
       return {

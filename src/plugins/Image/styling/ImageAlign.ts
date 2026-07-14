@@ -32,24 +32,10 @@ export function withImageAlign(image: Node, align: boolean): Node {
         align: {
           default: null as Align | null,
           parseHTML: (element: HTMLElement) => parseAlign(element),
-          renderHTML: () => ({}),
+          renderHTML: (attrs: { align?: Align | null }) =>
+            attrs.align ? { class: alignClass(attrs.align) } : {},
         },
       };
-    },
-
-    renderHTML(props) {
-      const dom = this.parent?.(props);
-      const align = props.node.attrs.align as Align | null | undefined;
-
-      if (align && Array.isArray(dom)) {
-        const attrs = dom[1];
-        if (attrs && typeof attrs === "object" && !Array.isArray(attrs)) {
-          const figureAttrs = attrs as Record<string, string>;
-          figureAttrs.class = [figureAttrs.class, alignClass(align)].filter(Boolean).join(" ");
-        }
-      }
-
-      return dom;
     },
 
     addCommands() {

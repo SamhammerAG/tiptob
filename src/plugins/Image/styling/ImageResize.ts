@@ -32,26 +32,10 @@ export function withImageResize(image: Node, resize: boolean): Node {
         width: {
           default: null as string | null,
           parseHTML: (element: HTMLElement) => parseWidth(element),
-          renderHTML: () => ({}),
+          renderHTML: (attrs: { width?: string | null }) =>
+            attrs.width ? { class: resizeClass(attrs.width), style: resizeStyle(attrs.width) } : {},
         },
       };
-    },
-
-    renderHTML(props) {
-      const dom = this.parent?.(props);
-      const width = props.node.attrs.width as string | null | undefined;
-
-      if (width && Array.isArray(dom)) {
-        const attrs = dom[1];
-        if (attrs && typeof attrs === "object" && !Array.isArray(attrs)) {
-          const figureAttrs = attrs as Record<string, string>;
-          figureAttrs.class = [figureAttrs.class, resizeClass(width)].filter(Boolean).join(" ");
-          const style = resizeStyle(width);
-          if (style) figureAttrs.style = style;
-        }
-      }
-
-      return dom;
     },
 
     addCommands() {

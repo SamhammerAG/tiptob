@@ -22,8 +22,6 @@ const HANDLE_CORNER_STYLES: Record<Corner, string> = {
   br: "bottom:-5px;right:-5px;cursor:nwse-resize;",
 };
 
-const SELECTION_OUTLINE = "outline:1px dashed var(--tiptob-bg-icon,#6c6c6c);outline-offset:2px;";
-
 interface NodeViewArgs {
   node: ProseMirrorNode;
   editor: Editor;
@@ -45,10 +43,8 @@ export class ImageNodeView {
   private startX = 0;
   private startWidth = 0;
   private activeCorner: Corner | null = null;
-  private boundMouseMove?: (e: MouseEvent) => void;
-  private boundMouseUp?: () => void;
-  private boundTouchMove?: (e: TouchEvent) => void;
-  private boundTouchEnd?: () => void;
+  private boundPointerMove?: (e: PointerEvent) => void;
+  private boundPointerUp?: (e: PointerEvent) => void;
 
   constructor({ node, editor, getPos, resizable }: NodeViewArgs) {
     this.node = node;
@@ -96,33 +92,23 @@ export class ImageNodeView {
       this.img.removeAttribute("title");
     }
 
-    const classes = ["image", resizeClass(width), alignClass(align)].filter(Boolean);
+    const selectedClass = this.selected ? "ProseMirror-selectednode" : "";
+    const classes = ["image", resizeClass(width), alignClass(align), selectedClass].filter(Boolean);
     this.dom.className = classes.join(" ");
 
     this.dom.style.width = width ? width : "";
-
-    this.applySelectionStyle();
-  }
-
-  private applySelectionStyle(): void {
-    if (this.selected) {
-      this.dom.style.cssText = `${this.dom.style.cssText};${SELECTION_OUTLINE}`;
-    } else {
-      this.dom.style.outline = "";
-      this.dom.style.outlineOffset = "";
-    }
   }
 
   selectNode(): void {
     if (!this.editor.isEditable) return;
     this.selected = true;
-    this.applySelectionStyle();
+    this.applyAttrs();
     if (this.resizable) this.addHandles();
   }
 
   deselectNode(): void {
     this.selected = false;
-    this.applySelectionStyle();
+    this.applyAttrs();
     this.removeHandles();
   }
 
@@ -134,6 +120,7 @@ export class ImageNodeView {
       dot.setAttribute("data-corner", corner);
       dot.setAttribute("contenteditable", "false");
       dot.setAttribute("style", HANDLE_BASE_STYLE + HANDLE_CORNER_STYLES[corner]);
+      dot.style.touchAction = "none";
       this.attachResize(dot, corner);
       this.dom.appendChild(dot);
       this.handles.push(dot);
@@ -146,34 +133,18 @@ export class ImageNodeView {
   }
 
   private attachResize(dot: HTMLElement, corner: Corner): void {
-    dot.addEventListener("mousedown", (e) => {
+    dot.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       e.stopPropagation();
+      dot.setPointerCapture(e.pointerId);
       this.beginResize(corner, e.clientX);
 
-      this.boundMouseMove = (ev) => this.onResizeMove(ev.clientX);
-      this.boundMouseUp = () => this.endResize();
-      document.addEventListener("mousemove", this.boundMouseMove);
-      document.addEventListener("mouseup", this.boundMouseUp);
+      this.boundPointerMove = (ev) => this.onResizeMove(ev.clientX);
+      this.boundPointerUp = () => this.endResize(dot);
+      dot.addEventListener("pointermove", this.boundPointerMove);
+      dot.addEventListener("pointerup", this.boundPointerUp);
+      dot.addEventListener("pointercancel", this.boundPointerUp);
     });
-
-    dot.addEventListener(
-      "touchstart",
-      (e) => {
-        if (e.cancelable) e.preventDefault();
-        e.stopPropagation();
-        this.beginResize(corner, e.touches[0].clientX);
-
-        this.boundTouchMove = (ev) => {
-          if (ev.cancelable) ev.preventDefault();
-          this.onResizeMove(ev.touches[0].clientX);
-        };
-        this.boundTouchEnd = () => this.endResize();
-        document.addEventListener("touchmove", this.boundTouchMove, { passive: false });
-        document.addEventListener("touchend", this.boundTouchEnd);
-      },
-      { passive: false },
-    );
   }
 
   private beginResize(corner: Corner, clientX: number): void {
@@ -204,19 +175,18 @@ export class ImageNodeView {
     }
   }
 
-  private endResize(): void {
+  private endResize(dot: HTMLElement): void {
     if (!this.resizing) return;
     this.resizing = false;
     this.activeCorner = null;
 
-    if (this.boundMouseMove) document.removeEventListener("mousemove", this.boundMouseMove);
-    if (this.boundMouseUp) document.removeEventListener("mouseup", this.boundMouseUp);
-    if (this.boundTouchMove) document.removeEventListener("touchmove", this.boundTouchMove);
-    if (this.boundTouchEnd) document.removeEventListener("touchend", this.boundTouchEnd);
-    this.boundMouseMove = undefined;
-    this.boundMouseUp = undefined;
-    this.boundTouchMove = undefined;
-    this.boundTouchEnd = undefined;
+    if (this.boundPointerMove) dot.removeEventListener("pointermove", this.boundPointerMove);
+    if (this.boundPointerUp) {
+      dot.removeEventListener("pointerup", this.boundPointerUp);
+      dot.removeEventListener("pointercancel", this.boundPointerUp);
+    }
+    this.boundPointerMove = undefined;
+    this.boundPointerUp = undefined;
 
     const finalWidth = this.dom.style.width;
     if (!finalWidth) return;
@@ -235,13 +205,6 @@ export class ImageNodeView {
       this.addHandles();
     }
     return true;
-  }
-
-  destroy(): void {
-    if (this.boundMouseMove) document.removeEventListener("mousemove", this.boundMouseMove);
-    if (this.boundMouseUp) document.removeEventListener("mouseup", this.boundMouseUp);
-    if (this.boundTouchMove) document.removeEventListener("touchmove", this.boundTouchMove);
-    if (this.boundTouchEnd) document.removeEventListener("touchend", this.boundTouchEnd);
   }
 
   ignoreMutation(): boolean {
