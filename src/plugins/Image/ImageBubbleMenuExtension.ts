@@ -13,11 +13,12 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
     updateDelay: 0,
     options: {
       strategy: "fixed",
-      flip: false,
-      autoPlacement: {
-        allowedPlacements: ["top", "bottom"],
+      placement: "top",
+      flip: {
+        fallbackPlacements: ["bottom"],
       },
-      shift: { crossAxis: true },
+      shift: { crossAxis: true, padding: 8 },
+      hide: { strategy: "referenceHidden" },
       ...bubbleMenuAutoUpdate(getEditor, element, imageBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
