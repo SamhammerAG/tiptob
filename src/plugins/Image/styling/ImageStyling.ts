@@ -1,4 +1,5 @@
 import { type Node, mergeAttributes } from "@tiptap/core";
+import type { ImageExtensionOptions, ImageExtensionStorage } from "../ImageExtension";
 import { ImageNodeView } from "./ImageNodeView";
 
 declare module "@tiptap/core" {
@@ -9,7 +10,10 @@ declare module "@tiptap/core" {
   }
 }
 
-export function withImageStyling(image: Node, resize: boolean, align: boolean): Node {
+export function withImageStyling(
+  image: Node<ImageExtensionOptions, ImageExtensionStorage>,
+): Node<ImageExtensionOptions, ImageExtensionStorage> {
+  const { resize, align } = image.storage;
   if (!resize && !align) return image;
 
   return image.extend({

@@ -194,7 +194,11 @@ export class ImageNodeView {
     const pos = this.getPos();
     if (typeof pos !== "number") return;
 
-    this.editor.chain().setNodeSelection(pos).setImageWidth(finalWidth).run();
+    this.editor
+      .chain()
+      .setNodeSelection(pos)
+      .updateAttributes("imageUpload", { width: finalWidth })
+      .run();
   }
 
   update(node: ProseMirrorNode): boolean {

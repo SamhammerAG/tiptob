@@ -10,14 +10,29 @@ export interface ImageExtensionOptions {
   align?: boolean;
 }
 
+export type ImageExtensionStorage = Required<ImageExtensionOptions>;
+
+declare module "@tiptap/core" {
+  interface Storage {
+    imageUpload: ImageExtensionStorage;
+  }
+}
+
 export default function getImageExtension(
   imageUpload: (file: File) => Promise<string>,
   options: ImageExtensionOptions = {},
-): Node {
+): Node<ImageExtensionOptions, ImageExtensionStorage> {
   const { resize = false, align = false } = options;
 
-  const image = Image.extend<ImageExtensionOptions>({
+  const baseImage = Image.extend<ImageExtensionOptions, ImageExtensionStorage>({
     name: "imageUpload",
+
+    addStorage() {
+      return {
+        resize,
+        align,
+      };
+    },
 
     addProseMirrorPlugins: () => {
       return [
@@ -92,6 +107,6 @@ export default function getImageExtension(
     },
   });
 
-  const base = withImageStyling(image, resize, align);
-  return withImageAlign(withImageResize(base, resize), align);
+  // Each decorator reads the image options and adds its configured behavior when enabled.
+  return withImageAlign(withImageResize(withImageStyling(baseImage)));
 }

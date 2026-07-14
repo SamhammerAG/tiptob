@@ -37,12 +37,12 @@
     { name: "right", icon: AlignRightIcon, label: "alignRight" },
   ];
 
-  const alignEnabled = $derived(typeof editor?.commands.setImageAlign === "function");
-  const resizeEnabled = $derived(typeof editor?.commands.setImageWidth === "function");
+  const alignEnabled = $derived(editor.storage.imageUpload.align);
+  const resizeEnabled = $derived(editor.storage.imageUpload.resize);
   const canResetStyling = $derived(alignEnabled || resizeEnabled);
 
   function setAlign(align: Align) {
-    editor.chain().focus().setImageAlign(align).run();
+    editor.chain().focus().updateAttributes("imageUpload", { align }).run();
   }
 
   function deleteImage() {

@@ -1,16 +1,9 @@
 import type { Node } from "@tiptap/core";
+import type { ImageExtensionOptions, ImageExtensionStorage } from "../ImageExtension";
 
 export type Align = "left" | "center" | "right";
 
 const ALIGN_CLASS_REGEX = /image-style-align-(left|center|right)/;
-
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    imageAlign: {
-      setImageAlign: (align: Align | null) => ReturnType;
-    };
-  }
-}
 
 export function parseAlign(element: HTMLElement): Align | null {
   const match = element.className.match(ALIGN_CLASS_REGEX);
@@ -22,7 +15,10 @@ export function alignClass(align: Align | null | undefined): string {
   return align ? `image-style-align-${align}` : "";
 }
 
-export function withImageAlign(image: Node, align: boolean): Node {
+export function withImageAlign(
+  image: Node<ImageExtensionOptions, ImageExtensionStorage>,
+): Node<ImageExtensionOptions, ImageExtensionStorage> {
+  const { align } = image.storage;
   if (!align) return image;
 
   return image.extend({
@@ -35,17 +31,6 @@ export function withImageAlign(image: Node, align: boolean): Node {
           renderHTML: (attrs: { align?: Align | null }) =>
             attrs.align ? { class: alignClass(attrs.align) } : {},
         },
-      };
-    },
-
-    addCommands() {
-      return {
-        ...(this.parent?.() ?? {}),
-        setImageAlign:
-          //schauen ob mit v3 besser geht
-          (align: Align | null) =>
-            ({ commands }) =>
-              commands.updateAttributes("imageUpload", { align }),
       };
     },
   });

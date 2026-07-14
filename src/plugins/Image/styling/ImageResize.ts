@@ -1,12 +1,5 @@
 import type { Node } from "@tiptap/core";
-
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    imageResize: {
-      setImageWidth: (width: string | null) => ReturnType;
-    };
-  }
-}
+import type { ImageExtensionOptions, ImageExtensionStorage } from "../ImageExtension";
 
 export function parseWidth(element: HTMLElement): string | null {
   const width = element.style?.width;
@@ -22,7 +15,10 @@ export function resizeStyle(width: string | null | undefined): string {
   return width ? `width:${width};` : "";
 }
 
-export function withImageResize(image: Node, resize: boolean): Node {
+export function withImageResize(
+  image: Node<ImageExtensionOptions, ImageExtensionStorage>,
+): Node<ImageExtensionOptions, ImageExtensionStorage> {
+  const { resize } = image.storage;
   if (!resize) return image;
 
   return image.extend({
@@ -35,16 +31,6 @@ export function withImageResize(image: Node, resize: boolean): Node {
           renderHTML: (attrs: { width?: string | null }) =>
             attrs.width ? { class: resizeClass(attrs.width), style: resizeStyle(attrs.width) } : {},
         },
-      };
-    },
-
-    addCommands() {
-      return {
-        ...(this.parent?.() ?? {}),
-        setImageWidth:
-          (width: string | null) =>
-          ({ commands }) =>
-            commands.updateAttributes("imageUpload", { width }),
       };
     },
   });
