@@ -12,9 +12,9 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
     pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
-      placement: "top",
+      placement: "bottom",
       flip: {
-        fallbackPlacements: ["bottom"],
+        fallbackPlacements: ["top"],
       },
       shift: { crossAxis: true, padding: 8 },
       hide: { strategy: "referenceHidden" },

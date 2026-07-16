@@ -13,9 +13,9 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
     updateDelay: 0,
     options: {
       strategy: "fixed",
-      placement: "top",
+      placement: "bottom",
       flip: {
-        fallbackPlacements: ["bottom"],
+        fallbackPlacements: ["top"],
       },
       shift: { crossAxis: true, padding: 8 },
       hide: { strategy: "referenceHidden" },
