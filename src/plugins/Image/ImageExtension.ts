@@ -1,10 +1,39 @@
-import Image from "@tiptap/extension-image";
+import { Image } from "@tiptap/extension-image";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node } from "@tiptap/core";
+import { withImageResize } from "./styling/ImageResize";
+import { withImageAlign } from "./styling/ImageAlign";
+import { withImageStyling } from "./styling/ImageStyling";
 
-export default function getImageExtension(imageUpload: (file: File) => Promise<string>): Node {
-  return Image.extend({
+export interface ImageExtensionOptions {
+  resize?: boolean;
+  align?: boolean;
+}
+
+export type ImageExtensionStorage = Required<ImageExtensionOptions>;
+
+declare module "@tiptap/core" {
+  interface Storage {
+    imageUpload: ImageExtensionStorage;
+  }
+}
+
+export default function getImageExtension(
+  imageUpload: (file: File) => Promise<string>,
+  options: ImageExtensionOptions = {},
+): Node<ImageExtensionOptions, ImageExtensionStorage> {
+  const { resize = false, align = false } = options;
+
+  const baseImage = Image.extend<ImageExtensionOptions, ImageExtensionStorage>({
     name: "imageUpload",
+
+    addStorage() {
+      return {
+        resize,
+        align,
+      };
+    },
+
     addProseMirrorPlugins: () => {
       return [
         new Plugin({
@@ -12,19 +41,15 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
           props: {
             handleDrop: (view, event, _, moved) => {
               const hasFiles =
-                event.dataTransfer &&
-                event.dataTransfer.files &&
-                event.dataTransfer.files.length;
+                event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
 
               if (!hasFiles || moved) {
                 return;
               }
 
-              const images = Array.from(event.dataTransfer.files).filter(
-                (file) => {
-                  return file.type.includes("image/");
-                }
-              );
+              const images = Array.from(event.dataTransfer.files).filter((file) => {
+                return file.type.includes("image/");
+              });
 
               if (images.length === 0) {
                 return;
@@ -39,8 +64,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
                   const node = schema.nodes.imageUpload.create({
                     src: img,
                   });
-                  const transaction =
-                    view.state.tr.insert(view.state.selection.from, node);
+                  const transaction = view.state.tr.insert(view.state.selection.from, node);
                   view.dispatch(transaction);
                 });
               }
@@ -52,7 +76,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
               if (!clipboardData) return false;
 
               const files = Array.from(clipboardData.files || []);
-              const images = files.filter(file => file.type.startsWith("image/"));
+              const images = files.filter((file) => file.type.startsWith("image/"));
 
               if (images.length === 0) return false;
 
@@ -82,4 +106,7 @@ export default function getImageExtension(imageUpload: (file: File) => Promise<s
       ];
     },
   });
+
+  // Each decorator reads the image options and adds its configured behavior when enabled.
+  return withImageAlign(withImageResize(withImageStyling(baseImage)));
 }

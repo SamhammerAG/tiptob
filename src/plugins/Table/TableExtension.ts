@@ -1,42 +1,45 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
+import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
 
-
+const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
 export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
-  return BubbleMenu.configure({
-    pluginKey: new PluginKey("tableBubbleMenu"),
-    tippyOptions: {
-      animation: true,
-      maxWidth: "none",
-      placement: "bottom",
-      popperOptions: {
-        modifiers: [
-          {
-            name: 'preventOverflow',
-            options: {
-              altAxis: true,
-              tether: true,
-            }
-          }
-        ]
-      },
-      getReferenceClientRect: () => {
-        const { state, view } = getEditor();
-        const myNodePos = new NodePos(state.selection.$anchor, getEditor());
-        const tableElement = findParentTableFromPos(myNodePos);
-        if (tableElement) {
-          return tableElement.getBoundingClientRect();
-        }
+  const element = getBubbleMenuElement("tiptob-table-bubble-menu");
 
-        return posToDOMRect(view, 0, 0);
+  return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
+    pluginKey: tableBubbleMenuPluginKey,
+    options: {
+      strategy: "fixed",
+      placement: "bottom",
+      flip: {
+        fallbackPlacements: ["top"],
       },
+      shift: { crossAxis: true, padding: 8 },
+      hide: { strategy: "referenceHidden" },
+      ...bubbleMenuAutoUpdate(getEditor, element, tableBubbleMenuPluginKey),
+    },
+    getReferencedVirtualElement: () => {
+      const editor = getEditor();
+      const { state, view } = editor;
+      const myNodePos = new NodePos(state.selection.$anchor, editor);
+      const tableElement = findParentTableFromPos(myNodePos);
+      if (tableElement) {
+        return tableElement;
+      }
+
+      return { getBoundingClientRect: () => posToDOMRect(view, 0, 0) };
     },
     shouldShow: ({ editor }) => {
-      return editor.isEditable && editor.isActive("table") && !editor.isActive("link");
+      return (
+        editor.isEditable &&
+        editor.isActive("table") &&
+        !editor.isActive("link") &&
+        !editor.isActive("imageUpload")
+      );
     },
-    element: document.querySelector("tiptob-table-bubble-menu"),
+    element,
   });
 }
 

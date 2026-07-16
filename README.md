@@ -22,6 +22,8 @@ TipToB is a customizable, web component-based toolbox for [TipTap](https://tipta
 npm install @samhammer/tiptob
 ```
 
+TipToB 3 requires Tiptap 3. Keep all installed `@tiptap/*` packages on the same v3 release line.
+
 ---
 
 ## 🛠️ Usage
@@ -66,8 +68,9 @@ TipToB provides the following web components:
 | `<tiptob-strike-button>`    | `@tiptap/extension-strike  (Strike)`                  |
 | `<tiptob-bullet-list-button>`| `@tiptap/extension-list (ListKit)` |
 | `<tiptob-ordered-list-button>`| `@tiptap/extension-list (ListKit)`|
-| `<tiptob-font-color-button>`| `@tiptap/extension-color  (Color)`, `@tiptap/extension-text-style  (TextStyleKit)` |
-| `<tiptob-font-highlight-button>`| `HighlightExtension` (from TipToB), `@tiptap/extension-text-style  (TextStyleKit)` |
+| `<tiptob-font-color-button>`| `ExtendedColor` (from TipToB), `@tiptap/extension-text-style (TextStyle)` |
+| `<tiptob-font-highlight-button>`| `ExtendedHighlight` (from TipToB) |
+| `<tiptob-font-size-button>`| `FontSizeExtension` (from TipToB), `@tiptap/extension-text-style (TextStyle)` |
 | `<tiptob-image-button>`     | `ImageExtension` (from TipToB)              |
 | `<tiptob-redo-button>`      | `@tiptap/extensions  (UndoRedo)`               |
 | `<tiptob-undo-button>`      | `@tiptap/extensions  (UndoRedo)`               |
@@ -86,6 +89,12 @@ TipToB provides the following web components:
   ```js
   uploadInlineImage(file: File): Promise<string>;
   ```
+  Pass an options object to opt in to extra editing features. Both flags default to `false`:
+  ```js
+  ImageExtension(uploadInlineImage, { resize: true, align: true })
+  ```
+  - `resize`: enables drag-to-resize handles on selected images. The `resetImageStyling` command is registered whenever `resize` or `align` is enabled. The selected-image outline is host CSS — style the ProseMirror selection marker on the figure, e.g. `figure.image.ProseMirror-selectednode { outline: 1px dashed #6c6c6c; outline-offset: 2px; }`.
+  - `align`: enables left/center/right alignment. The alignment buttons inside `ImageBubbleMenuExtension` only do something useful when this is `true`.
 - **InternalLinkExtension**: Add support for `<internallink internallinkid="...">` marks. The `<tiptob-internal-link-button>` component requires these callback properties:
   ```js
   fetchSuggestions(term: string, signal?: AbortSignal): Promise<{ label: string; value: string }[]>;
@@ -93,6 +102,7 @@ TipToB provides the following web components:
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
+- **FontSizeExtension**: Provides TipToB's `setFontSize` and `unsetFontSize` commands. Do not enable the `fontSize` part of Tiptap's `TextStyleKit` at the same time, because both extensions register the same name and commands.
 
 ---
 
@@ -102,7 +112,7 @@ Below is a minimal example of initializing a TipTap editor. For more advanced us
 
 ```js
 import { Editor } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
+import { StarterKit } from '@tiptap/starter-kit';
 
 const editor = new Editor({
   element: document.querySelector('.editor'),
@@ -123,14 +133,12 @@ For more details and advanced configuration, visit the [TipTap documentation](ht
 
 ## 🔗 Binding the Editor Instance to Web Components (Plain JavaScript)
 
-TipToB web components require a TipTap editor instance to function. Some components, like the image upload button, also require a callback function for uploading images that returns a string (the image URL). Here is how you can do this in plain JavaScript (example for bold, italic, and image upload buttons):
+TipToB web components require a TipTap editor instance to function. Some components, like the image upload button, also require a callback function for uploading images that returns a string (the image URL). StarterKit already includes bold and italic support, so they do not need to be registered separately:
 
 ```js
 import { Editor } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
-import Bold from '@tiptap/extension-bold';
-import Italic from '@tiptap/extension-italic';
-import { ImageExtension } from '@samhammer/tiptob/extensions.js';
+import { StarterKit } from '@tiptap/starter-kit';
+import { ImageExtension } from '@samhammer/tiptob/extensions';
 
 // Example image upload function (should return a Promise<string> with the image URL)
 function uploadInlineImage(file) {
@@ -147,8 +155,6 @@ const editor = new Editor({
   element: document.querySelector('#editor'),
   extensions: [
     StarterKit,
-    Bold,
-    Italic,
     ImageExtension(uploadInlineImage)
   ],
   content: '<p>Hello World!</p>',

@@ -1,6 +1,6 @@
 
 import { mergeAttributes } from "@tiptap/core";
-import Highlight, { type HighlightOptions } from "@tiptap/extension-highlight";
+import { Highlight, type HighlightOptions } from "@tiptap/extension-highlight";
 
 export const ExtendedHighlight = Highlight.extend<HighlightOptions>({
   priority: 103,

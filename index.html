@@ -129,6 +129,37 @@
                 position: absolute;
                 z-index: 2;
             }
+
+            .text-area figure.image {
+                display: block;
+                margin: 0.5rem auto;
+            }
+
+            .text-area figure.image.ProseMirror-selectednode {
+                outline: 1px dashed var(--tiptob-bg-icon, #6c6c6c);
+                outline-offset: 2px;
+            }
+
+            .text-area figure.image img {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            .text-area figure.image.image-style-align-left {
+                margin-left: 0;
+                margin-right: auto;
+            }
+
+            .text-area figure.image.image-style-align-center {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .text-area figure.image.image-style-align-right {
+                margin-left: auto;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
@@ -165,6 +196,7 @@
             <div class="wrapper">
                 <div class="text-area"></div>
                 <tiptob-table-bubble-menu></tiptob-table-bubble-menu>
+                <tiptob-image-bubble-menu></tiptob-image-bubble-menu>
             </div>
         </div>
     </div>

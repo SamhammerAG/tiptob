@@ -6,6 +6,9 @@ import svgLoader from "vite-svg-loader";
 export default defineConfig({
   build: {
     outDir: "dist",
+    rollupOptions: {
+      external: (id) => id.startsWith("@tiptap/"),
+    },
     lib: {
       entry: {
         webComponents: "./src/web-components.ts",
