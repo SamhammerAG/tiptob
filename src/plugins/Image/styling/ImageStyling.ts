@@ -1,6 +1,7 @@
 import { type Node, mergeAttributes } from "@tiptap/core";
 import type { ImageExtensionOptions, ImageExtensionStorage } from "../ImageExtension";
 import { ImageNodeView } from "./ImageNodeView";
+import { renderImageLink } from "./ImageLink";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -13,8 +14,8 @@ declare module "@tiptap/core" {
 export function withImageStyling(
   image: Node<ImageExtensionOptions, ImageExtensionStorage>,
 ): Node<ImageExtensionOptions, ImageExtensionStorage> {
-  const { resize, align } = image.storage;
-  if (!resize && !align) return image;
+  const { resize, align, link } = image.storage;
+  if (!resize && !align && !link) return image;
 
   return image.extend({
     addAttributes() {
@@ -61,10 +62,11 @@ export function withImageStyling(
     },
 
     renderHTML({ node, HTMLAttributes }) {
-      const { src, alt, title } = node.attrs as {
+      const { src, alt, title, href } = node.attrs as {
         src: string | null;
         alt: string | null;
         title: string | null;
+        href: string | null;
       };
 
       const imgAttrs: Record<string, string> = {};
@@ -72,10 +74,12 @@ export function withImageStyling(
       if (alt) imgAttrs.alt = alt;
       if (title) imgAttrs.title = title;
 
-      return ["figure", mergeAttributes({ class: "image" }, HTMLAttributes), ["img", imgAttrs]];
+      const content = renderImageLink(href, ["img", imgAttrs]);
+
+      return ["figure", mergeAttributes({ class: "image" }, HTMLAttributes), content];
     },
 
-    ...(resize
+    ...(resize || link
       ? {
           addNodeView() {
             return ({ node, editor, getPos }) => {
@@ -84,6 +88,7 @@ export function withImageStyling(
                 editor,
                 getPos: typeof getPos === "function" ? getPos : () => undefined,
                 resizable: resize,
+                linkEnabled: link,
               });
             };
           },
@@ -99,6 +104,7 @@ export function withImageStyling(
             commands.updateAttributes("imageUpload", {
               ...(resize ? { width: null } : {}),
               ...(align ? { align: null } : {}),
+              ...(link ? { href: null } : {}),
             }),
       };
     },

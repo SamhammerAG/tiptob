@@ -3,6 +3,7 @@ import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { type Align, alignClass } from "./ImageAlign";
 import { imageBubbleMenuPluginKey } from "../ImageBubbleMenuExtension";
 import { resizeClass } from "./ImageResize";
+import { normalizeLinkHref } from "../../../utils/link";
 
 type Corner = "tl" | "tr" | "bl" | "br";
 
@@ -27,11 +28,13 @@ interface NodeViewArgs {
   editor: Editor;
   getPos: () => number | undefined;
   resizable: boolean;
+  linkEnabled: boolean;
 }
 
 export class ImageNodeView {
   dom: HTMLElement;
   private img: HTMLImageElement;
+  private link?: HTMLAnchorElement;
   private handles: HTMLElement[] = [];
   private editor: Editor;
   private node: ProseMirrorNode;
@@ -46,7 +49,7 @@ export class ImageNodeView {
   private boundPointerMove?: (e: PointerEvent) => void;
   private boundPointerUp?: (e: PointerEvent) => void;
 
-  constructor({ node, editor, getPos, resizable }: NodeViewArgs) {
+  constructor({ node, editor, getPos, resizable, linkEnabled }: NodeViewArgs) {
     this.node = node;
     this.editor = editor;
     this.getPos = getPos;
@@ -59,7 +62,17 @@ export class ImageNodeView {
     img.style.display = "block";
     img.style.width = "100%";
     img.style.height = "auto";
-    figure.appendChild(img);
+    if (linkEnabled) {
+      const link = document.createElement("a");
+      link.addEventListener("click", (event) => {
+        if (this.editor.isEditable) event.preventDefault();
+      });
+      link.appendChild(img);
+      figure.appendChild(link);
+      this.link = link;
+    } else {
+      figure.appendChild(img);
+    }
 
     this.dom = figure;
     this.img = img;
@@ -68,12 +81,13 @@ export class ImageNodeView {
   }
 
   private applyAttrs(): void {
-    const { src, alt, title, width, align } = this.node.attrs as {
+    const { src, alt, title, width, align, href } = this.node.attrs as {
       src: string | null;
       alt: string | null;
       title: string | null;
       width: string | null;
       align: Align | null;
+      href: string | null;
     };
 
     if (src) {
@@ -97,6 +111,12 @@ export class ImageNodeView {
     this.dom.className = classes.join(" ");
 
     this.dom.style.width = width ? width : "";
+
+    if (this.link) {
+      const normalizedHref = href ? normalizeLinkHref(href) : null;
+      if (normalizedHref) this.link.href = normalizedHref;
+      else this.link.removeAttribute("href");
+    }
   }
 
   selectNode(): void {

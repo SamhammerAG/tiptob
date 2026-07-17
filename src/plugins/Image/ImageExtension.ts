@@ -3,11 +3,13 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node } from "@tiptap/core";
 import { withImageResize } from "./styling/ImageResize";
 import { withImageAlign } from "./styling/ImageAlign";
+import { withImageLink } from "./styling/ImageLink";
 import { withImageStyling } from "./styling/ImageStyling";
 
 export interface ImageExtensionOptions {
   resize?: boolean;
   align?: boolean;
+  link?: boolean;
 }
 
 export type ImageExtensionStorage = Required<ImageExtensionOptions>;
@@ -16,13 +18,21 @@ declare module "@tiptap/core" {
   interface Storage {
     imageUpload: ImageExtensionStorage;
   }
+
+  interface Commands<ReturnType> {
+    imageLink: {
+      canSetImageLink: () => ReturnType;
+      setImageLink: (href: string) => ReturnType;
+      unsetImageLink: () => ReturnType;
+    };
+  }
 }
 
 export default function getImageExtension(
   imageUpload: (file: File) => Promise<string>,
   options: ImageExtensionOptions = {},
 ): Node<ImageExtensionOptions, ImageExtensionStorage> {
-  const { resize = false, align = false } = options;
+  const { resize = false, align = false, link = false } = options;
 
   const baseImage = Image.extend<ImageExtensionOptions, ImageExtensionStorage>({
     name: "imageUpload",
@@ -31,6 +41,7 @@ export default function getImageExtension(
       return {
         resize,
         align,
+        link,
       };
     },
 
@@ -108,5 +119,5 @@ export default function getImageExtension(
   });
 
   // Each decorator reads the image options and adds its configured behavior when enabled.
-  return withImageAlign(withImageResize(withImageStyling(baseImage)));
+  return withImageLink(withImageAlign(withImageResize(withImageStyling(baseImage))));
 }

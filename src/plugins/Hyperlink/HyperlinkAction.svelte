@@ -9,6 +9,7 @@
   import Icon from "../../base/Icon.svelte";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
+  import { normalizeLinkHref } from "../../utils/link";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -32,8 +33,19 @@
     },
   };
 
+  function isImageLink() {
+    return editor.isActive("imageUpload") && editor.can().canSetImageLink();
+  }
+
   $effect(() => {
     editor?.on("transaction", () => {
+      if (isImageLink()) {
+        const href = editor.getAttributes("imageUpload").href;
+        urlInputField = href ?? "";
+        if (href) dropdownOpen = true;
+        return;
+      }
+
       if (editor.isActive("link")) {
         urlInputField = editor.getAttributes("link").href;
         dropdownOpen = true;
@@ -45,7 +57,13 @@
   });
 
   function setLink() {
-    const parsedUrl = urlInputField.includes(":") ? urlInputField : `https://${urlInputField}`;
+    if (isImageLink()) {
+      if (editor.chain().focus().setImageLink(urlInputField).run()) dropdownOpen = false;
+      return;
+    }
+
+    const parsedUrl = normalizeLinkHref(urlInputField);
+    if (!parsedUrl) return;
 
     const { empty, from } = editor.state.selection;
 
@@ -80,9 +98,19 @@
   }
 
   function removeLink() {
+    if (isImageLink()) {
+      if (editor.chain().focus().unsetImageLink().run()) urlInputField = "";
+      return;
+    }
+
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
     urlInputField = "";
+  }
+
+  function openLink() {
+    const href = normalizeLinkHref(urlInputField);
+    if (href) window.open(href, "_blank", "noopener,noreferrer");
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -93,12 +121,19 @@
   }
 
   function setFocus(element: HTMLInputElement) {
-    if (!editor.isActive("link")) element.focus();
+    if (!editor.isActive("link") && !isImageLink()) element.focus();
   }
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="link" icon={LinkIcon} text="" tooltip={translations[language]["main"]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{ isActive: (e) => e.isActive("link") || (e.can().canSetImageLink() && !!e.getAttributes("imageUpload").href) }}
+    icon={LinkIcon}
+    text=""
+    tooltip={translations[language]["main"]}
+  >
     <div class="tiptob-link-input-wrapper">
       <input
         id="tiptob-link-input"
@@ -122,7 +157,7 @@
       <Divider></Divider>
       <button
         type="button"
-        onclick={() => window.open(urlInputField, "_blank")}
+        onclick={openLink}
         disabled={!urlInputField}
         title={translations[language]["open"]}
       >
