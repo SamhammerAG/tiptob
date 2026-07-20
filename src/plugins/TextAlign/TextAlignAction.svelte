@@ -30,10 +30,11 @@
     },
   };
 
-  const textAlignments: { name: string; icon: string; action: () => void }[] = [
+  const textAlignments: { name: string; icon: string; isDefault?: boolean; action: () => void }[] = [
     {
       name: "left",
       icon: TextAlignLeftIcon,
+      isDefault: true,
       action: () => {
         //@ts-expect-error: This error is expected because the editor is initialized outside of the Web-component
         editor.chain().focus().setTextAlign("left").run();
@@ -68,15 +69,27 @@
       },
     },
   ];
+
+  function hasExplicitAlignment(editorInstance: Editor) {
+    return textAlignments.some((alignment) => !alignment.isDefault && editorInstance.isActive({ textAlign: alignment.name }));
+  }
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="textAlign" icon={TextAlignLeftIcon} tooltip={translations[language]["main"]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{ isActive: hasExplicitAlignment }}
+    icon={TextAlignLeftIcon}
+    tooltip={translations[language]["main"]}
+  >
     <div class="text-align-dropdown">
       {#each textAlignments as alignment (alignment.name)}
         <SimpleButton
           {editor}
-          key={{ attributes: { textAlign: alignment.name } }}
+          key={alignment.isDefault
+            ? { isActive: (editorInstance) => !hasExplicitAlignment(editorInstance) }
+            : { attributes: { textAlign: alignment.name } }}
           action={() => alignment.action()}
           icon={alignment.icon}
           tooltip={translations[language][alignment.name]}
