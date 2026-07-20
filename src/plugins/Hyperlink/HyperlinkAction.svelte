@@ -33,19 +33,8 @@
     },
   };
 
-  function isImageLink() {
-    return editor.isActive("imageUpload") && editor.can().canSetImageLink();
-  }
-
   $effect(() => {
     editor?.on("transaction", () => {
-      if (isImageLink()) {
-        const href = editor.getAttributes("imageUpload").href;
-        urlInputField = href ?? "";
-        if (href) dropdownOpen = true;
-        return;
-      }
-
       if (editor.isActive("link")) {
         urlInputField = editor.getAttributes("link").href;
         dropdownOpen = true;
@@ -57,15 +46,18 @@
   });
 
   function setLink() {
-    if (isImageLink()) {
-      if (editor.chain().focus().setImageLink(urlInputField).run()) dropdownOpen = false;
-      return;
-    }
-
     const parsedUrl = normalizeLinkHref(urlInputField);
     if (!parsedUrl) return;
 
     const { empty, from } = editor.state.selection;
+
+    // Images are inline nodes: apply the Link mark directly to the selected node.
+    if (editor.isActive("imageUpload")) {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().setLink({ href: parsedUrl }).run();
+      dropdownOpen = false;
+      return;
+    }
 
     if (editor.isActive("link")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
@@ -98,8 +90,10 @@
   }
 
   function removeLink() {
-    if (isImageLink()) {
-      if (editor.chain().focus().unsetImageLink().run()) urlInputField = "";
+    if (editor.isActive("imageUpload")) {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().unsetLink().run();
+      urlInputField = "";
       return;
     }
 
@@ -121,7 +115,7 @@
   }
 
   function setFocus(element: HTMLInputElement) {
-    if (!editor.isActive("link") && !isImageLink()) element.focus();
+    if (!editor.isActive("link") && !editor.isActive("imageUpload")) element.focus();
   }
 </script>
 
@@ -129,7 +123,7 @@
   <DropdownButton
     {editor}
     bind:dropdownOpen
-    key={{ isActive: (e) => e.isActive("link") || (e.can().canSetImageLink() && !!e.getAttributes("imageUpload").href) }}
+    key={{ isActive: (e) => e.isActive("link") }}
     icon={LinkIcon}
     text=""
     tooltip={translations[language]["main"]}
