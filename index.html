@@ -130,35 +130,57 @@
                 z-index: 2;
             }
 
-            .text-area figure.image {
-                display: block;
-                margin: 0.5rem auto;
+            .text-area [data-resize-container] {
+                max-width: 100%;
             }
 
-            .text-area figure.image.ProseMirror-selectednode {
+            .text-area [data-resize-wrapper] {
+                max-width: 100%;
+            }
+
+            .text-area [data-resize-wrapper] img {
+                display: block;
+                max-width: 100%;
+                height: auto !important;
+            }
+
+            .text-area [data-resize-container].ProseMirror-selectednode [data-resize-wrapper] {
                 outline: 1px dashed var(--tiptob-bg-icon, #6c6c6c);
                 outline-offset: 2px;
             }
 
-            .text-area figure.image img {
-                display: block;
-                width: 100%;
-                height: auto;
+            .text-area [data-resize-handle] {
+                width: 10px;
+                height: 10px;
+                background: var(--tiptob-bg-button, #ffffff);
+                border: 1.5px solid var(--tiptob-bg-icon, #6c6c6c);
+                border-radius: 50%;
+                box-shadow: 0 0 2px rgba(34, 47, 62, 0.2), 0 0.25rem 0.5rem rgba(34, 47, 62, 0.15);
+                z-index: 2;
             }
 
-            .text-area figure.image.image-style-align-left {
-                margin-left: 0;
-                margin-right: auto;
+            .text-area [data-resize-container]:not(.ProseMirror-selectednode) [data-resize-handle] {
+                display: none;
             }
 
-            .text-area figure.image.image-style-align-center {
-                margin-left: auto;
-                margin-right: auto;
+            .text-area [data-resize-handle="top-left"] {
+                margin: -5px 0 0 -5px;
+                cursor: nwse-resize;
             }
 
-            .text-area figure.image.image-style-align-right {
-                margin-left: auto;
-                margin-right: 0;
+            .text-area [data-resize-handle="top-right"] {
+                margin: -5px -5px 0 0;
+                cursor: nesw-resize;
+            }
+
+            .text-area [data-resize-handle="bottom-left"] {
+                margin: 0 0 -5px -5px;
+                cursor: nesw-resize;
+            }
+
+            .text-area [data-resize-handle="bottom-right"] {
+                margin: 0 -5px -5px 0;
+                cursor: nwse-resize;
             }
         }
     </style>
@@ -196,7 +218,6 @@
             <div class="wrapper">
                 <div class="text-area"></div>
                 <tiptob-table-bubble-menu></tiptob-table-bubble-menu>
-                <tiptob-image-bubble-menu></tiptob-image-bubble-menu>
             </div>
         </div>
     </div>

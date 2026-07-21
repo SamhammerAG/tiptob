@@ -9,6 +9,7 @@
   import Icon from "../../base/Icon.svelte";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
+  import { normalizeLinkHref } from "../../utils/link";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -45,9 +46,18 @@
   });
 
   function setLink() {
-    const parsedUrl = urlInputField.includes(":") ? urlInputField : `https://${urlInputField}`;
+    const parsedUrl = normalizeLinkHref(urlInputField);
+    if (!parsedUrl) return;
 
     const { empty, from } = editor.state.selection;
+
+    // Images are inline nodes: apply the Link mark directly to the selected node.
+    if (editor.isActive("imageUpload")) {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().setLink({ href: parsedUrl }).run();
+      dropdownOpen = false;
+      return;
+    }
 
     if (editor.isActive("link")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
@@ -80,9 +90,21 @@
   }
 
   function removeLink() {
+    if (editor.isActive("imageUpload")) {
+      //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+      editor.chain().focus().unsetLink().run();
+      urlInputField = "";
+      return;
+    }
+
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
     urlInputField = "";
+  }
+
+  function openLink() {
+    const href = normalizeLinkHref(urlInputField);
+    if (href) window.open(href, "_blank", "noopener,noreferrer");
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -93,12 +115,19 @@
   }
 
   function setFocus(element: HTMLInputElement) {
-    if (!editor.isActive("link")) element.focus();
+    if (!editor.isActive("link") && !editor.isActive("imageUpload")) element.focus();
   }
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="link" icon={LinkIcon} text="" tooltip={translations[language]["main"]}>
+  <DropdownButton
+    {editor}
+    bind:dropdownOpen
+    key={{ isActive: (e) => e.isActive("link") }}
+    icon={LinkIcon}
+    text=""
+    tooltip={translations[language]["main"]}
+  >
     <div class="tiptob-link-input-wrapper">
       <input
         id="tiptob-link-input"
@@ -122,7 +151,7 @@
       <Divider></Divider>
       <button
         type="button"
-        onclick={() => window.open(urlInputField, "_blank")}
+        onclick={openLink}
         disabled={!urlInputField}
         title={translations[language]["open"]}
       >

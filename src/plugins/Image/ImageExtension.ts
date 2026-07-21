@@ -1,40 +1,12 @@
 import { Image } from "@tiptap/extension-image";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Node } from "@tiptap/core";
-import { withImageResize } from "./styling/ImageResize";
-import { withImageAlign } from "./styling/ImageAlign";
-import { withImageStyling } from "./styling/ImageStyling";
 
-export interface ImageExtensionOptions {
-  resize?: boolean;
-  align?: boolean;
-}
-
-export type ImageExtensionStorage = Required<ImageExtensionOptions>;
-
-declare module "@tiptap/core" {
-  interface Storage {
-    imageUpload: ImageExtensionStorage;
-  }
-}
-
-export default function getImageExtension(
-  imageUpload: (file: File) => Promise<string>,
-  options: ImageExtensionOptions = {},
-): Node<ImageExtensionOptions, ImageExtensionStorage> {
-  const { resize = false, align = false } = options;
-
-  const baseImage = Image.extend<ImageExtensionOptions, ImageExtensionStorage>({
+export default function getImageExtension(imageUpload: (file: File) => Promise<string>): Node {
+  return Image.extend({
     name: "imageUpload",
 
-    addStorage() {
-      return {
-        resize,
-        align,
-      };
-    },
-
-    addProseMirrorPlugins: () => {
+    addProseMirrorPlugins() {
       return [
         new Plugin({
           key: new PluginKey("imageUpload"),
@@ -106,7 +78,4 @@ export default function getImageExtension(
       ];
     },
   });
-
-  // Each decorator reads the image options and adds its configured behavior when enabled.
-  return withImageAlign(withImageResize(withImageStyling(baseImage)));
 }

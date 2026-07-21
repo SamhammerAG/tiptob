@@ -22,7 +22,7 @@
       clear: "Schriftgröße entfernen",
     },
     en: {
-      main: "Font size",
+      main: "Font Size",
       clear: "Clear font size",
     },
   };

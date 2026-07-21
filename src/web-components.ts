@@ -5,7 +5,6 @@ import TableBubbleMenu from "./plugins/Table/TableBubbleMenu.svelte";
 import BulletListButton from "./plugins/BulletList/BulletListAction.svelte";
 import FontHighlightButton from "./plugins/FontHighlight/FontHighlightAction.svelte";
 import ImageButton from "./plugins/Image/ImageUploadAction.svelte";
-import ImageBubbleMenu from "./plugins/Image/ImageBubbleMenu.svelte";
 import ItalicButton from "./plugins/Italic/ItalicAction.svelte";
 import KnowledgeButton from "./plugins/KnowledgeMark/KnowledgeMarkAction.svelte";
 import OrderedListButton from "./plugins/OrderedList/OrderedListAction.svelte";
@@ -32,7 +31,6 @@ export {
   FontColorButton,
   FontHighlightButton,
   ImageButton,
-  ImageBubbleMenu,
   KnowledgeButton,
   RedoButton,
   UndoButton,

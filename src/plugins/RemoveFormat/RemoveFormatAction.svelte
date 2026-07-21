@@ -12,7 +12,7 @@
     en: "Remove Format",
   };
 
-  const action = () => editor.chain().focus().unsetAllMarks().run();
+  const action = () => editor.chain().focus().unsetAllMarks().clearNodes().run();
 </script>
 
 {#if editor}
