@@ -31,10 +31,6 @@
   let disabled = $derived(isEditorReadonly || externalDisabled);
 
   function setHighlighted() {
-    if (key === undefined) {
-      highlighted = false;
-      return;
-    }
     if (typeof key === "string") {
       highlighted = editor.isActive(key);
     } else if ("isActive" in key) {
@@ -51,15 +47,20 @@
   }
 
   onMount(() => {
-    setHighlighted();
-    setIsEditorReadonly();
+    if (key !== undefined) {
+      setHighlighted();
+      editor.on("transaction", setHighlighted);
+    }
 
-    editor.on("transaction", setHighlighted);
+    setIsEditorReadonly();
     editor.on("update", setIsEditorReadonly);
   });
 
   onDestroy(() => {
-    editor.off("transaction", setHighlighted);
+    if (key !== undefined) {
+      editor.off("transaction", setHighlighted);
+    }
+
     editor.off("update", setIsEditorReadonly);
   });
 </script>
