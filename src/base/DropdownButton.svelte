@@ -8,7 +8,7 @@
 
   interface Props {
     editor: Editor;
-    key: ButtonKey;
+    key?: ButtonKey;
     icon: string;
     children: Snippet;
     tooltip: string;

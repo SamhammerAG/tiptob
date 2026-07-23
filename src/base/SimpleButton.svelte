@@ -6,7 +6,7 @@
 
   interface Props {
     editor: Editor;
-    key: ButtonKey;
+    key?: ButtonKey;
     action: () => void;
     icon?: string;
     tooltip: string;
@@ -31,6 +31,10 @@
   let disabled = $derived(isEditorReadonly || externalDisabled);
 
   function setHighlighted() {
+    if (key === undefined) {
+      highlighted = false;
+      return;
+    }
     if (typeof key === "string") {
       highlighted = editor.isActive(key);
     } else if ("isActive" in key) {
