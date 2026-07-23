@@ -56,11 +56,11 @@
 {#if editor}
   {#if imageUpload !== undefined}
     <!-- File upload button -->
-    <SimpleButton {editor} key="image" action={() => input.click()} icon={ImageIcon} tooltip={translations[language]} />
+    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={translations[language]} />
     <input onchange={processImages} multiple bind:this={input} type="file" accept="image/*" />
   {:else}
     <!-- Image URL modal button -->
-    <DropdownButton {editor} bind:dropdownOpen key="image" icon={ImageIcon} text="" tooltip={translations[language]}>
+    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={translations[language]}>
       <div class="tiptob-link-input-wrapper">
         <input
           id="tiptob-link-input"

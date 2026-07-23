@@ -6,7 +6,7 @@
 
   interface Props {
     editor: Editor;
-    key: ButtonKey;
+    key?: ButtonKey;
     action: () => void;
     icon?: string;
     tooltip: string;
@@ -47,15 +47,20 @@
   }
 
   onMount(() => {
-    setHighlighted();
-    setIsEditorReadonly();
+    if (key !== undefined) {
+      setHighlighted();
+      editor.on("transaction", setHighlighted);
+    }
 
-    editor.on("transaction", setHighlighted);
+    setIsEditorReadonly();
     editor.on("update", setIsEditorReadonly);
   });
 
   onDestroy(() => {
-    editor.off("transaction", setHighlighted);
+    if (key !== undefined) {
+      editor.off("transaction", setHighlighted);
+    }
+
     editor.off("update", setIsEditorReadonly);
   });
 </script>
