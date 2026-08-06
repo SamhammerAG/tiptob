@@ -5,8 +5,8 @@ import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-m
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
-export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
-  const element = getBubbleMenuElement("tiptob-table-bubble-menu");
+export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: HTMLElement | null): Extension {
+  const element = customElement ? getBubbleMenuElement(customElement) : getBubbleMenuElement("tiptob-table-bubble-menu");
 
   return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
     pluginKey: tableBubbleMenuPluginKey,
