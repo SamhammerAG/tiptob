@@ -5,8 +5,10 @@ import type { PluginKey } from "@tiptap/pm/state";
 // The v3 bubble menu plugin only hides the element on a show→hide transition.
 // Until the first show, the element stays visible in normal flow where the
 // host placed it, so it must start out hidden and out of flow.
-export function getBubbleMenuElement(selector: string): HTMLElement | null {
-  const element = document.querySelector<HTMLElement>(selector);
+export function getBubbleMenuElement(selectorOrElement: string | HTMLElement): HTMLElement | null {
+  const element = typeof selectorOrElement === "string"
+    ? document.querySelector<HTMLElement>(selectorOrElement)
+    : selectorOrElement;
   if (element) {
     element.style.visibility = "hidden";
     element.style.position = "fixed";
