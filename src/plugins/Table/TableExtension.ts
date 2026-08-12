@@ -31,8 +31,12 @@ export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: 
 
       return { getBoundingClientRect: () => posToDOMRect(view, 0, 0) };
     },
-    shouldShow: ({ editor }) => {
+    shouldShow: ({ editor, element, view }) => {
+      // Without the focus check the menu shows during plugin construction when the doc starts with a table, and gets stuck.
+      const hasFocus = view.hasFocus() || element.contains(document.activeElement);
+
       return (
+        hasFocus &&
         editor.isEditable &&
         editor.isActive("table") &&
         !editor.isActive("link") &&
