@@ -31,10 +31,10 @@ export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLEleme
 
   return {
     onShow: () => {
-      if (!element) {
+      const editor = getEditor();
+      if (!element || !editor?.view) {
         return;
       }
-      const editor = getEditor();
       stopAutoUpdate = autoUpdate(editor.view.dom, element, () => {
         if (editor.isDestroyed) {
           return;

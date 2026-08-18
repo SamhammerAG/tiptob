@@ -64,7 +64,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.toggleHeaderCell();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           class="toggle-header-button"
           title={translations[language]["toggleHeader"]}
@@ -76,7 +76,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.mergeCells();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["mergeCells"]}
         >
@@ -87,7 +87,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.splitCell();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["splitCells"]}
         >
@@ -100,7 +100,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.addRowBefore();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["addRowBefore"]}
         >
@@ -111,7 +111,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.addRowAfter();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["addRowAfter"]}
         >
@@ -122,7 +122,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.deleteRow();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["deleteRow"]}
         >
@@ -135,7 +135,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.addColumnBefore();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["addColumnBefore"]}
         >
@@ -146,7 +146,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.addColumnAfter();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["addColumnAfter"]}
         >
@@ -157,7 +157,7 @@
             //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
             editor.commands.deleteColumn();
             //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
+            editor.chain().focus().run();
           }}
           title={translations[language]["deleteColumn"]}
         >
