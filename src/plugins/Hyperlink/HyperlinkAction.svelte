@@ -1,4 +1,4 @@
-﻿<svelte:options customElement="tiptob-hyperlink-button" />
+<svelte:options customElement="tiptob-hyperlink-button" />
 
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
@@ -10,11 +10,13 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
   import { normalizeLinkHref } from "../../utils/link";
+  import { untrack } from "svelte";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
+  let originalUrl = $state("");
 
   const translations: Record<string, Record<string, string>> = {
     de: {
@@ -34,12 +36,28 @@
   };
 
   $effect(() => {
+    if (dropdownOpen) {
+      untrack(() => {
+        if (editor.isActive("link")) {
+          urlInputField = editor.getAttributes("link").href || "";
+        } else {
+          urlInputField = "";
+        }
+        originalUrl = urlInputField;
+      });
+    }
+  });
+
+  $effect(() => {
     editor?.on("transaction", () => {
+      if (dropdownOpen) return;
       if (editor.isActive("link")) {
-        urlInputField = editor.getAttributes("link").href;
+        urlInputField = editor.getAttributes("link").href || "";
+        originalUrl = urlInputField;
         dropdownOpen = true;
       } else {
         urlInputField = "";
+        originalUrl = "";
         dropdownOpen = false;
       }
     });
@@ -52,9 +70,10 @@
     const { empty, from } = editor.state.selection;
 
     // Images are inline nodes: apply the Link mark directly to the selected node.
-    if (editor.isActive("imageUpload")) {
+    if (editor.isActive("image") || editor.isActive("imageUpload")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().setLink({ href: parsedUrl }).run();
+      originalUrl = parsedUrl;
       dropdownOpen = false;
       return;
     }
@@ -63,6 +82,7 @@
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
 
+      originalUrl = parsedUrl;
       dropdownOpen = false;
       return;
     }
@@ -86,11 +106,12 @@
       editor.chain().focus().setLink({ href: parsedUrl }).run();
     }
 
+    originalUrl = parsedUrl;
     dropdownOpen = false;
   }
 
   function removeLink() {
-    if (editor.isActive("imageUpload")) {
+    if (editor.isActive("image") || editor.isActive("imageUpload")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().unsetLink().run();
       urlInputField = "";
@@ -115,7 +136,7 @@
   }
 
   function setFocus(element: HTMLInputElement) {
-    if (!editor.isActive("link") && !editor.isActive("imageUpload")) element.focus();
+    if (!editor.isActive("link") && !editor.isActive("image") && !editor.isActive("imageUpload")) element.focus();
   }
 </script>
 
@@ -143,8 +164,8 @@
         type="button"
         class="confirm"
         onclick={setLink}
-        disabled={!urlInputField}
-        title={!urlInputField ? "" : translations[language]["confirm"]}
+        disabled={!urlInputField || urlInputField === originalUrl}
+        title={(!urlInputField || urlInputField === originalUrl) ? "" : translations[language]["confirm"]}
       >
         <Icon content={CheckIcon} />
       </button>

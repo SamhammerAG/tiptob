@@ -40,6 +40,7 @@ export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: 
         editor.isEditable &&
         editor.isActive("table") &&
         !editor.isActive("link") &&
+        !editor.isActive("image") &&
         !editor.isActive("imageUpload")
       );
     },
