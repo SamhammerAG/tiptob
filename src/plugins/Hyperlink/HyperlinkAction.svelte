@@ -115,12 +115,14 @@
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().unsetLink().run();
       urlInputField = "";
+      originalUrl = "";
       return;
     }
 
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
     urlInputField = "";
+    originalUrl = "";
   }
 
   function openLink() {
