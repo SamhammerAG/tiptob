@@ -10,13 +10,16 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
   import { normalizeLinkHref } from "../../utils/link";
-  import { untrack } from "svelte";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
-  let originalUrl = $state("");
+  let savedUrl = $state("");
+
+  const parsedInput = $derived(normalizeLinkHref(urlInputField));
+  const parsedSaved = $derived(normalizeLinkHref(savedUrl));
+  const hasChange = $derived(!!parsedInput && parsedInput !== parsedSaved);
 
   const translations: Record<string, Record<string, string>> = {
     de: {
@@ -36,28 +39,14 @@
   };
 
   $effect(() => {
-    if (dropdownOpen) {
-      untrack(() => {
-        if (editor.isActive("link")) {
-          urlInputField = editor.getAttributes("link").href || "";
-        } else {
-          urlInputField = "";
-        }
-        originalUrl = urlInputField;
-      });
-    }
-  });
-
-  $effect(() => {
     editor?.on("transaction", () => {
-      if (dropdownOpen) return;
       if (editor.isActive("link")) {
-        urlInputField = editor.getAttributes("link").href || "";
-        originalUrl = urlInputField;
+        savedUrl = editor.getAttributes("link").href || "";
+        urlInputField = savedUrl;
         dropdownOpen = true;
       } else {
+        savedUrl = "";
         urlInputField = "";
-        originalUrl = "";
         dropdownOpen = false;
       }
     });
@@ -73,7 +62,6 @@
     if (editor.isActive("image") || editor.isActive("imageUpload")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().setLink({ href: parsedUrl }).run();
-      originalUrl = parsedUrl;
       dropdownOpen = false;
       return;
     }
@@ -82,7 +70,6 @@
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().extendMarkRange("link").setLink({ href: parsedUrl }).run();
 
-      originalUrl = parsedUrl;
       dropdownOpen = false;
       return;
     }
@@ -106,7 +93,6 @@
       editor.chain().focus().setLink({ href: parsedUrl }).run();
     }
 
-    originalUrl = parsedUrl;
     dropdownOpen = false;
   }
 
@@ -115,14 +101,12 @@
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().unsetLink().run();
       urlInputField = "";
-      originalUrl = "";
       return;
     }
 
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
     urlInputField = "";
-    originalUrl = "";
   }
 
   function openLink() {
@@ -131,10 +115,9 @@
   }
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      setLink();
-    }
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    if (hasChange) setLink();
   }
 
   function setFocus(element: HTMLInputElement) {
@@ -166,18 +149,13 @@
         type="button"
         class="confirm"
         onclick={setLink}
-        disabled={!urlInputField || urlInputField === originalUrl}
-        title={(!urlInputField || urlInputField === originalUrl) ? "" : translations[language]["confirm"]}
+        disabled={!hasChange}
+        title={hasChange ? translations[language]["confirm"] : ""}
       >
         <Icon content={CheckIcon} />
       </button>
       <Divider></Divider>
-      <button
-        type="button"
-        onclick={openLink}
-        disabled={!urlInputField}
-        title={translations[language]["open"]}
-      >
+      <button type="button" onclick={openLink} disabled={!parsedInput} title={translations[language]["open"]}>
         <Icon content={OpenLink} />
       </button>
       <button class="close" type="button" onclick={removeLink} title={translations[language]["remove"]}>
