@@ -3,6 +3,7 @@
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
   import { TableMap } from "prosemirror-tables";
+  import type { Node } from "prosemirror-model";
 
   import DeleteTableIcon from "../../../icons/delete-bin-2-line.svg?raw";
   import DeleteColumnIcon from "../../../icons/delete-column.svg?raw";
@@ -118,7 +119,7 @@
     const col = cellIndex % map.width;
     const row = Math.floor(cellIndex / map.width);
 
-    const updates: Array<{ type: "insert" | "update_colspan", pos: number, node?: any, colspan?: number }> = [];
+    const updates: Array<{ type: "insert" | "update_colspan", pos: number, node?: Node, colspan?: number }> = [];
 
     for (let r = 0; r < map.height; r++) {
       const cIndex = r * map.width + col;
