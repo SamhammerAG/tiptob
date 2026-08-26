@@ -1,4 +1,4 @@
-﻿<svelte:options customElement="tiptob-hyperlink-button" />
+<svelte:options customElement="tiptob-hyperlink-button" />
 
 <script lang="ts">
   import type { Editor } from "@tiptap/core";
@@ -15,6 +15,11 @@
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
+  let savedUrl = $state("");
+
+  const parsedInput = $derived(normalizeLinkHref(urlInputField));
+  const parsedSaved = $derived(normalizeLinkHref(savedUrl));
+  const hasChange = $derived(!!parsedInput && parsedInput !== parsedSaved);
 
   const translations: Record<string, Record<string, string>> = {
     de: {
@@ -36,9 +41,11 @@
   $effect(() => {
     editor?.on("transaction", () => {
       if (editor.isActive("link")) {
-        urlInputField = editor.getAttributes("link").href;
+        savedUrl = editor.getAttributes("link").href || "";
+        urlInputField = savedUrl;
         dropdownOpen = true;
       } else {
+        savedUrl = "";
         urlInputField = "";
         dropdownOpen = false;
       }
@@ -52,7 +59,7 @@
     const { empty, from } = editor.state.selection;
 
     // Images are inline nodes: apply the Link mark directly to the selected node.
-    if (editor.isActive("imageUpload")) {
+    if (editor.isActive("image") || editor.isActive("imageUpload")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().setLink({ href: parsedUrl }).run();
       dropdownOpen = false;
@@ -90,7 +97,7 @@
   }
 
   function removeLink() {
-    if (editor.isActive("imageUpload")) {
+    if (editor.isActive("image") || editor.isActive("imageUpload")) {
       //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
       editor.chain().focus().unsetLink().run();
       urlInputField = "";
@@ -108,14 +115,13 @@
   }
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      setLink();
-    }
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    if (hasChange) setLink();
   }
 
   function setFocus(element: HTMLInputElement) {
-    if (!editor.isActive("link") && !editor.isActive("imageUpload")) element.focus();
+    if (!editor.isActive("link") && !editor.isActive("image") && !editor.isActive("imageUpload")) element.focus();
   }
 </script>
 
@@ -143,18 +149,13 @@
         type="button"
         class="confirm"
         onclick={setLink}
-        disabled={!urlInputField}
-        title={!urlInputField ? "" : translations[language]["confirm"]}
+        disabled={!hasChange}
+        title={hasChange ? translations[language]["confirm"] : ""}
       >
         <Icon content={CheckIcon} />
       </button>
       <Divider></Divider>
-      <button
-        type="button"
-        onclick={openLink}
-        disabled={!urlInputField}
-        title={translations[language]["open"]}
-      >
+      <button type="button" onclick={openLink} disabled={!parsedInput} title={translations[language]["open"]}>
         <Icon content={OpenLink} />
       </button>
       <button class="close" type="button" onclick={removeLink} title={translations[language]["remove"]}>

@@ -50,7 +50,7 @@ export default function getInternalLinkExtension(): Mark {
             const { selection } = state;
             const { from, empty } = selection;
 
-            if (editor.isActive("imageUpload")) {
+            if (editor.isActive("image") || editor.isActive("imageUpload")) {
               return chain().focus().setMark(this.name, { internalLinkId: id }).run();
             }
 
@@ -80,7 +80,7 @@ export default function getInternalLinkExtension(): Mark {
         unsetInternalLink:
           () =>
           ({ chain, editor }) => {
-            if (editor.isActive("imageUpload")) {
+            if (editor.isActive("image") || editor.isActive("imageUpload")) {
               return chain().focus().unsetMark(this.name).run();
             }
             return chain().focus().extendMarkRange(this.name).unsetMark(this.name).run();
