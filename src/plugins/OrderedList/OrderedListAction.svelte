@@ -4,6 +4,7 @@
   import NumberedListIcon from "../../../icons/list-ordered.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
+  import { toggleNestedListType } from "../../utils/toggleNestedList";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -13,7 +14,7 @@
   };
 
   const action = () => {
-    if (editor.isActive("bulletList")) editor.commands.toggleList("bulletList", "listItem");
+    if (toggleNestedListType(editor, "orderedList")) return;
     editor.commands.toggleList("orderedList", "listItem");
   };
 </script>
