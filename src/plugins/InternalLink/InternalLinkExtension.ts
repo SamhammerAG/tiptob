@@ -13,6 +13,9 @@ export interface InternalLinkAttrs {
   internalLinkId: string | null;
 }
 
+// Wiki-link-style `[[id|text]]` syntax for markdown
+const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(\d+)\|(.*?)\]\](?!\])/;
+
 export default function getInternalLinkExtension(): Mark {
   return Mark.create({
     name: "internalLink",
@@ -87,5 +90,20 @@ export default function getInternalLinkExtension(): Mark {
           },
       };
     },
+  }).extend({
+    markdownTokenizer: {
+      name: "internalLink",
+      level: "inline",
+      start: (src: string) => src.indexOf("[["),
+      tokenize: (src: string) => {
+        const match = INTERNAL_LINK_MARKDOWN_REGEX.exec(src);
+        if (!match) return undefined;
+
+        return { type: "internalLink", raw: match[0], internalLinkId: match[1], text: match[2] };
+      },
+    },
+    parseMarkdown: (token, helpers) =>
+      helpers.applyMark("internalLink", [helpers.createTextNode(token.text ?? "")], { internalLinkId: token.internalLinkId }),
+    renderMarkdown: (node, helpers) => `[[${node.attrs?.internalLinkId ?? ""}|${helpers.renderChildren(node.content ?? [])}]]`,
   });
 }
