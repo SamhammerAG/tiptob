@@ -14,7 +14,7 @@ export interface InternalLinkAttrs {
 }
 
 // Wiki-link-style `[[id|text]]` syntax for markdown
-const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(\d+)\|(.*?)\]\](?!\])/;
+const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(?<id>\d+)\|(?<text>.*?)\]\](?!\])/;
 
 export default function getInternalLinkExtension(): Mark {
   return Mark.create({
@@ -97,9 +97,9 @@ export default function getInternalLinkExtension(): Mark {
       start: (src: string) => src.indexOf("[["),
       tokenize: (src: string) => {
         const match = INTERNAL_LINK_MARKDOWN_REGEX.exec(src);
-        if (!match) return undefined;
+        if (!match?.groups) return undefined;
 
-        return { type: "internalLink", raw: match[0], internalLinkId: match[1], text: match[2] };
+        return { type: "internalLink", raw: match[0], internalLinkId: match.groups.id, text: match.groups.text };
       },
     },
     parseMarkdown: (token, helpers) =>
