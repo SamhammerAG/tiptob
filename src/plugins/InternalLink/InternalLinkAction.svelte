@@ -26,6 +26,7 @@
     fetchTitle,
     getPreviewUrl,
     translationOverrides,
+    disabled = false,
   }: {
     editor: Editor;
     language?: "de" | "en";
@@ -33,6 +34,7 @@
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
     translationOverrides?: { de?: Record<string, string>; en?: Record<string, string> };
+    disabled?: boolean;
   } = $props();
 
   let dropdownOpen = $state(false);
@@ -267,6 +269,7 @@
   <DropdownButton
     {editor}
     bind:dropdownOpen
+    {disabled}
     key="internalLink"
     icon={ArticleIcon}
     text=""

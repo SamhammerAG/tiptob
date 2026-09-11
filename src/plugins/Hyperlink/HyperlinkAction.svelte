@@ -11,7 +11,7 @@
   import Divider from "../../base/Divider.svelte";
   import { normalizeLinkHref } from "../../utils/link";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
@@ -129,6 +129,7 @@
   <DropdownButton
     {editor}
     bind:dropdownOpen
+    {disabled}
     key={{ isActive: (e) => e.isActive("link") }}
     icon={LinkIcon}
     text=""
