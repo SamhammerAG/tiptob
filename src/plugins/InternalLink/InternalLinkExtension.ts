@@ -20,7 +20,7 @@ export interface InternalLinkAttrs {
 // sees a third "]" right after, and grows to include it, then stops cleanly at the real "]]".
 // A "]]" that isn't immediately followed by another "]" (the common case) is accepted right away,
 // so unrelated "]]" appearing later in the same line - e.g. a second link - is never swallowed.
-const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(?<id>\d+)\|(?<text>.*?)\]\](?!\])/;
+export const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(?<id>\d+)\|(?<text>.*?)\]\](?!\])/;
 
 export default function getInternalLinkExtension(): Mark {
   return Mark.create({
