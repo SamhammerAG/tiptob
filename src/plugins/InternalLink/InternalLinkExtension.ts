@@ -13,7 +13,13 @@ export interface InternalLinkAttrs {
   internalLinkId: string | null;
 }
 
-// Wiki-link-style `[[id|text]]` syntax for markdown
+// Wiki-link-style `[[id|text]]` syntax for markdown. The lazy `.*?` normally stops at the first
+// "]]" it finds - but `(?!\])` rejects that stop if a third "]" immediately follows, forcing the
+// lazy match to grow by one more character and try again. That's what lets text end in a literal
+// "]" (e.g. a title like "Roadmap [Q4]"): "[[5|Roadmap [Q4]]]" first tries to stop after "Q4",
+// sees a third "]" right after, and grows to include it, then stops cleanly at the real "]]".
+// A "]]" that isn't immediately followed by another "]" (the common case) is accepted right away,
+// so unrelated "]]" appearing later in the same line - e.g. a second link - is never swallowed.
 const INTERNAL_LINK_MARKDOWN_REGEX = /^\[\[(?<id>\d+)\|(?<text>.*?)\]\](?!\])/;
 
 export default function getInternalLinkExtension(): Mark {
@@ -90,20 +96,19 @@ export default function getInternalLinkExtension(): Mark {
           },
       };
     },
-  }).extend({
+
     markdownTokenizer: {
       name: "internalLink",
-      level: "inline",
-      start: (src: string) => src.indexOf("[["),
-      tokenize: (src: string) => {
+      start: "[[",
+      tokenize: (src, _tokens, lexer) => {
         const match = INTERNAL_LINK_MARKDOWN_REGEX.exec(src);
         if (!match?.groups) return undefined;
 
-        return { type: "internalLink", raw: match[0], internalLinkId: match.groups.id, text: match.groups.text };
+        return { type: "internalLink", raw: match[0], internalLinkId: match.groups.id, tokens: lexer.inlineTokens(match.groups.text) };
       },
     },
     parseMarkdown: (token, helpers) =>
-      helpers.applyMark("internalLink", [helpers.createTextNode(token.text ?? "")], { internalLinkId: token.internalLinkId }),
-    renderMarkdown: (node, helpers) => `[[${node.attrs?.internalLinkId ?? ""}|${helpers.renderChildren(node.content ?? [])}]]`,
+      helpers.applyMark("internalLink", helpers.parseInline(token.tokens ?? []), { internalLinkId: token.internalLinkId }),
+    renderMarkdown: (node, helpers) => `[[${node.attrs?.internalLinkId ?? ""}|${helpers.renderChildren(node)}]]`,
   });
 }
