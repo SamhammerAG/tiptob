@@ -5,7 +5,7 @@
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
 
   const translations: Record<string, string> = {
     de: "Nummerierung",
@@ -19,5 +19,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="orderedList" icon={NumberedListIcon} tooltip={translations[language]} />
+  <SimpleButton {editor} {action} {disabled} key="orderedList" icon={NumberedListIcon} tooltip={translations[language]} />
 {/if}
