@@ -5,6 +5,17 @@ import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-m
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
+export const TableListKeymapExtension = Extension.create({
+  name: "tableListKeymap",
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => this.editor.commands.sinkListItem("listItem"),
+      "Shift-Tab": () => this.editor.commands.liftListItem("listItem"),
+    };
+  },
+});
+
 export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: HTMLElement): Extension {
   const element = customElement ? getBubbleMenuElement(customElement) : getBubbleMenuElement("tiptob-table-bubble-menu");
 

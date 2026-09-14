@@ -50,7 +50,7 @@ You can now use the provided custom elements in your HTML:
 Import the extensions bundle to use with your TipTap editor instance:
 
 ```js
-import { ImageExtension, InternalLinkExtension, KnowledgeExtension, SelectionDecoration, TableBubbleMenuExtension } from '@samhammer/tiptob/extensions';
+import { ImageExtension, InternalLinkExtension, KnowledgeExtension, SelectionDecoration, TableBubbleMenuExtension, TableListKeymapExtension } from '@samhammer/tiptob/extensions';
 ```
 
 ---
@@ -103,6 +103,7 @@ TipToB provides the following web components:
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
+- **TableListKeymapExtension**: Fixes a keymap conflict between `@tiptap/extension-table` and `@tiptap/extension-list`/`ListItem`: both bind `Tab`/`Shift-Tab`, and depending on extension registration order Table's cell-navigation binding can win, silently preventing bulleted/numbered lists from being nested manually while inside a table cell. Register this extension (it needs no configuration) alongside `Table`, `TableRow`, `TableHeader`, `TableCell`, and your list extensions to restore normal `Tab`-to-indent / `Shift-Tab`-to-outdent behavior for list items inside table cells; it defers to Table's own `Tab` handling when the selection isn't inside a list item.
 - **FontSizeExtension**: Provides TipToB's `setFontSize` and `unsetFontSize` commands. Do not enable the `fontSize` part of Tiptap's `TextStyleKit` at the same time, because both extensions register the same name and commands.
 
 ---

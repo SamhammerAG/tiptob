@@ -1,7 +1,7 @@
 import ImageExtension from "./plugins/Image/ImageExtension";
 import InternalLinkExtension from "./plugins/InternalLink/InternalLinkExtension";
 import KnowledgeExtension from "./plugins/KnowledgeMark/KnowledgeMarkExtension";
-import { getBubbleMenuExtension as TableBubbleMenuExtension } from "./plugins/Table/TableExtension";
+import { getBubbleMenuExtension as TableBubbleMenuExtension, TableListKeymapExtension } from "./plugins/Table/TableExtension";
 import { SelectionDecoration } from "./plugins/Selection/SelectionPlugin";
 import type { Editor } from "@tiptap/core";
 import { ExtendedHighlight } from "./plugins/FontHighlight/HighlightExtension";
@@ -21,6 +21,7 @@ export {
   KnowledgeExtension,
   SelectionDecoration,
   TableBubbleMenuExtension,
+  TableListKeymapExtension,
   ExtendedHighlight,
   ExtendedColor,
   TokenExtension,

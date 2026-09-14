@@ -3,6 +3,7 @@ import {
   ImageExtension,
   SelectionDecoration,
   TableBubbleMenuExtension,
+  TableListKeymapExtension,
   ExtendedHighlight,
   TokenExtension,
   FontSizeExtension,
@@ -60,6 +61,7 @@ const editor = new Editor({
       },
     }),
     TableBubbleMenuExtension(() => editor),
+    TableListKeymapExtension,
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
