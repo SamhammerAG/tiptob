@@ -19,6 +19,10 @@
 
   let { editor, key, icon, text = "", dropdownOpen = $bindable(), children, tooltip, disabled = false }: Props = $props();
 
+  // Definite assignment assertion: bind:this below sets this during mount, before the $effect
+  // that reads it ever runs, so the type stays HTMLDivElement rather than HTMLDivElement | undefined.
+  let wrapperEl!: HTMLDivElement;
+
   function toggleDropdown() {
     dropdownOpen = !dropdownOpen;
   }
@@ -27,9 +31,16 @@
   function outsideclick() {
     dropdownOpen = false;
   }
+
+  // Lets a consuming app react to this dropdown opening/closing without reaching into our shadow
+  // DOM (e.g. to resolve stacking-order issues between multiple toolbars on one page). Dispatched
+  // as a real DOM event (bubbles + composed) so it crosses the shadow boundary like focus events do.
+  $effect(() => {
+    wrapperEl.dispatchEvent(new CustomEvent("tiptob-dropdown-toggle", { bubbles: true, composed: true, detail: dropdownOpen }));
+  });
 </script>
 
-<div class="dropdown-wrapper" class:open={dropdownOpen} use:clickOutside onoutclick={outsideclick}>
+<div bind:this={wrapperEl} class="dropdown-wrapper" class:open={dropdownOpen} use:clickOutside onoutclick={outsideclick}>
   <SimpleButton {key} {editor} action={toggleDropdown} {icon} {text} {tooltip} {dropdownOpen} {disabled} />
 
   {#if dropdownOpen}
