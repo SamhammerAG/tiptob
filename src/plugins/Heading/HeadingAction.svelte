@@ -19,7 +19,8 @@
     editor,
     language = "en",
     availableOptions = ["paragraph", "h1", "h2", "h3", "h4", "h5", "h6"],
-  }: { editor: Editor; language: "de" | "en"; availableOptions: HeadingOption[] } = $props();
+    disabled = false,
+  }: { editor: Editor; language: "de" | "en"; availableOptions: HeadingOption[]; disabled?: boolean } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -70,7 +71,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="heading" icon={Heading} tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen {disabled} key="heading" icon={Heading} tooltip={translations[language]["main"]}>
     <div class="heading-dropdown">
       {#each availableOptions as availableOption (availableOption)}
         <SimpleButton
