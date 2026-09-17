@@ -51,7 +51,7 @@
   };
 </script>
 
-<div bind:this={wrapperEl} class="dropdown-wrapper" class:open={dropdownOpen} use:clickOutside onoutclick={outsideclick}>
+<div class="dropdown-wrapper" class:open={dropdownOpen} use:clickOutside onoutclick={outsideclick}>
   <SimpleButton {key} {editor} action={toggleDropdown} {icon} {text} {tooltip} {dropdownOpen} {disabled} />
 
   {#if dropdownOpen}
