@@ -1,14 +1,26 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
-import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
+import { bubbleMenuAutoUpdate } from "../../utils/bubble-menu";
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
-export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: HTMLElement): Extension {
-  const element = customElement ? getBubbleMenuElement(customElement) : getBubbleMenuElement("tiptob-table-bubble-menu");
+export function getBubbleMenuExtension(
+  getEditor: () => Editor,
+  menuProps?: { language?: "de" | "en"; hiddenButtons?: string[] },
+): Extension {
+  const element = document.createElement("tiptob-table-bubble-menu");
+  Object.assign(element, menuProps);
 
-  return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
+  return BubbleMenu.extend({
+    name: "tableBubbleMenu",
+    onCreate() {
+      Object.assign(element, { editor: this.editor });
+    },
+    onDestroy() {
+      element.remove();
+    },
+  }).configure({
     pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
