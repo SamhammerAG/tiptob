@@ -5,6 +5,8 @@
   import type { Editor } from "@tiptap/core";
   import { fly } from "svelte/transition";
   import type { ButtonKey } from "./ButtonKey";
+  import type { Action } from "svelte/action";
+  import { autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 
   interface Props {
     editor: Editor;
@@ -18,10 +20,7 @@
   }
 
   let { editor, key, icon, text = "", dropdownOpen = $bindable(), children, tooltip, disabled = false }: Props = $props();
-
-  // Definite assignment assertion: bind:this below sets this during mount, before the $effect
-  // that reads it ever runs, so the type stays HTMLDivElement rather than HTMLDivElement | undefined.
-  let wrapperEl!: HTMLDivElement;
+  const gap = 6;
 
   function toggleDropdown() {
     dropdownOpen = !dropdownOpen;
@@ -32,19 +31,31 @@
     dropdownOpen = false;
   }
 
-  // Lets a consuming app react to this dropdown opening/closing without reaching into our shadow
-  // DOM (e.g. to resolve stacking-order issues between multiple toolbars on one page). Dispatched
-  // as a real DOM event (bubbles + composed) so it crosses the shadow boundary like focus events do.
-  $effect(() => {
-    wrapperEl.dispatchEvent(new CustomEvent("tiptob-dropdown-toggle", { bubbles: true, composed: true, detail: dropdownOpen }));
-  });
+  const floatingDropdown: Action<HTMLDivElement> = (menu) => {
+    const wrapper = menu.parentElement;
+
+    menu.showPopover();
+
+    return {
+      destroy: autoUpdate(wrapper, menu, () =>
+        computePosition(wrapper, menu, {
+          strategy: "fixed",
+          placement: "bottom-start",
+          middleware: [offset(gap), flip(), shift({ padding: gap })],
+        }).then(({ x, y }) => {
+          menu.style.left = `${x}px`;
+          menu.style.top = `${y}px`;
+        }),
+      ),
+    };
+  };
 </script>
 
 <div bind:this={wrapperEl} class="dropdown-wrapper" class:open={dropdownOpen} use:clickOutside onoutclick={outsideclick}>
   <SimpleButton {key} {editor} action={toggleDropdown} {icon} {text} {tooltip} {dropdownOpen} {disabled} />
 
   {#if dropdownOpen}
-    <div transition:fly class="dropdown">
+    <div use:floatingDropdown popover="manual" transition:fly class="dropdown">
       {@render children()}
     </div>
   {/if}
@@ -70,13 +81,16 @@
     }
 
     .dropdown {
-      z-index: 99;
-      position: absolute;
+      position: fixed;
+      inset: auto;
+      margin: 0;
+      border: none;
+      padding: 0;
+      color: inherit;
       box-shadow:
         rgba(0, 0, 0, 0.05) 0px 6px 10px 0px,
         rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
       background-color: var(--tiptob-bg-button, #ffffff);
-      top: 2.125rem;
     }
   }
 </style>
