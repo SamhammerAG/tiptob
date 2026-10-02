@@ -65,7 +65,7 @@ const editor = new Editor({
         alwaysPreserveAspectRatio: true,
       },
     }),
-    TableBubbleMenuExtension(() => editor),
+    TableBubbleMenuExtension(),
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
