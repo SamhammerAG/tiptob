@@ -1,14 +1,26 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
-import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
+import { bubbleMenuAutoUpdate } from "../../utils/bubble-menu";
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
-export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: HTMLElement): Extension {
-  const element = customElement ? getBubbleMenuElement(customElement) : getBubbleMenuElement("tiptob-table-bubble-menu");
+export function getBubbleMenuExtension(menuProps?: { language?: "de" | "en"; hiddenButtons?: string[] }): Extension {
+  let editor: Editor;
+  const element = document.createElement("tiptob-table-bubble-menu");
+  Object.assign(element, menuProps);
 
-  return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
+  return BubbleMenu.extend({
+    name: "tableBubbleMenu",
+    // Before the view and so the bubble menu plugin are created, which may already need the editor.
+    onBeforeCreate() {
+      editor = this.editor;
+      Object.assign(element, { editor });
+    },
+    onDestroy() {
+      element.remove();
+    },
+  }).configure({
     pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
@@ -18,10 +30,9 @@ export function getBubbleMenuExtension(getEditor: () => Editor, customElement?: 
       },
       shift: { crossAxis: true, padding: 8 },
       hide: { strategy: "referenceHidden" },
-      ...bubbleMenuAutoUpdate(getEditor, element, tableBubbleMenuPluginKey),
+      ...bubbleMenuAutoUpdate(() => editor, element, tableBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
-      const editor = getEditor();
       const { state, view } = editor;
       const myNodePos = new NodePos(state.selection.$anchor, editor);
       const tableElement = findParentTableFromPos(myNodePos);
