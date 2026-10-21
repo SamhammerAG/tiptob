@@ -27,8 +27,9 @@ export function getBubbleMenuExtension(menuProps?: { language?: "de" | "en"; hid
       placement: "bottom",
       flip: {
         fallbackPlacements: ["top"],
+        altBoundary: true,
       },
-      shift: { crossAxis: true, padding: 8 },
+      shift: { crossAxis: true, padding: 8, altBoundary: true },
       hide: { strategy: "referenceHidden" },
       ...bubbleMenuAutoUpdate(() => editor, element, tableBubbleMenuPluginKey),
     },
