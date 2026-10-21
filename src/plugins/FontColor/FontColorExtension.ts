@@ -1,4 +1,4 @@
-import { Color, type ColorOptions } from "@tiptap/extension-color";
+import { Color, type ColorOptions } from "@tiptap/extension-text-style";
 
 export const ExtendedColor = Color.extend<ColorOptions>({
   addGlobalAttributes() {
