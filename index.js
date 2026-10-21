@@ -8,10 +8,9 @@ import {
   FontSizeExtension,
 } from "./src/extensions";
 
-import { Color } from "@tiptap/extension-color";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import { TextAlign } from "@tiptap/extension-text-align";
-import { TextStyle } from "@tiptap/extension-text-style";
+import { Color, TextStyle } from "@tiptap/extension-text-style";
 import { StarterKit } from "@tiptap/starter-kit";
 
 function uploadInlineImage(file) {
