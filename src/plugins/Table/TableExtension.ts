@@ -1,7 +1,7 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
-import { bubbleMenuAutoUpdate, editorBoundary } from "../../utils/bubble-menu";
+import { bubbleMenuAutoUpdate } from "../../utils/bubble-menu";
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
@@ -25,12 +25,12 @@ export function getBubbleMenuExtension(menuProps?: { language?: "de" | "en"; hid
     options: {
       strategy: "fixed",
       placement: "bottom",
-      flip: () => ({
+      flip: {
         fallbackPlacements: ["top"],
-        boundary: editorBoundary(editor),
-      }),
-      shift: () => ({ crossAxis: true, padding: 8, boundary: editorBoundary(editor) }),
-      hide: () => ({ strategy: "referenceHidden", boundary: editorBoundary(editor) }),
+        altBoundary: true,
+      },
+      shift: { crossAxis: true, padding: 8, altBoundary: true },
+      hide: { strategy: "referenceHidden" },
       ...bubbleMenuAutoUpdate(() => editor, element, tableBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
