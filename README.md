@@ -80,6 +80,7 @@ TipToB provides the following web components:
 | `<tiptob-table-button>`     | `@tiptap/extension-table  (Table, TableCell, TableHeader, TableRow)`|
 | `<tiptob-table-bubble-menu>`| `TableBubbleMenuExtension` (from TipToB), `@tiptap/extension-table (Table, TableCell, TableHeader, TableRow)`   |
 | `<tiptob-text-align-button>`| `@tiptap/extension-text-align (TextAlign)`              |
+| `<tiptob-alert-button>`     | `AlertExtension` (from TipToB), `@tiptap/extension-list (ListKit)` |
 
 ---
 
@@ -103,6 +104,11 @@ TipToB provides the following web components:
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
+- **AlertExtension**: Alert boxes in the [GitHub alert syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`), read and written by `@tiptap/markdown`. Works in Markdown and HTML editors. The HTML follows GitHub/Markdig without the SVG: `<div class="markdown-alert markdown-alert-note">`. The node view adds a non-editable `p.markdown-alert-title` with the translated type name as text only; the title is never part of the stored HTML or Markdown. An alert holds paragraphs and lists and is only allowed at the top level of the document; HTML pasted into a list, table or quote keeps only the content of an alert. The title falls back to English for languages other than `de`/`en`. Typing `[!WARNING] ` (any type) at the start of a quote turns it into an alert.
+  ```js
+  AlertExtension.configure({ language: 'de' })
+  ```
+  Commands: `setAlert(type)` wraps the selected blocks or changes the type of the surrounding alert, and `unsetAlert()` removes the alert and keeps its content. `editor.can().setAlert("note")` tells whether the button can be used at the selection. The box is not styled by TipToB; style the classes above (`markdown-alert`, `markdown-alert-{type}`, `markdown-alert-title`, `markdown-alert-content`) in your editor. Draw the icon with CSS, e.g. a `.markdown-alert-title::before` with `mask: url("data:image/svg+xml,…")` and `background-color: currentColor`. `index.html` has a complete example with the icons from `icons/alert-*.svg`.
 - **FontSizeExtension**: Provides TipToB's `setFontSize` and `unsetFontSize` commands. Do not enable the `fontSize` part of Tiptap's `TextStyleKit` at the same time, because both extensions register the same name and commands.
 
 ---
@@ -205,3 +211,5 @@ TipToB components use CSS custom properties for easy theming. The following vari
 ## 📄 License
 
 MIT © Samhammer AG
+
+The alert icons (`icons/alert-*.svg`) are [GitHub Octicons](https://github.com/primer/octicons), MIT © GitHub Inc.
