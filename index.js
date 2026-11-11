@@ -6,6 +6,7 @@ import {
   ExtendedHighlight,
   TokenExtension,
   FontSizeExtension,
+  AlertExtension,
 } from "./src/extensions";
 
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
@@ -59,6 +60,7 @@ const editor = new Editor({
       },
     }),
     TableBubbleMenuExtension(),
+    AlertExtension,
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
@@ -84,6 +86,7 @@ document.querySelector("tiptob-redo-button").editor = editor;
 document.querySelector("tiptob-remove-format-button").editor = editor;
 document.querySelector("tiptob-token-button").editor = editor;
 document.querySelector("tiptob-heading-button").editor = editor;
+document.querySelector("tiptob-alert-button").editor = editor;
 document.querySelector("tiptob-token-button").placeHolders = [
   { translation: "token.id", expression: "{{ token.id }}" },
   { translation: "token.id", expression: "{{ token.id }}" },

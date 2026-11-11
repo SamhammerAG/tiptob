@@ -51,6 +51,7 @@
     "@sveltejs/vite-plugin-svelte": "^6.1.0",
     "@tiptap/extension-table": "^3.31.0",
     "@tiptap/extension-text-align": "^3.31.0",
+    "@tiptap/markdown": "^3.32.0",
     "@tiptap/starter-kit": "^3.31.0",
     "@tsconfig/svelte": "^5.0.4",
     "eslint-plugin-svelte": "^3.11.0",
