@@ -10,7 +10,7 @@
   import ImportantIcon from "../../../icons/alert-important.svg?raw";
   import WarningIcon from "../../../icons/alert-warning.svg?raw";
   import CautionIcon from "../../../icons/alert-caution.svg?raw";
-  import { ALERT_TYPES, getAlertTitle, type AlertType } from "./AlertExtension";
+  import { ALERT_TITLES, ALERT_TYPES, type AlertType } from "./AlertExtension";
 
   const ALERT_ICONS: Record<AlertType, string> = {
     note: NoteIcon,
@@ -25,7 +25,10 @@
     en: { main: "Alert box", remove: "Remove alert box" },
   };
 
-  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
+  let { editor, language, disabled = false }: { editor: Editor; language?: "de" | "en"; disabled?: boolean } = $props();
+
+  // without its own language the button follows AlertExtension.configure({ language })
+  const currentLanguage = $derived<"de" | "en">(language ?? editor?.extensionManager.extensions.find((extension) => extension.name === "alert")?.options.language ?? "en");
 
   let dropdownOpen = $state(false);
   let insideAlert = $state(false);
@@ -58,7 +61,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={translations[currentLanguage]["main"]}>
     <div class="alert-dropdown">
       {#each ALERT_TYPES as type (type)}
         <SimpleButton
@@ -66,12 +69,12 @@
           key={{ name: "alert", attributes: { type } }}
           action={() => setAlert(type)}
           icon={ALERT_ICONS[type]}
-          text={getAlertTitle(type, language)}
-          tooltip={getAlertTitle(type, language)}
+          text={ALERT_TITLES[currentLanguage][type]}
+          tooltip={ALERT_TITLES[currentLanguage][type]}
         />
       {/each}
       {#if insideAlert}
-        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={translations[language]["remove"]} tooltip={translations[language]["remove"]} />
+        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={translations[currentLanguage]["remove"]} tooltip={translations[currentLanguage]["remove"]} />
       {/if}
     </div>
   </DropdownButton>

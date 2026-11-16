@@ -105,7 +105,7 @@ describe("AlertExtension html", () => {
 
 describe("AlertExtension paste", () => {
   // jsdom has no ClipboardEvent
-  globalThis.ClipboardEvent ??= class extends Event {} as typeof ClipboardEvent;
+  globalThis.ClipboardEvent ??= class extends Event {} as unknown as typeof ClipboardEvent;
 
   it("pastes an alert into an empty top-level paragraph", () => {
     editor.commands.setContent("<p>a</p><p></p>");
@@ -114,7 +114,8 @@ describe("AlertExtension paste", () => {
     editor.view.pasteHTML('<div class="markdown-alert markdown-alert-tip"><p>b</p></div>');
 
     expect(editor.getMarkdown()).toBe("a\n\n> [!TIP]\n> b");
-  });});
+  });
+});
 
 describe("AlertExtension commands", () => {
   it("wraps the selected paragraph", () => {
@@ -224,12 +225,15 @@ describe("AlertExtension node view", () => {
     expect(title?.querySelector("svg")).toBeNull();
   });
 
-  it("shows the English title for other languages", () => {
-    const french = new Editor({
-      extensions: [StarterKit, AlertExtension.configure({ language: "fr" as "en" })],
-      content: '<div class="markdown-alert markdown-alert-tip"><p>a</p></div>',
-    });
+  it("changes the type in place", () => {
+    editor.commands.setContent("> [!NOTE]\n> a", { contentType: "markdown" });
+    const box = editor.view.dom.querySelector(".markdown-alert");
+    editor.commands.setTextSelection(2);
 
-    expect(french.view.dom.querySelector(".markdown-alert-title")?.textContent).toBe("Tip");
+    editor.commands.setAlert("caution");
+
+    expect(editor.view.dom.querySelector(".markdown-alert")).toBe(box);
+    expect(box?.className).toBe("markdown-alert markdown-alert-caution");
+    expect(box?.querySelector(".markdown-alert-title")?.textContent).toBe("Vorsicht");
   });
 });

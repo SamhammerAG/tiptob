@@ -1,6 +1,6 @@
-import { findParentNode, InputRule, Node, type JSONContent } from "@tiptap/core";
+import { findParentNode, InputRule, mergeAttributes, Node, type JSONContent } from "@tiptap/core";
 import { NodeRange } from "@tiptap/pm/model";
-import { findWrapping } from "@tiptap/pm/transform";
+import { findWrapping, liftTarget } from "@tiptap/pm/transform";
 import type { EditorState } from "@tiptap/pm/state";
 
 export const ALERT_TYPES = ["note", "tip", "important", "warning", "caution"] as const;
@@ -22,13 +22,10 @@ declare module "@tiptap/core" {
   }
 }
 
-const ALERT_TITLES: Record<"de" | "en", Record<AlertType, string>> = {
+export const ALERT_TITLES: Record<"de" | "en", Record<AlertType, string>> = {
   de: { note: "Hinweis", tip: "Tipp", important: "Wichtig", warning: "Warnung", caution: "Vorsicht" },
   en: { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" },
 };
-
-// App.Admin passes the browser language, which can be any language
-export const getAlertTitle = (type: AlertType, language: string) => (ALERT_TITLES[language as "de" | "en"] ?? ALERT_TITLES.en)[type];
 
 // the content Markdig renders and the SSP styles, so the box stays a short hint
 const ALLOWED_CHILDREN = ["paragraph", "bulletList", "orderedList"];
@@ -69,26 +66,36 @@ export const AlertExtension = Node.create<AlertOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ["div", HTMLAttributes, 0];
+    return ["div", mergeAttributes(HTMLAttributes), 0];
   },
 
   addNodeView() {
-    return ({ node, HTMLAttributes }) => {
+    return ({ node }) => {
       const dom = document.createElement("div");
-      dom.className = HTMLAttributes.class;
 
       // text only: the icon is drawn by the consumer's css, like in the SSP
       const title = document.createElement("p");
       title.className = "markdown-alert-title";
       title.contentEditable = "false";
-      title.textContent = getAlertTitle(node.attrs.type, this.options.language);
 
       const contentDOM = document.createElement("div");
       contentDOM.className = "markdown-alert-content";
       dom.append(title, contentDOM);
 
-      // a changed type re-creates the view with the new class and title
-      return { dom, contentDOM, update: (updated) => updated.type === node.type && updated.attrs.type === node.attrs.type };
+      const render = (type: AlertType) => {
+        dom.className = `markdown-alert markdown-alert-${type}`;
+        title.textContent = ALERT_TITLES[this.options.language][type];
+      };
+      render(node.attrs.type);
+
+      // a changed type is updated in place, so the selection and IME input stay intact
+      const update = (updated: typeof node) => {
+        if (updated.type !== node.type) return false;
+        render(updated.attrs.type);
+        return true;
+      };
+
+      return { dom, contentDOM, update };
     };
   },
 
@@ -114,10 +121,11 @@ export const AlertExtension = Node.create<AlertOptions>({
           const alert = findParentAlert(state);
           if (!alert) return false;
 
-          if (dispatch) {
-            const content = new NodeRange(tr.doc.resolve(alert.start), tr.doc.resolve(alert.start + alert.node.content.size), alert.depth);
-            tr.lift(content, alert.depth - 1);
-          }
+          const content = new NodeRange(tr.doc.resolve(alert.start), tr.doc.resolve(alert.start + alert.node.content.size), alert.depth);
+          const target = liftTarget(content);
+          if (target === null) return false;
+
+          if (dispatch) tr.lift(content, target);
           return true;
         },
     };

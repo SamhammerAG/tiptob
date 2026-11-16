@@ -21,7 +21,7 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
     "watch": "vite build && tsc --emitDeclarationOnly --watch",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.test.json",
     "lint": "eslint src",
     "test:unit": "vitest run"
   },

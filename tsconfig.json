@@ -29,8 +29,7 @@
   ],
   "exclude": [
     "src/web-components.ts",
-    // tests import StarterKit, whose command typings would make the components' @ts-expect-error unused;
-    // also keeps their d.ts out of dist
+    // checked with tsconfig.test.json
     "src/__tests__",
   ]
 }
