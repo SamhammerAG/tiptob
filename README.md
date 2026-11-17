@@ -104,7 +104,7 @@ TipToB provides the following web components:
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
-- **AlertExtension**: Note, tip, important, warning and caution boxes in the [GitHub alert syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) (`> [!NOTE]`), for Markdown and HTML editors. The language sets the box titles and is used by `<tiptob-alert-button>` unless it has its own:
+- **AlertExtension**: Note, tip, important, warning and caution boxes in the [GitHub alert syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) (`> [!NOTE]`), for Markdown and HTML editors. The language sets the box titles in the editor; `<tiptob-alert-button>` takes its own `language` like the other buttons:
   ```js
   AlertExtension.configure({ language: 'de' })
   ```
