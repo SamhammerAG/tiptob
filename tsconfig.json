@@ -29,5 +29,7 @@
   ],
   "exclude": [
     "src/web-components.ts",
+    // checked with tsconfig.test.json
+    "src/__tests__",
   ]
 }

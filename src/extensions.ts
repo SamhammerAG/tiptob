@@ -9,6 +9,7 @@ import { ExtendedColor } from "./plugins/FontColor/FontColorExtension";
 import { TokenExtension } from "./plugins/Token/TokenExtension";
 import { SignatureExtension } from "./plugins/SignaturePlaceholder/SignatureExtension";
 import { FontSizeExtension } from "./plugins/FontSize/FontSizeExtension";
+import { AlertExtension, type AlertType, type AlertOptions } from "./plugins/Alert/AlertExtension";
 
 interface CustomHTMLElement extends HTMLElement {
   editor: Editor;
@@ -26,5 +27,8 @@ export {
   TokenExtension,
   FontSizeExtension,
   SignatureExtension,
+  AlertExtension,
+  type AlertType,
+  type AlertOptions,
   type CustomHTMLElement,
 };

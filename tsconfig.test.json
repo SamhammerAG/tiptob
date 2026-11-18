@@ -1,0 +1,11 @@
+{
+  // the tests import StarterKit, whose command typings would make the components' @ts-expect-error unused,
+  // so they are checked on their own and stay out of dist
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "emitDeclarationOnly": false
+  },
+  "include": ["src/__tests__", "vite-env.d.ts"],
+  "exclude": []
+}

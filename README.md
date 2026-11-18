@@ -80,6 +80,7 @@ TipToB provides the following web components:
 | `<tiptob-table-button>`     | `@tiptap/extension-table  (Table, TableCell, TableHeader, TableRow)`|
 | `<tiptob-table-bubble-menu>`| `TableBubbleMenuExtension` (from TipToB), `@tiptap/extension-table (Table, TableCell, TableHeader, TableRow)`   |
 | `<tiptob-text-align-button>`| `@tiptap/extension-text-align (TextAlign)`              |
+| `<tiptob-alert-button>`     | `AlertExtension` (from TipToB), `@tiptap/extension-list (ListKit)` |
 
 ---
 
@@ -103,6 +104,11 @@ TipToB provides the following web components:
   getPreviewUrl(id: string): string;
   ```
 - **TableBubbleMenuExtension**: Bubble Menu for table editing support.
+- **AlertExtension**: Note, tip, important, warning and caution boxes in the [GitHub alert syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) (`> [!NOTE]`), for Markdown and HTML editors. The language sets the box titles in the editor; `<tiptob-alert-button>` takes its own `language` like the other buttons:
+  ```js
+  AlertExtension.configure({ language: 'de' })
+  ```
+  TipToB does not style the box; style `markdown-alert`, `markdown-alert-{type}` and `markdown-alert-title` yourself (see `index.html`).
 - **FontSizeExtension**: Provides TipToB's `setFontSize` and `unsetFontSize` commands. Do not enable the `fontSize` part of Tiptap's `TextStyleKit` at the same time, because both extensions register the same name and commands.
 
 ---
@@ -205,3 +211,5 @@ TipToB components use CSS custom properties for easy theming. The following vari
 ## 📄 License
 
 MIT © Samhammer AG
+
+The alert icons (`icons/alert-*.svg`) are [GitHub Octicons](https://github.com/primer/octicons), MIT © GitHub Inc.
