@@ -1,7 +1,7 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
-import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
+import { Editor, Extension, findParentNode, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
-import { bubbleMenuAutoUpdate } from "../../utils/bubble-menu";
+import { bubbleMenuAutoUpdate, editorBoundary } from "../../utils/bubble-menu";
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
@@ -24,21 +24,20 @@ export function getBubbleMenuExtension(menuProps?: { language?: "de" | "en"; hid
     pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
-      placement: "bottom",
-      flip: {
-        fallbackPlacements: ["top"],
-        altBoundary: true,
-      },
-      shift: { crossAxis: true, padding: 8, altBoundary: true },
-      hide: { strategy: "referenceHidden" },
+      // above the row with the cursor, or below it at the top of the editor: a menu at the table would cover rows
+      // of a table taller than the editor, and a scrolling wrapper around the table leaves it no room outside of it.
+      // Centered on the row, so it doesn't jump sideways between columns.
+      placement: "top",
+      flip: () => ({ fallbackPlacements: ["bottom"], boundary: editorBoundary(editor) }),
+      shift: () => ({ padding: 8, boundary: editorBoundary(editor) }),
+      hide: () => ({ strategy: "referenceHidden", boundary: editorBoundary(editor) }),
       ...bubbleMenuAutoUpdate(() => editor, element, tableBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
       const { state, view } = editor;
-      const myNodePos = new NodePos(state.selection.$anchor, editor);
-      const tableElement = findParentTableFromPos(myNodePos);
-      if (tableElement) {
-        return tableElement;
+      const row = findParentNode((node) => node.type.spec.tableRole === "row")(state.selection);
+      if (row) {
+        return view.nodeDOM(row.pos) as Element;
       }
 
       return { getBoundingClientRect: () => posToDOMRect(view, 0, 0) };
@@ -58,17 +57,4 @@ export function getBubbleMenuExtension(menuProps?: { language?: "de" | "en"; hid
     },
     element,
   });
-}
-
-function findParentTableFromPos(nodePos: NodePos): Element | null {
-  if (nodePos.node.type.name === "table") {
-    return nodePos.element;
-  }
-
-  const parentNode = nodePos.parent;
-  if (parentNode) {
-    return findParentTableFromPos(parentNode);
-  }
-
-  return null;
 }

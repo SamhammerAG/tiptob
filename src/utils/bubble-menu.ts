@@ -1,4 +1,4 @@
-import { autoUpdate } from "@floating-ui/dom";
+import { autoUpdate, getOverflowAncestors } from "@floating-ui/dom";
 import type { Editor } from "@tiptap/core";
 import type { PluginKey } from "@tiptap/pm/state";
 
@@ -31,4 +31,10 @@ export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLEleme
     onHide: stop,
     onDestroy: stop,
   };
+}
+
+// The menu is positioned "fixed", so Floating UI only uses the viewport as boundary. The overflow ancestors of the editor
+// keep it inside the visible editor area, without a scrolling wrapper of the table, which a host app may add.
+export function editorBoundary(editor: Editor): Element[] {
+  return getOverflowAncestors(editor.view.dom).filter((ancestor) => ancestor instanceof Element);
 }
