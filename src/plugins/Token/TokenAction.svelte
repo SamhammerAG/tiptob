@@ -31,6 +31,8 @@
     placeHolders,
   }: { editor: Editor; language: string; placeHolders: Array<PlaceHolder> } = $props();
 
+  const t = $derived(getTranslation(translations, language));
+
   let dropdownOpen = $state(false);
 
   let selected = $state("Select option");
@@ -58,12 +60,12 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={getTranslation(translations, language)["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={t.main}>
     <div class="dropdown-content">
       <div class="search-wrapper">
         <input
           type="text"
-          placeholder={getTranslation(translations, language)["search"]}
+          placeholder={t.search}
           bind:value={searchTerm}
           onclick={(e) => e.stopPropagation()}
         />
@@ -78,10 +80,10 @@
       </div>
 
       <div class="button-wrapper">
-        <button type="button" class="confirm" onclick={confirmToken} title={getTranslation(translations, language)["confirm"]}>
+        <button type="button" class="confirm" onclick={confirmToken} title={t.confirm}>
           <Icon content={CheckIcon} />
         </button>
-        <button type="button" class="close" onclick={closeDropdown} title={getTranslation(translations, language)["close"]}>
+        <button type="button" class="close" onclick={closeDropdown} title={t.close}>
           <Icon content={CloseIcon} />
         </button>
       </div>

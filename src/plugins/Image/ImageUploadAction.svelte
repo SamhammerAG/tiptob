@@ -22,6 +22,8 @@
     en: "Insert Image",
   };
 
+  const t = $derived(getTranslation(translations, language));
+
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
 
@@ -57,11 +59,11 @@
 {#if editor}
   {#if imageUpload !== undefined}
     <!-- File upload button -->
-    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={getTranslation(translations, language)} />
+    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={t} />
     <input onchange={processImages} multiple bind:this={input} type="file" accept="image/*" />
   {:else}
     <!-- Image URL modal button -->
-    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={getTranslation(translations, language)}>
+    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={t}>
       <div class="tiptob-link-input-wrapper">
         <input
           id="tiptob-link-input"
@@ -77,7 +79,7 @@
           class="confirm"
           onclick={addImageURL}
           disabled={!urlInputField}
-          title={!urlInputField ? "" : getTranslation(translations, language)}
+          title={!urlInputField ? "" : t}
         >
           <Icon content={CheckIcon} />
         </button>

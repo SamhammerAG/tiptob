@@ -39,6 +39,8 @@
     },
   };
 
+  const t = $derived(getTranslation(translations, language));
+
   $effect(() => {
     editor?.on("transaction", () => {
       if (editor.isActive("link")) {
@@ -134,14 +136,14 @@
     key={{ isActive: (e) => e.isActive("link") }}
     icon={LinkIcon}
     text=""
-    tooltip={getTranslation(translations, language)["main"]}
+    tooltip={t.main}
   >
     <div class="tiptob-link-input-wrapper">
       <input
         id="tiptob-link-input"
         bind:value={urlInputField}
         type="url"
-        placeholder={getTranslation(translations, language)["placeholder"]}
+        placeholder={t.placeholder}
         onkeydown={handleKeyDown}
         autocomplete="off"
         class="tiptob-link-input"
@@ -152,15 +154,15 @@
         class="confirm"
         onclick={setLink}
         disabled={!hasChange}
-        title={hasChange ? getTranslation(translations, language)["confirm"] : ""}
+        title={hasChange ? t.confirm : ""}
       >
         <Icon content={CheckIcon} />
       </button>
       <Divider></Divider>
-      <button type="button" onclick={openLink} disabled={!parsedInput} title={getTranslation(translations, language)["open"]}>
+      <button type="button" onclick={openLink} disabled={!parsedInput} title={t.open}>
         <Icon content={OpenLink} />
       </button>
-      <button class="close" type="button" onclick={removeLink} title={getTranslation(translations, language)["remove"]}>
+      <button class="close" type="button" onclick={removeLink} title={t.remove}>
         <Icon content={CloseIcon} />
       </button>
     </div>

@@ -48,6 +48,8 @@
     },
   };
 
+  const t = $derived(getTranslation(translations, language));
+
   const headingLevels: Record<HeadingOption, { level: number | null; label: HeadingOption; icon: string }> = {
     paragraph: { level: null, label: "paragraph", icon: Paragraph },
     h1: { level: 1, label: "h1", icon: Heading1Icon },
@@ -72,7 +74,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen {disabled} key="heading" icon={Heading} tooltip={getTranslation(translations, language)["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen {disabled} key="heading" icon={Heading} tooltip={t.main}>
     <div class="heading-dropdown">
       {#each availableOptions as availableOption (availableOption)}
         <SimpleButton
@@ -82,7 +84,7 @@
             : { name: "heading", attributes: { level: headingLevels[availableOption].level } }}
           action={() => setHeading(headingLevels[availableOption].level)}
           icon={headingLevels[availableOption].icon}
-          tooltip={getTranslation(translations, language)[headingLevels[availableOption].label]}
+          tooltip={t[headingLevels[availableOption].label]}
         ></SimpleButton>
       {/each}
     </div>

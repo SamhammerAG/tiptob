@@ -5,6 +5,7 @@ import { StarterKit } from "@tiptap/starter-kit";
 import { getTranslation } from "../utils/translation";
 import BoldAction from "../plugins/Bold/BoldAction.svelte";
 import HeadingAction from "../plugins/Heading/HeadingAction.svelte";
+import InternalLinkAction from "../plugins/InternalLink/InternalLinkAction.svelte";
 
 describe("getTranslation", () => {
   const translations = { de: "Fett", en: "Bold" };
@@ -38,5 +39,22 @@ describe("buttons in a language without translations", () => {
     flushSync();
 
     expect(document.body.querySelector("button")?.getAttribute("title")).toBe(tooltip);
+  });
+
+  it("applies the overrides of the language on top of the english texts", () => {
+    component = mount(InternalLinkAction, {
+      target: document.body,
+      props: {
+        editor,
+        language: "ja",
+        fetchSuggestions: async () => [] as never[],
+        fetchTitle: async () => "",
+        getPreviewUrl: () => "",
+        translationOverrides: { ja: { main: "Article link" }, en: { main: "Ignored" } },
+      },
+    });
+    flushSync();
+
+    expect(document.body.querySelector("button")?.getAttribute("title")).toBe("Article link");
   });
 });

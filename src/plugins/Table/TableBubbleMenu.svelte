@@ -48,6 +48,8 @@
       deleteColumn: "Delete Column",
     },
   };
+
+  const t = $derived(getTranslation(translations, language));
 </script>
 
 {#if editor}
@@ -59,7 +61,7 @@
             onclick={() =>
               //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
               editor.commands.deleteTable()}
-            title={getTranslation(translations, language)["deleteTable"]}
+            title={t.deleteTable}
           >
             <Icon content={DeleteTableIcon} />
           </button>
@@ -76,7 +78,7 @@
                 editor.chain().focus().run();
               }}
               class="toggle-header-button"
-              title={getTranslation(translations, language)["toggleHeader"]}
+              title={t.toggleHeader}
             >
               <Icon content={ToggleHeaderIcon} />
             </button>
@@ -89,7 +91,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["mergeCells"]}
+              title={t.mergeCells}
             >
               <Icon content={MergeCells} />
             </button>
@@ -102,7 +104,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["splitCells"]}
+              title={t.splitCells}
             >
               <Icon content={SplitCells} />
             </button>
@@ -119,7 +121,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["addRowBefore"]}
+              title={t.addRowBefore}
             >
               <Icon content={InsertRowTopIcon} />
             </button>
@@ -132,7 +134,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["addRowAfter"]}
+              title={t.addRowAfter}
             >
               <Icon content={InsertRowBottomIcon} />
             </button>
@@ -145,7 +147,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["deleteRow"]}
+              title={t.deleteRow}
             >
               <Icon content={DeleteRowIcon} />
             </button>
@@ -162,7 +164,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["addColumnBefore"]}
+              title={t.addColumnBefore}
             >
               <Icon content={InsertColumnLeftIcon} />
             </button>
@@ -175,7 +177,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["addColumnAfter"]}
+              title={t.addColumnAfter}
             >
               <Icon content={InsertColumnRightIcon} />
             </button>
@@ -188,7 +190,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={getTranslation(translations, language)["deleteColumn"]}
+              title={t.deleteColumn}
             >
               <Icon content={DeleteColumnIcon} />
             </button>

@@ -31,6 +31,8 @@
     },
   };
 
+  const t = $derived(getTranslation(translations, language));
+
   const textAlignments: { name: string; icon: string; isDefault?: boolean; action: () => void }[] = [
     {
       name: "left",
@@ -82,7 +84,7 @@
     bind:dropdownOpen
     key={{ isActive: hasExplicitAlignment }}
     icon={TextAlignLeftIcon}
-    tooltip={getTranslation(translations, language)["main"]}
+    tooltip={t.main}
   >
     <div class="text-align-dropdown">
       {#each textAlignments as alignment (alignment.name)}
@@ -93,7 +95,7 @@
             : { attributes: { textAlign: alignment.name } }}
           action={() => alignment.action()}
           icon={alignment.icon}
-          tooltip={getTranslation(translations, language)[alignment.name]}
+          tooltip={t[alignment.name]}
         ></SimpleButton>
       {/each}
     </div>

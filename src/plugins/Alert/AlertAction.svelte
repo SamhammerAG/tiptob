@@ -28,6 +28,9 @@
 
   let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
+  const t = $derived(getTranslation(translations, language));
+  const titles = $derived(getTranslation(ALERT_TITLES, language));
+
   let dropdownOpen = $state(false);
   let insideAlert = $state(false);
   let allowed = $state(true);
@@ -59,7 +62,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={getTranslation(translations, language)["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={t.main}>
     <div class="alert-dropdown">
       {#each ALERT_TYPES as type (type)}
         <SimpleButton
@@ -67,12 +70,12 @@
           key={{ name: "alert", attributes: { type } }}
           action={() => setAlert(type)}
           icon={ALERT_ICONS[type]}
-          text={getTranslation(ALERT_TITLES, language)[type]}
-          tooltip={getTranslation(ALERT_TITLES, language)[type]}
+          text={titles[type]}
+          tooltip={titles[type]}
         />
       {/each}
       {#if insideAlert}
-        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={getTranslation(translations, language)["remove"]} tooltip={getTranslation(translations, language)["remove"]} />
+        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={t.remove} tooltip={t.remove} />
       {/if}
     </div>
   </DropdownButton>
