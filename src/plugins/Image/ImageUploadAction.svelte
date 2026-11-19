@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-image-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import Icon from "../../base/Icon.svelte";
   import CloseIcon from "../../../icons/close-line.svg?raw";
@@ -11,15 +12,17 @@
 
   interface Props {
     editor: Editor;
-    language: "de" | "en";
+    language: string;
     imageUpload: (file: File) => Promise<string>;
   }
   let { editor, language = "en", imageUpload }: Props = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Bild einfügen",
     en: "Insert Image",
   };
+
+  const t = $derived(getTranslation(translations, language));
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
@@ -56,11 +59,11 @@
 {#if editor}
   {#if imageUpload !== undefined}
     <!-- File upload button -->
-    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={translations[language]} />
+    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={t} />
     <input onchange={processImages} multiple bind:this={input} type="file" accept="image/*" />
   {:else}
     <!-- Image URL modal button -->
-    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={translations[language]}>
+    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={t}>
       <div class="tiptob-link-input-wrapper">
         <input
           id="tiptob-link-input"
@@ -76,7 +79,7 @@
           class="confirm"
           onclick={addImageURL}
           disabled={!urlInputField}
-          title={!urlInputField ? "" : translations[language]}
+          title={!urlInputField ? "" : t}
         >
           <Icon content={CheckIcon} />
         </button>

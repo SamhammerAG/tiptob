@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-internal-link-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import CheckIcon from "../../../icons/check-line.svg?raw";
   import CloseIcon from "../../../icons/close-line.svg?raw";
@@ -29,11 +30,11 @@
     disabled = false,
   }: {
     editor: Editor;
-    language?: "de" | "en";
+    language?: string;
     fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
-    translationOverrides?: { de?: Record<string, string>; en?: Record<string, string> };
+    translationOverrides?: Record<string, Record<string, string>>;
     disabled?: boolean;
   } = $props();
 
@@ -47,7 +48,7 @@
 
   const SUGGESTION_DEBOUNCE_MS = 300;
 
-  const translations = $derived<Record<string, Record<string, string>>>({
+  const translations = {
     de: {
       main: "Interner Link",
       placeholder: "Suchen...",
@@ -57,7 +58,6 @@
       loading: "Lädt...",
       noResults: "Keine Treffer",
       error: "Fehler beim Laden",
-      ...(translationOverrides?.de ?? {}),
     },
     en: {
       main: "Internal link",
@@ -68,9 +68,11 @@
       loading: "Loading...",
       noResults: "No results",
       error: "Could not load data",
-      ...(translationOverrides?.en ?? {}),
     },
-  });
+  };
+
+  // the overrides of a language without texts of its own apply on top of the english ones
+  const t = $derived({ ...getTranslation(translations, language), ...translationOverrides?.[language] });
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let titleController: AbortController | null = null;
@@ -250,9 +252,9 @@
     if (!activeId || searchTerm !== null) return searchTerm ?? "";
     switch (titleRequest.status) {
       case "loading":
-        return translations[language].loading;
+        return t.loading;
       case "failed":
-        return translations[language].error;
+        return t.error;
       case "success":
         return titleRequest.data;
       default:
@@ -273,7 +275,7 @@
     key="internalLink"
     icon={ArticleIcon}
     text=""
-    tooltip={translations[language]["main"]}
+    tooltip={t.main}
   >
     <div class="tiptob-internallink-wrapper">
       <div class="tiptob-internallink-row">
@@ -282,7 +284,7 @@
           class="tiptob-internallink-input"
           class:muted={searchReadonly}
           value={inputValue}
-          placeholder={translations[language]["placeholder"]}
+          placeholder={t.placeholder}
           oninput={onInput}
           onkeydown={onKeyDown}
           autocomplete="off"
@@ -294,15 +296,15 @@
           class="confirm"
           onclick={confirm}
           disabled={!selectedSuggestion}
-          title={!selectedSuggestion ? "" : translations[language]["confirm"]}
+          title={!selectedSuggestion ? "" : t.confirm}
         >
           <Icon content={CheckIcon} />
         </button>
         <Divider></Divider>
-        <button type="button" onclick={openPreview} disabled={!activeId} title={translations[language]["open"]}>
+        <button type="button" onclick={openPreview} disabled={!activeId} title={t.open}>
           <Icon content={OpenLink} />
         </button>
-        <button type="button" class="close" onclick={removeLink} title={translations[language]["remove"]}>
+        <button type="button" class="close" onclick={removeLink} title={t.remove}>
           <Icon content={CloseIcon} />
         </button>
       </div>
@@ -325,11 +327,11 @@
           {/each}
         </ul>
       {:else if suggestionsRequest.status === "loading"}
-        <div class="tiptob-internallink-loading" role="status">{translations[language]["loading"]}</div>
+        <div class="tiptob-internallink-loading" role="status">{t.loading}</div>
       {:else if searchTerm?.trim() && suggestionsRequest.status === "failed"}
-        <div class="tiptob-internallink-empty">{translations[language]["error"]}</div>
+        <div class="tiptob-internallink-empty">{t.error}</div>
       {:else if searchTerm?.trim() && !selectedSuggestion}
-        <div class="tiptob-internallink-empty">{translations[language]["noResults"]}</div>
+        <div class="tiptob-internallink-empty">{t.noResults}</div>
       {/if}
     </div>
   </DropdownButton>

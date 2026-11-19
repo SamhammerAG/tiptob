@@ -1,13 +1,14 @@
 <svelte:options customElement="tiptob-undo-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import UndoIcon from "../../../icons/arrow-go-back-line.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Rückgängig",
     en: "Undo",
   };
@@ -33,5 +34,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={translations[language]} disabled={!canUndo} />
+  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={getTranslation(translations, language)} disabled={!canUndo} />
 {/if}

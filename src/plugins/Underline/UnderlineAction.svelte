@@ -1,13 +1,14 @@
 <svelte:options customElement="tiptob-underline-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import UnderlineIcon from "../../../icons/underline.svg?raw";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Unterstreichen",
     en: "Underline",
   };
@@ -17,5 +18,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton key="underline" {editor} {action} icon={UnderlineIcon} tooltip={translations[language]} />
+  <SimpleButton key="underline" {editor} {action} icon={UnderlineIcon} tooltip={getTranslation(translations, language)} />
 {/if}

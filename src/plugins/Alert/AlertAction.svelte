@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-alert-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import SimpleButton from "../../base/SimpleButton.svelte";
@@ -20,12 +21,15 @@
     caution: CautionIcon,
   };
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: { main: "Hinweisbox", remove: "Hinweisbox entfernen" },
     en: { main: "Alert box", remove: "Remove alert box" },
   };
 
-  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
+
+  const t = $derived(getTranslation(translations, language));
+  const titles = $derived(getTranslation(ALERT_TITLES, language));
 
   let dropdownOpen = $state(false);
   let insideAlert = $state(false);
@@ -58,7 +62,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={t.main}>
     <div class="alert-dropdown">
       {#each ALERT_TYPES as type (type)}
         <SimpleButton
@@ -66,12 +70,12 @@
           key={{ name: "alert", attributes: { type } }}
           action={() => setAlert(type)}
           icon={ALERT_ICONS[type]}
-          text={ALERT_TITLES[language][type]}
-          tooltip={ALERT_TITLES[language][type]}
+          text={titles[type]}
+          tooltip={titles[type]}
         />
       {/each}
       {#if insideAlert}
-        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={translations[language]["remove"]} tooltip={translations[language]["remove"]} />
+        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={t.remove} tooltip={t.remove} />
       {/if}
     </div>
   </DropdownButton>

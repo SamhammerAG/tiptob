@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-heading-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Paragraph from "../../../icons/paragraph.svg?raw";
   import Heading from "../../../icons/heading.svg?raw";
@@ -20,11 +21,11 @@
     language = "en",
     availableOptions = ["paragraph", "h1", "h2", "h3", "h4", "h5", "h6"],
     disabled = false,
-  }: { editor: Editor; language: "de" | "en"; availableOptions: HeadingOption[]; disabled?: boolean } = $props();
+  }: { editor: Editor; language: string; availableOptions: HeadingOption[]; disabled?: boolean } = $props();
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Überschriften",
       paragraph: "Paragraph",
@@ -46,6 +47,8 @@
       h6: "Heading 6",
     },
   };
+
+  const t = $derived(getTranslation(translations, language));
 
   const headingLevels: Record<HeadingOption, { level: number | null; label: HeadingOption; icon: string }> = {
     paragraph: { level: null, label: "paragraph", icon: Paragraph },
@@ -71,7 +74,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen {disabled} key="heading" icon={Heading} tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen {disabled} key="heading" icon={Heading} tooltip={t.main}>
     <div class="heading-dropdown">
       {#each availableOptions as availableOption (availableOption)}
         <SimpleButton
@@ -81,7 +84,7 @@
             : { name: "heading", attributes: { level: headingLevels[availableOption].level } }}
           action={() => setHeading(headingLevels[availableOption].level)}
           icon={headingLevels[availableOption].icon}
-          tooltip={translations[language][headingLevels[availableOption].label]}
+          tooltip={t[headingLevels[availableOption].label]}
         ></SimpleButton>
       {/each}
     </div>
