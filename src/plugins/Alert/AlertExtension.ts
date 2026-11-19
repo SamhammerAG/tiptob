@@ -9,6 +9,7 @@ export type AlertType = (typeof ALERT_TYPES)[number];
 
 export interface AlertOptions {
   language: "de" | "en";
+  titles?: Partial<Record<AlertType, string>>;
 }
 
 declare module "@tiptap/core" {
@@ -84,7 +85,7 @@ export const AlertExtension = Node.create<AlertOptions>({
 
       const render = (type: AlertType) => {
         dom.className = `markdown-alert markdown-alert-${type}`;
-        title.textContent = ALERT_TITLES[this.options.language][type];
+        title.textContent = this.options.titles?.[type] ?? ALERT_TITLES[this.options.language][type];
       };
       render(node.attrs.type);
 

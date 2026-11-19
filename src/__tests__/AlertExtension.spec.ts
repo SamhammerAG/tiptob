@@ -236,4 +236,18 @@ describe("AlertExtension node view", () => {
     expect(box?.className).toBe("markdown-alert markdown-alert-caution");
     expect(box?.querySelector(".markdown-alert-title")?.textContent).toBe("Vorsicht");
   });
+
+  it("shows the given titles and falls back to the language for missing types", () => {
+    const french = new Editor({
+      extensions: [StarterKit, Markdown, AlertExtension.configure({ language: "en", titles: { note: "Remarque", warning: "Avertissement" } })],
+      content: "> [!NOTE]\n> a\n\n> [!WARNING]\n> b\n\n> [!TIP]\n> c",
+      contentType: "markdown",
+    });
+
+    const titles = [...french.view.dom.querySelectorAll(".markdown-alert-title")].map((title) => title.textContent);
+    expect(titles).toEqual(["Remarque", "Avertissement", "Tip"]);
+    expect(french.getMarkdown()).toBe("> [!NOTE]\n> a\n\n> [!WARNING]\n> b\n\n> [!TIP]\n> c");
+    expect(french.getHTML()).not.toContain("Remarque");
+    french.destroy();
+  });
 });

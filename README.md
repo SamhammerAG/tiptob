@@ -108,6 +108,10 @@ TipToB provides the following web components:
   ```js
   AlertExtension.configure({ language: 'de' })
   ```
+  For other languages, pass the titles with `titles`; a type without a title falls back to `language`. The titles are only shown in the editor, they are not part of the Markdown or HTML:
+  ```js
+  AlertExtension.configure({ language: 'en', titles: { note: 'Remarque', tip: 'Astuce', important: 'Important', warning: 'Avertissement', caution: 'Attention' } })
+  ```
   TipToB does not style the box; style `markdown-alert`, `markdown-alert-{type}` and `markdown-alert-title` yourself (see `index.html`).
 - **FontSizeExtension**: Provides TipToB's `setFontSize` and `unsetFontSize` commands. Do not enable the `fontSize` part of Tiptap's `TextStyleKit` at the same time, because both extensions register the same name and commands.
 
