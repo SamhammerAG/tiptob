@@ -13,7 +13,7 @@
     disabled = false,
   }: { editor: Editor; language: string; withHeaderRow?: boolean; disabled?: boolean } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Tabelle",
     en: "Table",
   };

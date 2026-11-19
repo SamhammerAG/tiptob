@@ -1,5 +1,3 @@
-export const FALLBACK_LANGUAGE = "en";
-
-export function getTranslation<T>(translations: Record<string, T>, language: string | undefined): T {
-  return translations[language ?? FALLBACK_LANGUAGE] ?? translations[FALLBACK_LANGUAGE];
+export function getTranslation<T>(translations: { de: T; en: T }, language: string | undefined): T {
+  return (translations as Record<string, T>)[language ?? "en"] ?? translations.en;
 }

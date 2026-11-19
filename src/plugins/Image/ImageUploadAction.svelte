@@ -17,7 +17,7 @@
   }
   let { editor, language = "en", imageUpload }: Props = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Bild einfügen",
     en: "Insert Image",
   };

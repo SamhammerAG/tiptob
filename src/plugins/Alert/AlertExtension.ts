@@ -24,7 +24,7 @@ declare module "@tiptap/core" {
   }
 }
 
-export const ALERT_TITLES: Record<string, Record<AlertType, string>> = {
+export const ALERT_TITLES: Record<"de" | "en", Record<AlertType, string>> = {
   de: { note: "Hinweis", tip: "Tipp", important: "Wichtig", warning: "Warnung", caution: "Vorsicht" },
   en: { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" },
 };

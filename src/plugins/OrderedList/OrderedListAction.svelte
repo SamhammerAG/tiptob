@@ -8,7 +8,7 @@
 
   let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Nummerierung",
     en: "Numbered List",
   };

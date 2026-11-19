@@ -22,7 +22,7 @@
     return hiddenButtons.includes(key);
   }
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       toggleHeader: "Kopfzeile umschalten",
       mergeCells: "Zellen zusammenführen",

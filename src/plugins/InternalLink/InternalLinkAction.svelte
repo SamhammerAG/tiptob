@@ -48,7 +48,7 @@
 
   const SUGGESTION_DEBOUNCE_MS = 300;
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Interner Link",
       placeholder: "Suchen...",

@@ -22,7 +22,7 @@
   const parsedSaved = $derived(normalizeLinkHref(savedUrl));
   const hasChange = $derived(!!parsedInput && parsedInput !== parsedSaved);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Link",
       confirm: "Bestätigen",

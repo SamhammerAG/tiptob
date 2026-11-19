@@ -17,7 +17,7 @@
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Schriftgröße",
       clear: "Schriftgröße entfernen",

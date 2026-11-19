@@ -21,7 +21,7 @@
     caution: CautionIcon,
   };
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: { main: "Hinweisbox", remove: "Hinweisbox entfernen" },
     en: { main: "Alert box", remove: "Remove alert box" },
   };

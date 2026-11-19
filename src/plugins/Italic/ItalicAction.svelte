@@ -8,7 +8,7 @@
 
   let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Kursiv",
     en: "Italic",
   };

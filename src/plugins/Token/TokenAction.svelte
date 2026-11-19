@@ -10,7 +10,7 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import type PlaceHolder from "./PlaceHolderInterface";
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Token auswählen",
       confirm: "Token einfügen",

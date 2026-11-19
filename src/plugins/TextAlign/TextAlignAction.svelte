@@ -14,7 +14,7 @@
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Textausrichtung",
       left: "Linksbündig",
@@ -33,7 +33,7 @@
 
   const t = $derived(getTranslation(translations, language));
 
-  const textAlignments: { name: string; icon: string; isDefault?: boolean; action: () => void }[] = [
+  const textAlignments: { name: "left" | "center" | "right" | "justify"; icon: string; isDefault?: boolean; action: () => void }[] = [
     {
       name: "left",
       icon: TextAlignLeftIcon,

@@ -16,7 +16,7 @@
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Schriftfarbe",
     en: "Font Color",
   };
