@@ -2,13 +2,14 @@ import { findParentNode, InputRule, mergeAttributes, Node, type JSONContent } fr
 import { NodeRange } from "@tiptap/pm/model";
 import { findWrapping, liftTarget } from "@tiptap/pm/transform";
 import type { EditorState } from "@tiptap/pm/state";
+import { getTranslation } from "../../utils/translation";
 
 export const ALERT_TYPES = ["note", "tip", "important", "warning", "caution"] as const;
 
 export type AlertType = (typeof ALERT_TYPES)[number];
 
 export interface AlertOptions {
-  language: "de" | "en";
+  language: string;
   titles?: Partial<Record<AlertType, string>>;
 }
 
@@ -23,7 +24,7 @@ declare module "@tiptap/core" {
   }
 }
 
-export const ALERT_TITLES: Record<"de" | "en", Record<AlertType, string>> = {
+export const ALERT_TITLES: Record<string, Record<AlertType, string>> = {
   de: { note: "Hinweis", tip: "Tipp", important: "Wichtig", warning: "Warnung", caution: "Vorsicht" },
   en: { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" },
 };
@@ -85,7 +86,7 @@ export const AlertExtension = Node.create<AlertOptions>({
 
       const render = (type: AlertType) => {
         dom.className = `markdown-alert markdown-alert-${type}`;
-        title.textContent = this.options.titles?.[type] ?? ALERT_TITLES[this.options.language][type];
+        title.textContent = this.options.titles?.[type] ?? getTranslation(ALERT_TITLES, this.options.language)[type];
       };
       render(node.attrs.type);
 

@@ -1,11 +1,12 @@
 <svelte:options customElement="tiptob-ordered-list-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import NumberedListIcon from "../../../icons/list-ordered.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import { findParentNode, type Editor } from "@tiptap/core";
 
-  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
   const translations: Record<string, string> = {
     de: "Nummerierung",
@@ -20,5 +21,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} {disabled} key={{ isActive }} icon={NumberedListIcon} tooltip={translations[language]} />
+  <SimpleButton {editor} {action} {disabled} key={{ isActive }} icon={NumberedListIcon} tooltip={getTranslation(translations, language)} />
 {/if}

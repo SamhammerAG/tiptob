@@ -250,4 +250,15 @@ describe("AlertExtension node view", () => {
     expect(french.getHTML()).not.toContain("Remarque");
     french.destroy();
   });
+
+  it("shows the english titles for a language without titles", () => {
+    const japanese = new Editor({
+      extensions: [StarterKit, Markdown, AlertExtension.configure({ language: "ja" })],
+      content: "> [!NOTE]\n> a",
+      contentType: "markdown",
+    });
+
+    expect(japanese.view.dom.querySelector(".markdown-alert-title")?.textContent).toBe("Note");
+    japanese.destroy();
+  });
 });

@@ -1,13 +1,14 @@
 <svelte:options customElement="tiptob-font-highlight-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import FontHighlightIcon from "../../../icons/palette-line.svg?raw";
   import EraserIcon from "../../../icons/eraser-line.svg?raw";
   import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -30,7 +31,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="highlight" icon={FontHighlightIcon} tooltip={translations[language]}>
+  <DropdownButton {editor} bind:dropdownOpen key="highlight" icon={FontHighlightIcon} tooltip={getTranslation(translations, language)}>
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>
         <Icon content={EraserIcon} />

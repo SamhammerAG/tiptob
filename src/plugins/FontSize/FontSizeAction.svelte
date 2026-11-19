@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-font-size-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import FontSizeIcon from "../../../icons/font-size.svg?raw";
   import EraserIcon from "../../../icons/eraser-line.svg?raw";
@@ -12,7 +13,7 @@
     editor,
     language = "en",
     availableOptions = ["12px", "14px", "16px", "18px", "24px", "32px"],
-  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
+  }: { editor: Editor; language: string; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -44,7 +45,7 @@
     bind:dropdownOpen
     key={{ isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").fontSize && editorInstance.isActive("textStyle") }}
     icon={FontSizeIcon}
-    tooltip={translations[language]["main"]}
+    tooltip={getTranslation(translations, language)["main"]}
   >
     <div class="heading-dropdown">
       <div class="clear-action">

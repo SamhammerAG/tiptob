@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-table-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import TableIcon from "../../../icons/table-line.svg?raw";
   import type { Editor } from "@tiptap/core";
@@ -10,7 +11,7 @@
     language = "en",
     withHeaderRow = false,
     disabled = false,
-  }: { editor: Editor; language: "de" | "en"; withHeaderRow?: boolean; disabled?: boolean } = $props();
+  }: { editor: Editor; language: string; withHeaderRow?: boolean; disabled?: boolean } = $props();
 
   const translations: Record<string, string> = {
     de: "Tabelle",
@@ -31,7 +32,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen {disabled} key="table" icon={TableIcon} tooltip={translations[language]}>
+  <DropdownButton {editor} bind:dropdownOpen {disabled} key="table" icon={TableIcon} tooltip={getTranslation(translations, language)}>
     <div class="table">
       {#each { length: tableGridSize }, x}
         {#each { length: tableGridSize }, y}

@@ -1,11 +1,12 @@
 <svelte:options customElement="tiptob-bold-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import BoldIcon from "../../../icons/bold.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
   const translations: Record<string, string> = {
     de: "Fett",
@@ -17,5 +18,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="bold" icon={BoldIcon} tooltip={translations[language]} />
+  <SimpleButton {editor} {action} key="bold" icon={BoldIcon} tooltip={getTranslation(translations, language)} />
 {/if}

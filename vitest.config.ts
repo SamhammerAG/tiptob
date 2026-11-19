@@ -5,6 +5,9 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 // bundled into rollup's lib mode, neither of which vitest should apply when running tests.
 export default defineConfig({
   plugins: [svelte()],
+  resolve: {
+    conditions: ["browser"],
+  },
   test: {
     environment: "jsdom",
     globals: true,

@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-font-color-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import FontColorIcon from "../../../icons/font-color.svg?raw";
   import EraserIcon from "../../../icons/eraser-line.svg?raw";
   import DropdownButton from "../../base/DropdownButton.svelte";
@@ -11,7 +12,7 @@
     editor,
     language = "en",
     availableOptions = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"],
-  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
+  }: { editor: Editor; language: string; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -39,7 +40,7 @@
       isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").color && editorInstance.isActive("textStyle"),
     }}
     icon={FontColorIcon}
-    tooltip={translations[language]}
+    tooltip={getTranslation(translations, language)}
   >
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>

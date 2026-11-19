@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-token-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import Text from "../../../icons/text.svg?raw";
   import Icon from "../../base/Icon.svelte";
@@ -28,7 +29,7 @@
     editor,
     language = "en",
     placeHolders,
-  }: { editor: Editor; language: "de" | "en"; placeHolders: Array<PlaceHolder> } = $props();
+  }: { editor: Editor; language: string; placeHolders: Array<PlaceHolder> } = $props();
 
   let dropdownOpen = $state(false);
 
@@ -57,12 +58,12 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={getTranslation(translations, language)["main"]}>
     <div class="dropdown-content">
       <div class="search-wrapper">
         <input
           type="text"
-          placeholder={translations[language]["search"]}
+          placeholder={getTranslation(translations, language)["search"]}
           bind:value={searchTerm}
           onclick={(e) => e.stopPropagation()}
         />
@@ -77,10 +78,10 @@
       </div>
 
       <div class="button-wrapper">
-        <button type="button" class="confirm" onclick={confirmToken} title={translations[language]["confirm"]}>
+        <button type="button" class="confirm" onclick={confirmToken} title={getTranslation(translations, language)["confirm"]}>
           <Icon content={CheckIcon} />
         </button>
-        <button type="button" class="close" onclick={closeDropdown} title={translations[language]["close"]}>
+        <button type="button" class="close" onclick={closeDropdown} title={getTranslation(translations, language)["close"]}>
           <Icon content={CloseIcon} />
         </button>
       </div>

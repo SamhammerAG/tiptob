@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-internal-link-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import CheckIcon from "../../../icons/check-line.svg?raw";
   import CloseIcon from "../../../icons/close-line.svg?raw";
@@ -29,7 +30,7 @@
     disabled = false,
   }: {
     editor: Editor;
-    language?: "de" | "en";
+    language?: string;
     fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
@@ -250,9 +251,9 @@
     if (!activeId || searchTerm !== null) return searchTerm ?? "";
     switch (titleRequest.status) {
       case "loading":
-        return translations[language].loading;
+        return getTranslation(translations, language).loading;
       case "failed":
-        return translations[language].error;
+        return getTranslation(translations, language).error;
       case "success":
         return titleRequest.data;
       default:
@@ -273,7 +274,7 @@
     key="internalLink"
     icon={ArticleIcon}
     text=""
-    tooltip={translations[language]["main"]}
+    tooltip={getTranslation(translations, language)["main"]}
   >
     <div class="tiptob-internallink-wrapper">
       <div class="tiptob-internallink-row">
@@ -282,7 +283,7 @@
           class="tiptob-internallink-input"
           class:muted={searchReadonly}
           value={inputValue}
-          placeholder={translations[language]["placeholder"]}
+          placeholder={getTranslation(translations, language)["placeholder"]}
           oninput={onInput}
           onkeydown={onKeyDown}
           autocomplete="off"
@@ -294,15 +295,15 @@
           class="confirm"
           onclick={confirm}
           disabled={!selectedSuggestion}
-          title={!selectedSuggestion ? "" : translations[language]["confirm"]}
+          title={!selectedSuggestion ? "" : getTranslation(translations, language)["confirm"]}
         >
           <Icon content={CheckIcon} />
         </button>
         <Divider></Divider>
-        <button type="button" onclick={openPreview} disabled={!activeId} title={translations[language]["open"]}>
+        <button type="button" onclick={openPreview} disabled={!activeId} title={getTranslation(translations, language)["open"]}>
           <Icon content={OpenLink} />
         </button>
-        <button type="button" class="close" onclick={removeLink} title={translations[language]["remove"]}>
+        <button type="button" class="close" onclick={removeLink} title={getTranslation(translations, language)["remove"]}>
           <Icon content={CloseIcon} />
         </button>
       </div>
@@ -325,11 +326,11 @@
           {/each}
         </ul>
       {:else if suggestionsRequest.status === "loading"}
-        <div class="tiptob-internallink-loading" role="status">{translations[language]["loading"]}</div>
+        <div class="tiptob-internallink-loading" role="status">{getTranslation(translations, language)["loading"]}</div>
       {:else if searchTerm?.trim() && suggestionsRequest.status === "failed"}
-        <div class="tiptob-internallink-empty">{translations[language]["error"]}</div>
+        <div class="tiptob-internallink-empty">{getTranslation(translations, language)["error"]}</div>
       {:else if searchTerm?.trim() && !selectedSuggestion}
-        <div class="tiptob-internallink-empty">{translations[language]["noResults"]}</div>
+        <div class="tiptob-internallink-empty">{getTranslation(translations, language)["noResults"]}</div>
       {/if}
     </div>
   </DropdownButton>

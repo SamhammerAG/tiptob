@@ -1,6 +1,7 @@
 <svelte:options customElement="tiptob-hyperlink-button" />
 
 <script lang="ts">
+  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import CheckIcon from "../../../icons/check-line.svg?raw";
   import CloseIcon from "../../../icons/close-line.svg?raw";
@@ -11,7 +12,7 @@
   import Divider from "../../base/Divider.svelte";
   import { normalizeLinkHref } from "../../utils/link";
 
-  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
@@ -133,14 +134,14 @@
     key={{ isActive: (e) => e.isActive("link") }}
     icon={LinkIcon}
     text=""
-    tooltip={translations[language]["main"]}
+    tooltip={getTranslation(translations, language)["main"]}
   >
     <div class="tiptob-link-input-wrapper">
       <input
         id="tiptob-link-input"
         bind:value={urlInputField}
         type="url"
-        placeholder={translations[language]["placeholder"]}
+        placeholder={getTranslation(translations, language)["placeholder"]}
         onkeydown={handleKeyDown}
         autocomplete="off"
         class="tiptob-link-input"
@@ -151,15 +152,15 @@
         class="confirm"
         onclick={setLink}
         disabled={!hasChange}
-        title={hasChange ? translations[language]["confirm"] : ""}
+        title={hasChange ? getTranslation(translations, language)["confirm"] : ""}
       >
         <Icon content={CheckIcon} />
       </button>
       <Divider></Divider>
-      <button type="button" onclick={openLink} disabled={!parsedInput} title={translations[language]["open"]}>
+      <button type="button" onclick={openLink} disabled={!parsedInput} title={getTranslation(translations, language)["open"]}>
         <Icon content={OpenLink} />
       </button>
-      <button class="close" type="button" onclick={removeLink} title={translations[language]["remove"]}>
+      <button class="close" type="button" onclick={removeLink} title={getTranslation(translations, language)["remove"]}>
         <Icon content={CloseIcon} />
       </button>
     </div>
