@@ -2,13 +2,17 @@ import { findParentNode, InputRule, mergeAttributes, Node, type JSONContent } fr
 import { NodeRange } from "@tiptap/pm/model";
 import { findWrapping, liftTarget } from "@tiptap/pm/transform";
 import type { EditorState } from "@tiptap/pm/state";
+import { getTranslation } from "../../utils/translation";
 
 export const ALERT_TYPES = ["note", "tip", "important", "warning", "caution"] as const;
 
 export type AlertType = (typeof ALERT_TYPES)[number];
 
+export type AlertTitles = Partial<Record<AlertType, string>>;
+
 export interface AlertOptions {
-  language: "de" | "en";
+  language: string;
+  titles: AlertTitles;
 }
 
 declare module "@tiptap/core" {
@@ -27,6 +31,9 @@ export const ALERT_TITLES: Record<"de" | "en", Record<AlertType, string>> = {
   en: { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" },
 };
 
+export const getAlertTitle = (type: AlertType, language: string, titles?: AlertTitles) =>
+  titles?.[type] ?? getTranslation(ALERT_TITLES, language)[type];
+
 // the content Markdig renders and the SSP styles, so the box stays a short hint
 const ALLOWED_CHILDREN = ["paragraph", "bulletList", "orderedList"];
 
@@ -42,7 +49,7 @@ export const AlertExtension = Node.create<AlertOptions>({
   defining: true,
 
   addOptions() {
-    return { language: "en" };
+    return { language: "en", titles: {} };
   },
 
   addAttributes() {
@@ -84,7 +91,7 @@ export const AlertExtension = Node.create<AlertOptions>({
 
       const render = (type: AlertType) => {
         dom.className = `markdown-alert markdown-alert-${type}`;
-        title.textContent = ALERT_TITLES[this.options.language][type];
+        title.textContent = getAlertTitle(type, this.options.language, this.options.titles);
       };
       render(node.attrs.type);
 

@@ -8,12 +8,13 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import type { Editor } from "@tiptap/core";
   import SimpleButton from "../../base/SimpleButton.svelte";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Textausrichtung",
       left: "Linksbündig",
@@ -30,7 +31,9 @@
     },
   };
 
-  const textAlignments: { name: string; icon: string; isDefault?: boolean; action: () => void }[] = [
+  const translation = $derived(getTranslation(translations, language));
+
+  const textAlignments: { name: "left" | "center" | "right" | "justify"; icon: string; isDefault?: boolean; action: () => void }[] = [
     {
       name: "left",
       icon: TextAlignLeftIcon,
@@ -81,7 +84,7 @@
     bind:dropdownOpen
     key={{ isActive: hasExplicitAlignment }}
     icon={TextAlignLeftIcon}
-    tooltip={translations[language]["main"]}
+    tooltip={translation.main}
   >
     <div class="text-align-dropdown">
       {#each textAlignments as alignment (alignment.name)}
@@ -92,7 +95,7 @@
             : { attributes: { textAlign: alignment.name } }}
           action={() => alignment.action()}
           icon={alignment.icon}
-          tooltip={translations[language][alignment.name]}
+          tooltip={translation[alignment.name]}
         ></SimpleButton>
       {/each}
     </div>
