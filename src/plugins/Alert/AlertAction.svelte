@@ -40,10 +40,10 @@
   $effect(() => {
     if (!editor) return;
 
-    const current = editor;
+    const currentEditor = editor;
     updateState();
-    current.on("transaction", updateState);
-    return () => current.off("transaction", updateState);
+    currentEditor.on("transaction", updateState);
+    return () => currentEditor.off("transaction", updateState);
   });
 
   function setAlert(type: AlertType) {

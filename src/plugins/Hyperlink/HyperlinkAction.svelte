@@ -1,7 +1,7 @@
 <svelte:options customElement="tiptob-hyperlink-button" />
 
 <script lang="ts">
-  import type { Editor } from "@tiptap/core";
+  import type { Editor, EditorEvents } from "@tiptap/core";
   import CheckIcon from "../../../icons/check-line.svg?raw";
   import CloseIcon from "../../../icons/close-line.svg?raw";
   import LinkIcon from "../../../icons/link.svg?raw";
@@ -39,18 +39,28 @@
   };
 
   $effect(() => {
-    editor?.on("transaction", () => {
-      if (editor.isActive("link")) {
-        savedUrl = editor.getAttributes("link").href || "";
-        urlInputField = savedUrl;
-        dropdownOpen = true;
-      } else {
-        savedUrl = "";
-        urlInputField = "";
-        dropdownOpen = false;
-      }
-    });
+    // the editor is assigned after the web component is created
+    if (!editor) return;
+
+    const currentEditor = editor;
+    currentEditor.on("transaction", syncLinkState);
+    return () => currentEditor.off("transaction", syncLinkState);
   });
+
+  function syncLinkState({ transaction }: EditorEvents["transaction"]) {
+    // meta-only transactions (e.g. focus/blur) must not overwrite a url the user is typing
+    if (!transaction.docChanged && !transaction.selectionSet) return;
+
+    if (editor.isActive("link")) {
+      savedUrl = editor.getAttributes("link").href || "";
+      urlInputField = savedUrl;
+      dropdownOpen = true;
+    } else {
+      savedUrl = "";
+      urlInputField = "";
+      dropdownOpen = false;
+    }
+  }
 
   function setLink() {
     const parsedUrl = normalizeLinkHref(urlInputField);

@@ -22,10 +22,11 @@
   $effect(() => {
     if (!editor) return;
 
+    const currentEditor = editor;
     updateCanRedo();
-    editor.on("transaction", updateCanRedo);
+    currentEditor.on("transaction", updateCanRedo);
 
-    return () => editor.off("transaction", updateCanRedo);
+    return () => currentEditor.off("transaction", updateCanRedo);
   });
 
   //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component

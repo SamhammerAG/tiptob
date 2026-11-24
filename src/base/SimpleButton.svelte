@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Editor } from "@tiptap/core";
+  import type { Editor, EditorEvents } from "@tiptap/core";
   import Icon from "./Icon.svelte";
-  import { onDestroy, onMount } from "svelte";
+  import { untrack } from "svelte";
   import type { ButtonKey } from "./ButtonKey";
 
   interface Props {
@@ -42,26 +42,36 @@
     }
   }
 
+  // every key depends only on the doc, the selection and the stored marks, so meta-only transactions (focus, blur,
+  // collaboration cursors) can't change the highlight
+  function onTransaction({ transaction, appendedTransactions }: EditorEvents["transaction"]) {
+    if ([transaction, ...appendedTransactions].some((tr) => tr.docChanged || tr.selectionSet || tr.storedMarksSet)) {
+      setHighlighted();
+    }
+  }
+
   function setIsEditorReadonly() {
     isEditorReadonly = !editor.isEditable;
   }
 
-  onMount(() => {
-    if (key !== undefined) {
-      setHighlighted();
-      editor.on("transaction", setHighlighted);
-    }
+  // unregister from the editor the listeners were registered on, even if the editor prop changed in between
+  $effect(() => {
+    if (!editor) return;
 
-    setIsEditorReadonly();
-    editor.on("update", setIsEditorReadonly);
-  });
+    const currentEditor = editor;
+    const tracksHighlight = key !== undefined;
 
-  onDestroy(() => {
-    if (key !== undefined) {
-      editor.off("transaction", setHighlighted);
-    }
+    untrack(() => {
+      if (tracksHighlight) setHighlighted();
+      setIsEditorReadonly();
+    });
+    if (tracksHighlight) currentEditor.on("transaction", onTransaction);
+    currentEditor.on("update", setIsEditorReadonly);
 
-    editor.off("update", setIsEditorReadonly);
+    return () => {
+      if (tracksHighlight) currentEditor.off("transaction", onTransaction);
+      currentEditor.off("update", setIsEditorReadonly);
+    };
   });
 </script>
 

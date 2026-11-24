@@ -8,6 +8,7 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import type { Editor } from "@tiptap/core";
   import SimpleButton from "../../base/SimpleButton.svelte";
+  import { getActiveAlignments } from "../../utils/text-align";
 
   let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
 
@@ -71,7 +72,8 @@
   ];
 
   function hasExplicitAlignment(editorInstance: Editor) {
-    return textAlignments.some((alignment) => !alignment.isDefault && editorInstance.isActive({ textAlign: alignment.name }));
+    const active = getActiveAlignments(editorInstance.state);
+    return textAlignments.some((alignment) => !alignment.isDefault && active.has(alignment.name));
   }
 </script>
 
@@ -89,7 +91,7 @@
           {editor}
           key={alignment.isDefault
             ? { isActive: (editorInstance) => !hasExplicitAlignment(editorInstance) }
-            : { attributes: { textAlign: alignment.name } }}
+            : { isActive: (editorInstance) => getActiveAlignments(editorInstance.state).has(alignment.name) }}
           action={() => alignment.action()}
           icon={alignment.icon}
           tooltip={translations[language][alignment.name]}

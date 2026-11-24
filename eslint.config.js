@@ -6,7 +6,7 @@ export default [
   ...typescript.configs["recommended"],
   ...svelte.configs["flat/recommended"],
   {
-    files: ["**/*.svelte"],
+    files: ["**/*.svelte", "**/*.svelte.ts"],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {
