@@ -239,7 +239,7 @@ describe("AlertExtension node view", () => {
 
   it("shows the given titles and falls back to the language for missing types", () => {
     const french = new Editor({
-      extensions: [StarterKit, Markdown, AlertExtension.configure({ language: "en", titles: { note: "Remarque", warning: "Avertissement" } })],
+      extensions: [StarterKit, Markdown, AlertExtension.configure({ language: "fr", titles: { note: "Remarque", warning: "Avertissement" } })],
       content: "> [!NOTE]\n> a\n\n> [!WARNING]\n> b\n\n> [!TIP]\n> c",
       contentType: "markdown",
     });

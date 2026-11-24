@@ -1,10 +1,10 @@
 <svelte:options customElement="tiptob-knowledge-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import KnowledgeIcon from "../../../icons/brain-line.svg?raw";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
   let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
@@ -13,9 +13,11 @@
     en: "Knowledge Mark",
   };
 
+  const translation = $derived(getTranslation(translations, language));
+
   const action = () => editor.chain().toggleKnowledgeMark().run();
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="knowledge" icon={KnowledgeIcon} tooltip={getTranslation(translations, language)} />
+  <SimpleButton {editor} {action} key="knowledge" icon={KnowledgeIcon} tooltip={translation} />
 {/if}

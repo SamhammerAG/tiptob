@@ -82,7 +82,7 @@ TipToB provides the following web components:
 | `<tiptob-text-align-button>`| `@tiptap/extension-text-align (TextAlign)`              |
 | `<tiptob-alert-button>`     | `AlertExtension` (from TipToB), `@tiptap/extension-list (ListKit)` |
 
-All web components take a `language` property. TipToB has German (`de`) and English (`en`) texts; any other language falls back to English, so you can pass the language of your app as it is.
+All web components take a `language` property. TipToB has German (`de`) and English (`en`) texts; a region like `de-DE` uses the texts of its language and any other language falls back to English, so you can pass the language of your app as it is.
 
 ---
 

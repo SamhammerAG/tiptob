@@ -1,7 +1,6 @@
 <svelte:options customElement="tiptob-table-bubble-menu" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
 
   import DeleteTableIcon from "../../../icons/delete-bin-2-line.svg?raw";
@@ -15,6 +14,7 @@
   import InsertRowBottomIcon from "../../../icons/insert-row-bottom.svg?raw";
   import MergeCells from "../../../icons/merge-cells-horizontal.svg?raw";
   import Icon from "../../base/Icon.svelte";
+  import { getTranslation } from "../../utils/translation";
 
   let { editor, language = "en", hiddenButtons = [] }: { editor: Editor; language: string; hiddenButtons?: string[] } = $props();
 
@@ -49,7 +49,7 @@
     },
   };
 
-  const t = $derived(getTranslation(translations, language));
+  const translation = $derived(getTranslation(translations, language));
 </script>
 
 {#if editor}
@@ -61,7 +61,7 @@
             onclick={() =>
               //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
               editor.commands.deleteTable()}
-            title={t.deleteTable}
+            title={translation.deleteTable}
           >
             <Icon content={DeleteTableIcon} />
           </button>
@@ -78,7 +78,7 @@
                 editor.chain().focus().run();
               }}
               class="toggle-header-button"
-              title={t.toggleHeader}
+              title={translation.toggleHeader}
             >
               <Icon content={ToggleHeaderIcon} />
             </button>
@@ -91,7 +91,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.mergeCells}
+              title={translation.mergeCells}
             >
               <Icon content={MergeCells} />
             </button>
@@ -104,7 +104,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.splitCells}
+              title={translation.splitCells}
             >
               <Icon content={SplitCells} />
             </button>
@@ -121,7 +121,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.addRowBefore}
+              title={translation.addRowBefore}
             >
               <Icon content={InsertRowTopIcon} />
             </button>
@@ -134,7 +134,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.addRowAfter}
+              title={translation.addRowAfter}
             >
               <Icon content={InsertRowBottomIcon} />
             </button>
@@ -147,7 +147,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.deleteRow}
+              title={translation.deleteRow}
             >
               <Icon content={DeleteRowIcon} />
             </button>
@@ -164,7 +164,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.addColumnBefore}
+              title={translation.addColumnBefore}
             >
               <Icon content={InsertColumnLeftIcon} />
             </button>
@@ -177,7 +177,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.addColumnAfter}
+              title={translation.addColumnAfter}
             >
               <Icon content={InsertColumnRightIcon} />
             </button>
@@ -190,7 +190,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={t.deleteColumn}
+              title={translation.deleteColumn}
             >
               <Icon content={DeleteColumnIcon} />
             </button>

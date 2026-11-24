@@ -1,10 +1,10 @@
 <svelte:options customElement="tiptob-redo-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import RedoIcon from "../../../icons/arrow-go-forward-line.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
   let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
@@ -12,6 +12,8 @@
     de: "Wiederherstellen",
     en: "Redo",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   let canRedo = $state(false);
 
@@ -34,5 +36,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={getTranslation(translations, language)} disabled={!canRedo} />
+  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={translation} disabled={!canRedo} />
 {/if}

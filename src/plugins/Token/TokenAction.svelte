@@ -1,7 +1,6 @@
 <svelte:options customElement="tiptob-token-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import Text from "../../../icons/text.svg?raw";
   import Icon from "../../base/Icon.svelte";
@@ -9,6 +8,7 @@
   import CloseIcon from "../../../icons/close-line.svg?raw";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import type PlaceHolder from "./PlaceHolderInterface";
+  import { getTranslation } from "../../utils/translation";
 
   const translations = {
     de: {
@@ -31,7 +31,7 @@
     placeHolders,
   }: { editor: Editor; language: string; placeHolders: Array<PlaceHolder> } = $props();
 
-  const t = $derived(getTranslation(translations, language));
+  const translation = $derived(getTranslation(translations, language));
 
   let dropdownOpen = $state(false);
 
@@ -60,12 +60,12 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={t.main}>
+  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={translation.main}>
     <div class="dropdown-content">
       <div class="search-wrapper">
         <input
           type="text"
-          placeholder={t.search}
+          placeholder={translation.search}
           bind:value={searchTerm}
           onclick={(e) => e.stopPropagation()}
         />
@@ -80,10 +80,10 @@
       </div>
 
       <div class="button-wrapper">
-        <button type="button" class="confirm" onclick={confirmToken} title={t.confirm}>
+        <button type="button" class="confirm" onclick={confirmToken} title={translation.confirm}>
           <Icon content={CheckIcon} />
         </button>
-        <button type="button" class="close" onclick={closeDropdown} title={t.close}>
+        <button type="button" class="close" onclick={closeDropdown} title={translation.close}>
           <Icon content={CloseIcon} />
         </button>
       </div>

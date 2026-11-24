@@ -1,12 +1,12 @@
 <svelte:options customElement="tiptob-font-color-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import FontColorIcon from "../../../icons/font-color.svg?raw";
   import EraserIcon from "../../../icons/eraser-line.svg?raw";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
   let {
     editor,
@@ -20,6 +20,8 @@
     de: "Schriftfarbe",
     en: "Font Color",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   function clearColor() {
     editor.chain().focus().unsetColor().run();
@@ -40,7 +42,7 @@
       isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").color && editorInstance.isActive("textStyle"),
     }}
     icon={FontColorIcon}
-    tooltip={getTranslation(translations, language)}
+    tooltip={translation}
   >
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>

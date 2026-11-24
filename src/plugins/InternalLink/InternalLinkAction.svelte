@@ -1,7 +1,6 @@
 <svelte:options customElement="tiptob-internal-link-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import CheckIcon from "../../../icons/check-line.svg?raw";
   import CloseIcon from "../../../icons/close-line.svg?raw";
@@ -11,6 +10,7 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
   import { onDestroy, onMount } from "svelte";
+  import { getTranslation } from "../../utils/translation";
 
   type Suggestion = { label: string; value: string };
   type TitleRequest = { status: "idle" } | { status: "loading" } | { status: "success"; data: string } | { status: "failed" };
@@ -34,7 +34,7 @@
     fetchSuggestions: (term: string, signal?: AbortSignal) => Promise<Suggestion[]>;
     fetchTitle: (id: string, signal?: AbortSignal) => Promise<string>;
     getPreviewUrl: (id: string) => string;
-    translationOverrides?: Record<string, Record<string, string>>;
+    translationOverrides?: Record<string, Partial<typeof translations.en>>;
     disabled?: boolean;
   } = $props();
 
@@ -72,7 +72,7 @@
   };
 
   // the overrides of a language without texts of its own apply on top of the english ones
-  const t = $derived({ ...getTranslation(translations, language), ...translationOverrides?.[language] });
+  const translation = $derived({ ...getTranslation(translations, language), ...translationOverrides?.[language] });
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let titleController: AbortController | null = null;
@@ -252,9 +252,9 @@
     if (!activeId || searchTerm !== null) return searchTerm ?? "";
     switch (titleRequest.status) {
       case "loading":
-        return t.loading;
+        return translation.loading;
       case "failed":
-        return t.error;
+        return translation.error;
       case "success":
         return titleRequest.data;
       default:
@@ -275,7 +275,7 @@
     key="internalLink"
     icon={ArticleIcon}
     text=""
-    tooltip={t.main}
+    tooltip={translation.main}
   >
     <div class="tiptob-internallink-wrapper">
       <div class="tiptob-internallink-row">
@@ -284,7 +284,7 @@
           class="tiptob-internallink-input"
           class:muted={searchReadonly}
           value={inputValue}
-          placeholder={t.placeholder}
+          placeholder={translation.placeholder}
           oninput={onInput}
           onkeydown={onKeyDown}
           autocomplete="off"
@@ -296,15 +296,15 @@
           class="confirm"
           onclick={confirm}
           disabled={!selectedSuggestion}
-          title={!selectedSuggestion ? "" : t.confirm}
+          title={!selectedSuggestion ? "" : translation.confirm}
         >
           <Icon content={CheckIcon} />
         </button>
         <Divider></Divider>
-        <button type="button" onclick={openPreview} disabled={!activeId} title={t.open}>
+        <button type="button" onclick={openPreview} disabled={!activeId} title={translation.open}>
           <Icon content={OpenLink} />
         </button>
-        <button type="button" class="close" onclick={removeLink} title={t.remove}>
+        <button type="button" class="close" onclick={removeLink} title={translation.remove}>
           <Icon content={CloseIcon} />
         </button>
       </div>
@@ -327,11 +327,11 @@
           {/each}
         </ul>
       {:else if suggestionsRequest.status === "loading"}
-        <div class="tiptob-internallink-loading" role="status">{t.loading}</div>
+        <div class="tiptob-internallink-loading" role="status">{translation.loading}</div>
       {:else if searchTerm?.trim() && suggestionsRequest.status === "failed"}
-        <div class="tiptob-internallink-empty">{t.error}</div>
+        <div class="tiptob-internallink-empty">{translation.error}</div>
       {:else if searchTerm?.trim() && !selectedSuggestion}
-        <div class="tiptob-internallink-empty">{t.noResults}</div>
+        <div class="tiptob-internallink-empty">{translation.noResults}</div>
       {/if}
     </div>
   </DropdownButton>

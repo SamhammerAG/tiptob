@@ -1,7 +1,6 @@
 <svelte:options customElement="tiptob-alert-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import type { Editor } from "@tiptap/core";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import SimpleButton from "../../base/SimpleButton.svelte";
@@ -11,7 +10,8 @@
   import ImportantIcon from "../../../icons/alert-important.svg?raw";
   import WarningIcon from "../../../icons/alert-warning.svg?raw";
   import CautionIcon from "../../../icons/alert-caution.svg?raw";
-  import { ALERT_TITLES, ALERT_TYPES, type AlertType } from "./AlertExtension";
+  import { getTranslation } from "../../utils/translation";
+  import { ALERT_TYPES, getAlertTitle, type AlertTitles, type AlertType } from "./AlertExtension";
 
   const ALERT_ICONS: Record<AlertType, string> = {
     note: NoteIcon,
@@ -28,8 +28,8 @@
 
   let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
-  const t = $derived(getTranslation(translations, language));
-  const titles = $derived(getTranslation(ALERT_TITLES, language));
+  const translation = $derived(getTranslation(translations, language));
+  const titles = $derived<AlertTitles | undefined>(editor?.extensionManager.extensions.find((extension) => extension.name === "alert")?.options.titles);
 
   let dropdownOpen = $state(false);
   let insideAlert = $state(false);
@@ -62,20 +62,21 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={t.main}>
+  <DropdownButton {editor} bind:dropdownOpen disabled={disabled || !allowed} key="alert" icon={NoteIcon} tooltip={translation.main}>
     <div class="alert-dropdown">
       {#each ALERT_TYPES as type (type)}
+        {@const title = getAlertTitle(type, language, titles)}
         <SimpleButton
           {editor}
           key={{ name: "alert", attributes: { type } }}
           action={() => setAlert(type)}
           icon={ALERT_ICONS[type]}
-          text={titles[type]}
-          tooltip={titles[type]}
+          text={title}
+          tooltip={title}
         />
       {/each}
       {#if insideAlert}
-        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={t.remove} tooltip={t.remove} />
+        <SimpleButton {editor} action={unsetAlert} icon={DeleteIcon} text={translation.remove} tooltip={translation.remove} />
       {/if}
     </div>
   </DropdownButton>

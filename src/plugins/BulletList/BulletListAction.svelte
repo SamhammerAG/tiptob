@@ -1,10 +1,10 @@
 <svelte:options customElement="tiptob-bullet-list-button" />
 
 <script lang="ts">
-  import { getTranslation } from "../../utils/translation";
   import BulletListIcon from "../../../icons/list-unordered.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import { findParentNode, type Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
   let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
@@ -12,6 +12,8 @@
     de: "Aufzählung",
     en: "Bulleted List",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   const action = () => editor.chain().focus().toggleList("bulletList", "listItem").run();
 
@@ -21,5 +23,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} {disabled} key={{ isActive }} icon={BulletListIcon} tooltip={getTranslation(translations, language)} />
+  <SimpleButton {editor} {action} {disabled} key={{ isActive }} icon={BulletListIcon} tooltip={translation} />
 {/if}
