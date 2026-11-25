@@ -11,3 +11,8 @@ updates:
     allow:
       - dependency-name: "*"
         dependency-type: production
+      - dependency-name: "@tiptap/*"
+    groups:
+      tiptap:
+        patterns:
+          - "@tiptap/*"
