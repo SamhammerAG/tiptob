@@ -6,24 +6,24 @@ import {
   ExtendedHighlight,
   TokenExtension,
   FontSizeExtension,
+  AlertExtension,
 } from "./src/extensions";
 
-import { Color } from "@tiptap/extension-color";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import { TextAlign } from "@tiptap/extension-text-align";
-import { TextStyle } from "@tiptap/extension-text-style";
+import { Color, TextStyle } from "@tiptap/extension-text-style";
 import { StarterKit } from "@tiptap/starter-kit";
 
 function uploadInlineImage(file) {
-  // Replace this with your actual upload logic
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulate upload and return a dummy URL
-      resolve("https://your.cdn.com/" + file.name);
-    }, 1000);
+  // Stands in for a real upload: reads the file locally and returns a data URL after a short
+  // delay, so the inserted image actually renders in the demo.
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => setTimeout(() => resolve(reader.result), 500);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
   });
 }
-var tableBubbleMenu = document.querySelector("tiptob-table-bubble-menu");
 
 const editor = new Editor({
   element: document.querySelector(".text-area") || undefined,
@@ -59,7 +59,8 @@ const editor = new Editor({
         alwaysPreserveAspectRatio: true,
       },
     }),
-    TableBubbleMenuExtension(() => editor),
+    TableBubbleMenuExtension(),
+    AlertExtension,
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
@@ -78,13 +79,14 @@ document.querySelector("tiptob-bullet-list-button").editor = editor;
 document.querySelector("tiptob-ordered-list-button").editor = editor;
 document.querySelector("tiptob-hyperlink-button").editor = editor;
 document.querySelector("tiptob-image-button").editor = editor;
-//document.querySelector("tiptob-image-button").imageUpload = uploadInlineImage.bind(this);
+document.querySelector("tiptob-image-button").imageUpload = uploadInlineImage;
 document.querySelector("tiptob-table-button").editor = editor;
 document.querySelector("tiptob-undo-button").editor = editor;
 document.querySelector("tiptob-redo-button").editor = editor;
 document.querySelector("tiptob-remove-format-button").editor = editor;
 document.querySelector("tiptob-token-button").editor = editor;
 document.querySelector("tiptob-heading-button").editor = editor;
+document.querySelector("tiptob-alert-button").editor = editor;
 document.querySelector("tiptob-token-button").placeHolders = [
   { translation: "token.id", expression: "{{ token.id }}" },
   { translation: "token.id", expression: "{{ token.id }}" },
@@ -114,4 +116,3 @@ document.querySelector("tiptob-token-button").placeHolders = [
   { translation: "token.id", expression: "{{ token.id }}" },
 ];
 
-tableBubbleMenu.editor = editor;

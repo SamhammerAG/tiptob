@@ -1,27 +1,39 @@
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import { Editor, Extension, NodePos, posToDOMRect } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
-import { bubbleMenuAutoUpdate, getBubbleMenuElement } from "../../utils/bubble-menu";
+import { bubbleMenuAutoUpdate, editorBoundary } from "../../utils/bubble-menu";
 
 const tableBubbleMenuPluginKey = new PluginKey("tableBubbleMenu");
 
-export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
-  const element = getBubbleMenuElement("tiptob-table-bubble-menu");
+export function getBubbleMenuExtension(menuProps?: { language?: string; hiddenButtons?: string[] }): Extension {
+  let editor: Editor;
+  const element = document.createElement("tiptob-table-bubble-menu");
+  Object.assign(element, menuProps);
 
-  return BubbleMenu.extend({ name: "tableBubbleMenu" }).configure({
+  return BubbleMenu.extend({
+    name: "tableBubbleMenu",
+    // Before the view and so the bubble menu plugin are created, which may already need the editor.
+    onBeforeCreate() {
+      editor = this.editor;
+      Object.assign(element, { editor });
+    },
+    onDestroy() {
+      element.remove();
+    },
+  }).configure({
     pluginKey: tableBubbleMenuPluginKey,
     options: {
       strategy: "fixed",
       placement: "bottom",
-      flip: {
+      flip: () => ({
         fallbackPlacements: ["top"],
-      },
-      shift: { crossAxis: true, padding: 8 },
-      hide: { strategy: "referenceHidden" },
-      ...bubbleMenuAutoUpdate(getEditor, element, tableBubbleMenuPluginKey),
+        boundary: editorBoundary(editor),
+      }),
+      shift: () => ({ crossAxis: true, padding: 8, boundary: editorBoundary(editor) }),
+      hide: () => ({ strategy: "referenceHidden", boundary: editorBoundary(editor) }),
+      ...bubbleMenuAutoUpdate(() => editor, element, tableBubbleMenuPluginKey),
     },
     getReferencedVirtualElement: () => {
-      const editor = getEditor();
       const { state, view } = editor;
       const myNodePos = new NodePos(state.selection.$anchor, editor);
       const tableElement = findParentTableFromPos(myNodePos);
@@ -31,11 +43,16 @@ export function getBubbleMenuExtension(getEditor: () => Editor): Extension {
 
       return { getBoundingClientRect: () => posToDOMRect(view, 0, 0) };
     },
-    shouldShow: ({ editor }) => {
+    shouldShow: ({ editor, element, view }) => {
+      // Without the focus check the menu shows during plugin construction when the doc starts with a table, and gets stuck.
+      const hasFocus = view.hasFocus() || element.contains(document.activeElement);
+
       return (
+        hasFocus &&
         editor.isEditable &&
         editor.isActive("table") &&
         !editor.isActive("link") &&
+        !editor.isActive("image") &&
         !editor.isActive("imageUpload")
       );
     },

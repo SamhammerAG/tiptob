@@ -6,19 +6,22 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
   let {
     editor,
     language = "en",
     availableOptions = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"],
-  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
+  }: { editor: Editor; language: string; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Schriftfarbe",
     en: "Font Color",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   function clearColor() {
     editor.chain().focus().unsetColor().run();
@@ -39,7 +42,7 @@
       isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").color && editorInstance.isActive("textStyle"),
     }}
     icon={FontColorIcon}
-    tooltip={translations[language]}
+    tooltip={translation}
   >
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>

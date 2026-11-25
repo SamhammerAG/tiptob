@@ -14,10 +14,15 @@
   import InsertRowBottomIcon from "../../../icons/insert-row-bottom.svg?raw";
   import MergeCells from "../../../icons/merge-cells-horizontal.svg?raw";
   import Icon from "../../base/Icon.svelte";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en", hiddenButtons = [] }: { editor: Editor; language: string; hiddenButtons?: string[] } = $props();
 
-  const translations: Record<string, Record<string, string>> = {
+  function isHidden(key: string) {
+    return hiddenButtons.includes(key);
+  }
+
+  const translations = {
     de: {
       toggleHeader: "Kopfzeile umschalten",
       mergeCells: "Zellen zusammenführen",
@@ -43,127 +48,155 @@
       deleteColumn: "Delete Column",
     },
   };
+
+  const translation = $derived(getTranslation(translations, language));
 </script>
 
 {#if editor}
   <div class="table-bubble-menu">
     <div class="table-toolbar">
-      <div class="toolbar-button-group">
-        <button
-          onclick={() =>
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.deleteTable()}
-          title={translations[language]["deleteTable"]}
-        >
-          <Icon content={DeleteTableIcon} />
-        </button>
-      </div>
-      <div class="toolbar-button-group">
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.toggleHeaderCell();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          class="toggle-header-button"
-          title={translations[language]["toggleHeader"]}
-        >
-          <Icon content={ToggleHeaderIcon} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.mergeCells();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["mergeCells"]}
-        >
-          <Icon content={MergeCells} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.splitCell();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["splitCells"]}
-        >
-          <Icon content={SplitCells} />
-        </button>
-      </div>
-      <div class="toolbar-button-group">
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.addRowBefore();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["addRowBefore"]}
-        >
-          <Icon content={InsertRowTopIcon} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.addRowAfter();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["addRowAfter"]}
-        >
-          <Icon content={InsertRowBottomIcon} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.deleteRow();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["deleteRow"]}
-        >
-          <Icon content={DeleteRowIcon} />
-        </button>
-      </div>
-      <div class="toolbar-button-group">
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.addColumnBefore();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["addColumnBefore"]}
-        >
-          <Icon content={InsertColumnLeftIcon} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.addColumnAfter();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["addColumnAfter"]}
-        >
-          <Icon content={InsertColumnRightIcon} />
-        </button>
-        <button
-          onclick={() => {
-            //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-            editor.commands.deleteColumn();
-            //AID-27639 wtf is that bug, but ye this fixes it.
-            editor.chain().focus();
-          }}
-          title={translations[language]["deleteColumn"]}
-        >
-          <Icon content={DeleteColumnIcon} />
-        </button>
-      </div>
+      {#if !isHidden("deleteTable")}
+        <div class="toolbar-button-group">
+          <button
+            onclick={() =>
+              //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+              editor.commands.deleteTable()}
+            title={translation.deleteTable}
+          >
+            <Icon content={DeleteTableIcon} />
+          </button>
+        </div>
+      {/if}
+      {#if !isHidden("toggleHeader") || !isHidden("mergeCells") || !isHidden("splitCells")}
+        <div class="toolbar-button-group">
+          {#if !isHidden("toggleHeader")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.toggleHeaderCell();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              class="toggle-header-button"
+              title={translation.toggleHeader}
+            >
+              <Icon content={ToggleHeaderIcon} />
+            </button>
+          {/if}
+          {#if !isHidden("mergeCells")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.mergeCells();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.mergeCells}
+            >
+              <Icon content={MergeCells} />
+            </button>
+          {/if}
+          {#if !isHidden("splitCells")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.splitCell();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.splitCells}
+            >
+              <Icon content={SplitCells} />
+            </button>
+          {/if}
+        </div>
+      {/if}
+      {#if !isHidden("addRowBefore") || !isHidden("addRowAfter") || !isHidden("deleteRow")}
+        <div class="toolbar-button-group">
+          {#if !isHidden("addRowBefore")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.addRowBefore();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.addRowBefore}
+            >
+              <Icon content={InsertRowTopIcon} />
+            </button>
+          {/if}
+          {#if !isHidden("addRowAfter")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.addRowAfter();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.addRowAfter}
+            >
+              <Icon content={InsertRowBottomIcon} />
+            </button>
+          {/if}
+          {#if !isHidden("deleteRow")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.deleteRow();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.deleteRow}
+            >
+              <Icon content={DeleteRowIcon} />
+            </button>
+          {/if}
+        </div>
+      {/if}
+      {#if !isHidden("addColumnBefore") || !isHidden("addColumnAfter") || !isHidden("deleteColumn")}
+        <div class="toolbar-button-group">
+          {#if !isHidden("addColumnBefore")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.addColumnBefore();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.addColumnBefore}
+            >
+              <Icon content={InsertColumnLeftIcon} />
+            </button>
+          {/if}
+          {#if !isHidden("addColumnAfter")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.addColumnAfter();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.addColumnAfter}
+            >
+              <Icon content={InsertColumnRightIcon} />
+            </button>
+          {/if}
+          {#if !isHidden("deleteColumn")}
+            <button
+              onclick={() => {
+                //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
+                editor.commands.deleteColumn();
+                //AID-27639 wtf is that bug, but ye this fixes it.
+                editor.chain().focus().run();
+              }}
+              title={translation.deleteColumn}
+            >
+              <Icon content={DeleteColumnIcon} />
+            </button>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
 {/if}

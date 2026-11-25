@@ -1,25 +1,13 @@
-import { autoUpdate } from "@floating-ui/dom";
+import { autoUpdate, getOverflowAncestors } from "@floating-ui/dom";
 import type { Editor } from "@tiptap/core";
 import type { PluginKey } from "@tiptap/pm/state";
-
-// The v3 bubble menu plugin only hides the element on a show→hide transition.
-// Until the first show, the element stays visible in normal flow where the
-// host placed it, so it must start out hidden and out of flow.
-export function getBubbleMenuElement(selector: string): HTMLElement | null {
-  const element = document.querySelector<HTMLElement>(selector);
-  if (element) {
-    element.style.visibility = "hidden";
-    element.style.position = "fixed";
-  }
-  return element;
-}
 
 // Tiptap v3 repositions bubble menus only on selection/doc changes and window
 // scroll, so scrolling a nested container of the host app leaves the menu
 // stuck. Floating UI's autoUpdate watches scroll and resize of all overflow
 // ancestors of the editor; while the menu is shown, it triggers the plugin's
 // official "updatePosition" meta transaction.
-export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLElement | null, pluginKey: PluginKey) {
+export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLElement, pluginKey: PluginKey) {
   let stopAutoUpdate: (() => void) | null = null;
 
   const stop = () => {
@@ -29,10 +17,10 @@ export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLEleme
 
   return {
     onShow: () => {
-      if (!element) {
+      const editor = getEditor();
+      if (!editor?.view) {
         return;
       }
-      const editor = getEditor();
       stopAutoUpdate = autoUpdate(editor.view.dom, element, () => {
         if (editor.isDestroyed) {
           return;
@@ -43,4 +31,12 @@ export function bubbleMenuAutoUpdate(getEditor: () => Editor, element: HTMLEleme
     onHide: stop,
     onDestroy: stop,
   };
+}
+
+// The menu is positioned "fixed", so Floating UI only uses the viewport as
+// boundary. A table cut off by a scrolling container of the host app would
+// then get its menu outside of that container. Using the overflow ancestors
+// of the editor as boundary keeps the menu inside the visible editor area.
+export function editorBoundary(editor: Editor): Element[] {
+  return getOverflowAncestors(editor.view.dom).filter((ancestor) => ancestor instanceof Element);
 }

@@ -4,13 +4,21 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import TableIcon from "../../../icons/table-line.svg?raw";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let {
+    editor,
+    language = "en",
+    withHeaderRow = false,
+    disabled = false,
+  }: { editor: Editor; language: string; withHeaderRow?: boolean; disabled?: boolean } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Tabelle",
     en: "Table",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   let dropdownOpen = $state(false);
   let xPos: number = $state(0);
@@ -20,13 +28,13 @@
 
   function createTable(rows: number, cols: number) {
     //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
-    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run();
+    editor.chain().focus().insertTable({ rows, cols, withHeaderRow }).run();
     dropdownOpen = false;
   }
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="table" icon={TableIcon} tooltip={translations[language]}>
+  <DropdownButton {editor} bind:dropdownOpen {disabled} key="table" icon={TableIcon} tooltip={translation}>
     <div class="table">
       {#each { length: tableGridSize }, x}
         {#each { length: tableGridSize }, y}
