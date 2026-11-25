@@ -14,8 +14,9 @@
     editor: Editor;
     language: string;
     imageUpload: (file: File) => Promise<string>;
+    disabled?: boolean;
   }
-  let { editor, language = "en", imageUpload }: Props = $props();
+  let { editor, language = "en", imageUpload, disabled = false }: Props = $props();
 
   const translations = {
     de: "Bild einfügen",
@@ -59,11 +60,11 @@
 {#if editor}
   {#if imageUpload !== undefined}
     <!-- File upload button -->
-    <SimpleButton {editor} action={() => input.click()} icon={ImageIcon} tooltip={translation} />
+    <SimpleButton {editor} {disabled} action={() => input.click()} icon={ImageIcon} tooltip={translation} />
     <input onchange={processImages} multiple bind:this={input} type="file" accept="image/*" />
   {:else}
     <!-- Image URL modal button -->
-    <DropdownButton {editor} bind:dropdownOpen icon={ImageIcon} text="" tooltip={translation}>
+    <DropdownButton {editor} bind:dropdownOpen {disabled} icon={ImageIcon} text="" tooltip={translation}>
       <div class="tiptob-link-input-wrapper">
         <input
           id="tiptob-link-input"

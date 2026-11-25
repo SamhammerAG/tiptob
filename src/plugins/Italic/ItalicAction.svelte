@@ -6,7 +6,7 @@
   import type { Editor } from "@tiptap/core";
   import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
   const translations = {
     de: "Kursiv",
@@ -20,5 +20,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton key="italic" {editor} {action} icon={ItalicIcon} tooltip={translation} />
+  <SimpleButton key="italic" {editor} {action} {disabled} icon={ItalicIcon} tooltip={translation} />
 {/if}
