@@ -8,8 +8,9 @@
   import CloseIcon from "../../../icons/close-line.svg?raw";
   import DropdownButton from "../../base/DropdownButton.svelte";
   import type PlaceHolder from "./PlaceHolderInterface";
+  import { getTranslation } from "../../utils/translation";
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Token auswählen",
       confirm: "Token einfügen",
@@ -28,7 +29,9 @@
     editor,
     language = "en",
     placeHolders,
-  }: { editor: Editor; language: "de" | "en"; placeHolders: Array<PlaceHolder> } = $props();
+  }: { editor: Editor; language: string; placeHolders: Array<PlaceHolder> } = $props();
+
+  const translation = $derived(getTranslation(translations, language));
 
   let dropdownOpen = $state(false);
 
@@ -57,12 +60,12 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={translations[language]["main"]}>
+  <DropdownButton {editor} bind:dropdownOpen key="token" icon={Text} text="Token" tooltip={translation.main}>
     <div class="dropdown-content">
       <div class="search-wrapper">
         <input
           type="text"
-          placeholder={translations[language]["search"]}
+          placeholder={translation.search}
           bind:value={searchTerm}
           onclick={(e) => e.stopPropagation()}
         />
@@ -77,10 +80,10 @@
       </div>
 
       <div class="button-wrapper">
-        <button type="button" class="confirm" onclick={confirmToken} title={translations[language]["confirm"]}>
+        <button type="button" class="confirm" onclick={confirmToken} title={translation.confirm}>
           <Icon content={CheckIcon} />
         </button>
-        <button type="button" class="close" onclick={closeDropdown} title={translations[language]["close"]}>
+        <button type="button" class="close" onclick={closeDropdown} title={translation.close}>
           <Icon content={CloseIcon} />
         </button>
       </div>

@@ -14,14 +14,15 @@
   import InsertRowBottomIcon from "../../../icons/insert-row-bottom.svg?raw";
   import MergeCells from "../../../icons/merge-cells-horizontal.svg?raw";
   import Icon from "../../base/Icon.svelte";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en", hiddenButtons = [] }: { editor: Editor; language: "de" | "en"; hiddenButtons?: string[] } = $props();
+  let { editor, language = "en", hiddenButtons = [] }: { editor: Editor; language: string; hiddenButtons?: string[] } = $props();
 
   function isHidden(key: string) {
     return hiddenButtons.includes(key);
   }
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       toggleHeader: "Kopfzeile umschalten",
       mergeCells: "Zellen zusammenführen",
@@ -47,6 +48,8 @@
       deleteColumn: "Delete Column",
     },
   };
+
+  const translation = $derived(getTranslation(translations, language));
 </script>
 
 {#if editor}
@@ -58,7 +61,7 @@
             onclick={() =>
               //@ts-expect-error: This error is expected because the editor is initilized outside of the Web-component
               editor.commands.deleteTable()}
-            title={translations[language]["deleteTable"]}
+            title={translation.deleteTable}
           >
             <Icon content={DeleteTableIcon} />
           </button>
@@ -75,7 +78,7 @@
                 editor.chain().focus().run();
               }}
               class="toggle-header-button"
-              title={translations[language]["toggleHeader"]}
+              title={translation.toggleHeader}
             >
               <Icon content={ToggleHeaderIcon} />
             </button>
@@ -88,7 +91,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["mergeCells"]}
+              title={translation.mergeCells}
             >
               <Icon content={MergeCells} />
             </button>
@@ -101,7 +104,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["splitCells"]}
+              title={translation.splitCells}
             >
               <Icon content={SplitCells} />
             </button>
@@ -118,7 +121,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["addRowBefore"]}
+              title={translation.addRowBefore}
             >
               <Icon content={InsertRowTopIcon} />
             </button>
@@ -131,7 +134,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["addRowAfter"]}
+              title={translation.addRowAfter}
             >
               <Icon content={InsertRowBottomIcon} />
             </button>
@@ -144,7 +147,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["deleteRow"]}
+              title={translation.deleteRow}
             >
               <Icon content={DeleteRowIcon} />
             </button>
@@ -161,7 +164,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["addColumnBefore"]}
+              title={translation.addColumnBefore}
             >
               <Icon content={InsertColumnLeftIcon} />
             </button>
@@ -174,7 +177,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["addColumnAfter"]}
+              title={translation.addColumnAfter}
             >
               <Icon content={InsertColumnRightIcon} />
             </button>
@@ -187,7 +190,7 @@
                 //AID-27639 wtf is that bug, but ye this fixes it.
                 editor.chain().focus().run();
               }}
-              title={translations[language]["deleteColumn"]}
+              title={translation.deleteColumn}
             >
               <Icon content={DeleteColumnIcon} />
             </button>

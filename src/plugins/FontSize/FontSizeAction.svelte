@@ -7,16 +7,17 @@
   import type { Editor } from "@tiptap/core";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import Icon from "../../base/Icon.svelte";
+  import { getTranslation } from "../../utils/translation";
 
   let {
     editor,
     language = "en",
     availableOptions = ["12px", "14px", "16px", "18px", "24px", "32px"],
-  }: { editor: Editor; language: "de" | "en"; availableOptions: string[] } = $props();
+  }: { editor: Editor; language: string; availableOptions: string[] } = $props();
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Schriftgröße",
       clear: "Schriftgröße entfernen",
@@ -26,6 +27,8 @@
       clear: "Clear font size",
     },
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   function setFontSize(size: string) {
     editor.chain().focus().setFontSize(size).run();
@@ -44,7 +47,7 @@
     bind:dropdownOpen
     key={{ isActive: (editorInstance) => !!editorInstance.getAttributes("textStyle").fontSize && editorInstance.isActive("textStyle") }}
     icon={FontSizeIcon}
-    tooltip={translations[language]["main"]}
+    tooltip={translation.main}
   >
     <div class="heading-dropdown">
       <div class="clear-action">

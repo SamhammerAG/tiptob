@@ -6,15 +6,18 @@
   import EraserIcon from "../../../icons/eraser-line.svg?raw";
   import Icon from "../../base/Icon.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
   let dropdownOpen = $state(false);
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Markieren",
     en: "Font Highlight",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   const colors: string[] = ["#E91313", "#118800", "#63F963", "#72CDFD", "#fc7999", "#FDFD77"];
 
@@ -30,7 +33,7 @@
 </script>
 
 {#if editor}
-  <DropdownButton {editor} bind:dropdownOpen key="highlight" icon={FontHighlightIcon} tooltip={translations[language]}>
+  <DropdownButton {editor} bind:dropdownOpen key="highlight" icon={FontHighlightIcon} tooltip={translation}>
     <div class="color-picker">
       <button class="clear" onclick={clearColor}>
         <Icon content={EraserIcon} />

@@ -10,8 +10,9 @@
   import DropdownButton from "../../base/DropdownButton.svelte";
   import Divider from "../../base/Divider.svelte";
   import { normalizeLinkHref } from "../../utils/link";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en", disabled = false }: { editor: Editor; language: "de" | "en"; disabled?: boolean } = $props();
+  let { editor, language = "en", disabled = false }: { editor: Editor; language: string; disabled?: boolean } = $props();
 
   let dropdownOpen = $state(false);
   let urlInputField = $state("");
@@ -21,7 +22,7 @@
   const parsedSaved = $derived(normalizeLinkHref(savedUrl));
   const hasChange = $derived(!!parsedInput && parsedInput !== parsedSaved);
 
-  const translations: Record<string, Record<string, string>> = {
+  const translations = {
     de: {
       main: "Link",
       confirm: "Bestätigen",
@@ -37,6 +38,8 @@
       placeholder: "Paste a link...",
     },
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   $effect(() => {
     // the editor is assigned after the web component is created
@@ -143,14 +146,14 @@
     key={{ isActive: (e) => e.isActive("link") }}
     icon={LinkIcon}
     text=""
-    tooltip={translations[language]["main"]}
+    tooltip={translation.main}
   >
     <div class="tiptob-link-input-wrapper">
       <input
         id="tiptob-link-input"
         bind:value={urlInputField}
         type="url"
-        placeholder={translations[language]["placeholder"]}
+        placeholder={translation.placeholder}
         onkeydown={handleKeyDown}
         autocomplete="off"
         class="tiptob-link-input"
@@ -161,15 +164,15 @@
         class="confirm"
         onclick={setLink}
         disabled={!hasChange}
-        title={hasChange ? translations[language]["confirm"] : ""}
+        title={hasChange ? translation.confirm : ""}
       >
         <Icon content={CheckIcon} />
       </button>
       <Divider></Divider>
-      <button type="button" onclick={openLink} disabled={!parsedInput} title={translations[language]["open"]}>
+      <button type="button" onclick={openLink} disabled={!parsedInput} title={translation.open}>
         <Icon content={OpenLink} />
       </button>
-      <button class="close" type="button" onclick={removeLink} title={translations[language]["remove"]}>
+      <button class="close" type="button" onclick={removeLink} title={translation.remove}>
         <Icon content={CloseIcon} />
       </button>
     </div>

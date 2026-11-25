@@ -4,17 +4,20 @@
   import SimpleButton from "../../base/SimpleButton.svelte";
   import KnowledgeIcon from "../../../icons/brain-line.svg?raw";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Wissensmarkierung",
     en: "Knowledge Mark",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   const action = () => editor.chain().toggleKnowledgeMark().run();
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="knowledge" icon={KnowledgeIcon} tooltip={translations[language]} />
+  <SimpleButton {editor} {action} key="knowledge" icon={KnowledgeIcon} tooltip={translation} />
 {/if}

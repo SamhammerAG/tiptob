@@ -4,13 +4,16 @@
   import UndoIcon from "../../../icons/arrow-go-back-line.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Rückgängig",
     en: "Undo",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   let canUndo = $state(false);
 
@@ -34,5 +37,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={translations[language]} disabled={!canUndo} />
+  <SimpleButton key="undo" {editor} {action} icon={UndoIcon} tooltip={translation} disabled={!canUndo} />
 {/if}

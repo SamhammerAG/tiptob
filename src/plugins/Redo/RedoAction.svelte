@@ -4,13 +4,16 @@
   import RedoIcon from "../../../icons/arrow-go-forward-line.svg?raw";
   import SimpleButton from "../../base/SimpleButton.svelte";
   import type { Editor } from "@tiptap/core";
+  import { getTranslation } from "../../utils/translation";
 
-  let { editor, language = "en" }: { editor: Editor; language: "de" | "en" } = $props();
+  let { editor, language = "en" }: { editor: Editor; language: string } = $props();
 
-  const translations: Record<string, string> = {
+  const translations = {
     de: "Wiederherstellen",
     en: "Redo",
   };
+
+  const translation = $derived(getTranslation(translations, language));
 
   let canRedo = $state(false);
 
@@ -34,5 +37,5 @@
 </script>
 
 {#if editor}
-  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={translations[language]} disabled={!canRedo} />
+  <SimpleButton {editor} {action} key="redo" icon={RedoIcon} tooltip={translation} disabled={!canRedo} />
 {/if}
